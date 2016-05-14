@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ===============dialog=============== -->
+    <style name="lou_dialog_progress" parent="@android:style/Theme.Holo.Dialog.NoActionBar" />
+
+    <style name="lou_dialog_transparent" parent="android:Theme.Holo.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
+</resources>

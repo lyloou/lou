@@ -1,0 +1,5 @@
+<resources>
+
+    <dimen name="skin_normal">12dp</dimen>
+    <dimen name="skin_checked">4dp</dimen>
+</resources>
