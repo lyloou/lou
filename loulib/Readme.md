@@ -1,5 +1,8 @@
+#### loulib 4--1.0(2016.05.20)
+* add: add Lou.mmap
+
 #### loulib 4--1.0(2016.05.12)
-*update: RatioColor.java(滑动冲突和回弹效果已经处理)
+* update: RatioColor.java(滑动冲突和回弹效果已经处理)
 
 #### loulib 4--1.0(2016.05.12)
 * update: RatioColor.java(没有滑动处理)
