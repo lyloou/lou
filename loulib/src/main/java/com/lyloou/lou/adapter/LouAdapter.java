@@ -2,6 +2,7 @@ package com.lyloou.lou.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -127,16 +128,8 @@ public abstract class LouAdapter<T> extends BaseAdapter {
 
     public void deleteChoicedItem() {
         if (mListView.getChoiceMode() != AbsListView.CHOICE_MODE_NONE) {
-
-            // 获取被选中的ITEM；
-            SparseBooleanArray sparseBooleanArray = mListView.getCheckedItemPositions();
-            ArrayList<T> deleteLists = new ArrayList<T>();
-            for (int i = 0; i < sparseBooleanArray.size(); i++) {
-                if (sparseBooleanArray.valueAt(i)) {
-                    deleteLists.add(mLists.get(sparseBooleanArray.keyAt(i)));
-                }
-            }
-            mLists.removeAll(deleteLists);
+            // 移除被选中的ITEM；
+            mLists.removeAll(getCheckedItems());
             mListView.clearChoices();
             updateChange();
         }
@@ -149,6 +142,16 @@ public abstract class LouAdapter<T> extends BaseAdapter {
         updateChange();
     }
 
+    public List<T> getCheckedItems(){
+        SparseBooleanArray sba = mListView.getCheckedItemPositions();
+        ArrayList<T> checkedLists = new ArrayList<>();
+        for (int i = 0; i < sba.size(); i++) {
+            if (sba.valueAt(i)) {
+                checkedLists.add(getItem(sba.keyAt(i)));
+            }
+        }
+        return checkedLists;
+    }
     // ~~~~~~~~~~~~
 
     /**
@@ -158,9 +161,6 @@ public abstract class LouAdapter<T> extends BaseAdapter {
      * @return 返回的结果
      */
     protected boolean contain(T o) {
-        if (mLists.contains(o)) {
-            return true;
-        }
         return false;
     }
 
@@ -439,7 +439,7 @@ public abstract class LouAdapter<T> extends BaseAdapter {
 
             if (!roundShape) {
                 // 该库已经做了错位处理了（如果只是将加载的图片加载到ImageView的话，就不需要错位问题）；
-                Picasso.with(context).load(url).placeholder(R.mipmap.ic_go).into(imageView);
+                Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher).into(imageView);
                 return this;
             } else {
                 new AsyncTask<Void, Void, Bitmap>() {
@@ -447,7 +447,7 @@ public abstract class LouAdapter<T> extends BaseAdapter {
                     @Override
                     protected void onPreExecute() {
                         // 首先设置默认图片
-                        Bitmap bitmap = Uview.getBitmapByXfermode(context, R.mipmap.ic_go,
+                        Bitmap bitmap = Uview.getBitmapByXfermode(context, R.mipmap.ic_launcher,
                                 Color.parseColor("#993382"),
                                 Uscreen.dp2Px(context, 48),
                                 Uscreen.dp2Px(context, 48),
@@ -463,9 +463,11 @@ public abstract class LouAdapter<T> extends BaseAdapter {
                     protected Bitmap doInBackground(Void... params) {
                         Bitmap bitmap = null;
                         try {
-                            bitmap = Picasso.with(context).load(url).placeholder(R.mipmap.ic_go).get();
+                            bitmap = Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher).get();
                         } catch (IOException e) {
-                            e.printStackTrace();
+//                            e.printStackTrace();
+                            // 网络不可用使用默认图片
+                            bitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
                         }
 
                         // 设置圆角

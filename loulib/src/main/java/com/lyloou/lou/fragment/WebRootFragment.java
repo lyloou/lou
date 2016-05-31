@@ -31,10 +31,6 @@ public class WebRootFragment extends Fragment implements OnClickListener {
     private TextView mTvTips;
     private ProgressBar mProgressBar;
 
-    public WebRootFragment() {
-        super();
-    }
-
     public static WebRootFragment newInstance(String url) {
         WebRootFragment fragment = new WebRootFragment();
         Bundle bundle = new Bundle();

@@ -36,10 +36,10 @@ public class LouTest {
     @Test
     public void path() throws Exception{
         String path = "/lou/slk";
-        System.out.println("isValidPath===>"+isValidPath(path));
+        System.out.println("isValidFilePath===>"+isValidPath(path));
 
         path = "//dkj/ sdf aa< \f : > \0 ~/ |";
-        System.out.println("isValidPath===>"+isValidPath(path));
+        System.out.println("isValidFilePath===>"+isValidPath(path));
     }
 
     private static boolean isValidPath(String path){

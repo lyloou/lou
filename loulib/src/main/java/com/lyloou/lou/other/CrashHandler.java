@@ -27,9 +27,12 @@ import java.util.Map;
 
 /**
  * UncaughtException处理类,当程序发生Uncaught异常的时候,有该类来接管程序,并记录发送错误报告.
- * 保存到了内层卡中，需要权限支持（{@code     <!-- 文件读和写权限 -->
+ * 保存到了内层卡中，需要权限支持
+ * {@code
+ * <!-- 文件读和写权限 -->
  * <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
- * <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />}）；
+ * <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+ * }
  *
  * @author user
  */

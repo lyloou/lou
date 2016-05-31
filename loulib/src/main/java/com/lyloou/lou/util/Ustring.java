@@ -8,7 +8,7 @@ import java.io.IOException;
  */
 public class Ustring {
 
-    public static boolean isValidPath(String path){
+    public static boolean isValidFilePath(String path){
         File f = new File(path);
         try{
             f.getCanonicalPath();
