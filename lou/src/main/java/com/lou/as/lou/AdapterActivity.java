@@ -12,7 +12,7 @@ import com.lyloou.lou.util.Utoast;
 
 import java.util.Arrays;
 
-public class DemoAdapterActivity extends LouActivity {
+public class AdapterActivity extends LouActivity {
 
     private Activity mContext;
 

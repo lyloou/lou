@@ -7,14 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import com.lyloou.lou.util.Utoast;
 import com.lyloou.lou.view.CountView;
 
-public class CountViewActivity extends AppCompatActivity {
+public class ViewCountViewActivity extends AppCompatActivity {
     private Activity mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        setContentView(R.layout.activity_count_view);
+        setContentView(R.layout.activity_view_count_view);
         initView();
     }
 

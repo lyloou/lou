@@ -11,6 +11,7 @@
         android:textSize="18sp"
         android:gravity="center"
         android:text="下拉可以刷新"
+        android:textColor="@color/colorAccent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

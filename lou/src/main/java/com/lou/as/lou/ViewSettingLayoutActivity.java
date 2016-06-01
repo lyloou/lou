@@ -8,14 +8,15 @@ import com.lyloou.lou.util.Uscreen;
 import com.lyloou.lou.util.Utoast;
 import com.lyloou.lou.view.SettingLayout;
 
-public class SettingActivity extends LouActivity {
+public class ViewSettingLayoutActivity extends LouActivity {
     private Activity mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting);
         mContext = this;
+
+        setContentView(R.layout.activity_view_setting_layout);
         initView();
     }
 
@@ -25,7 +26,7 @@ public class SettingActivity extends LouActivity {
             public void click(SettingLayout layout, SettingLayout.Item item) {
                 switch (item.titleStrId) {
                     case R.string.app_name_0:
-                        SettingChangeNameActivity.startActivity(mContext, layout, item);
+                        ViewSettingLayoutChangeNameActivity.startActivity(mContext, layout, item);
                         break;
                     case R.string.app_name_1:
                         item.contentStr = "双卡";

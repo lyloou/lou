@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 
 public class Uview {
 
@@ -157,7 +158,7 @@ public class Uview {
         }
     }
 
-    public static View inflate(Context context, int layoutId){
+    public static View inflate(Context context, int layoutId) {
         return LayoutInflater.from(context).inflate(layoutId, null);
     }
 
@@ -337,26 +338,27 @@ public class Uview {
         return outBitmap;
     }
 
-    private void enable(View v, boolean enable, boolean withAnim) {
-        v.setEnabled(enable);
-        if (enable) {
-            if (withAnim) {
-                v.animate().alpha(1.0f).setDuration(100).start();
-            } else {
-                v.setAlpha(1.0f);
-            }
-        } else {
-            if (withAnim) {
-                v.animate().alpha(0.4f).setDuration(100).start();
-            } else {
-                v.setAlpha(0.4f);
-            }
-        }
-    }
-
-    public void enable(boolean enable, boolean withAnim, View... vs) {
+    public static void enable(boolean enable, boolean withAnim, View... vs) {
         for (View v : vs) {
-            enable(v, enable, withAnim);
+            if(v == null){
+                continue;
+            }
+
+            v.setEnabled(enable);
+            if (enable) {
+                if (withAnim) {
+                    v.animate().alpha(1.0f).setDuration(100).start();
+                } else {
+                    v.setAlpha(1.0f);
+                }
+            } else {
+                if (withAnim) {
+                    v.animate().alpha(0.4f).setDuration(100).start();
+                } else {
+                    v.setAlpha(0.4f);
+                }
+            }
+
         }
     }
 }

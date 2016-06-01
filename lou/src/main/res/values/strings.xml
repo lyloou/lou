@@ -23,6 +23,4 @@
     <string name="app_name_13">摇一摇</string>
     <string name="app_name_14">购物</string>
     <string name="app_name_15">游戏</string>
-    <string name="title_activity_demo_adapter">DemoAdapterActivity</string>
-    <string name="title_activity_count_view">CountViewActivity</string>
 </resources>

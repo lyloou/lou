@@ -11,7 +11,7 @@ public class Uthread {
      * 判断当前线程是否是主线程；
      * @return
      */
-    public boolean isMainThread(){
+    public static boolean isMainThread(){
         return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 }

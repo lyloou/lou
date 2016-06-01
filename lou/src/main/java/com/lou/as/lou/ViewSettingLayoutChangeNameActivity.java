@@ -9,18 +9,18 @@ import android.widget.EditText;
 import com.lyloou.lou.activity.LouActivity;
 import com.lyloou.lou.view.SettingLayout;
 
-public class SettingChangeNameActivity extends LouActivity {
+public class ViewSettingLayoutChangeNameActivity extends LouActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main3);
+        setContentView(R.layout.activity_view_setting_layout_change_name);
     }
 
     public static void startActivity(Activity context, SettingLayout layout, SettingLayout.Item item) {
         sLayout = layout;
         sItem = item;
-        context.startActivity(new Intent(context, SettingChangeNameActivity.class));
+        context.startActivity(new Intent(context, ViewSettingLayoutChangeNameActivity.class));
     }
 
     static SettingLayout sLayout;

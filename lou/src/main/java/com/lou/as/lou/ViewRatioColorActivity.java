@@ -3,15 +3,17 @@ package com.lou.as.lou;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.ViewGroup;
-import android.view.Window;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 
+import com.lyloou.lou.activity.LouActivity;
+import com.lyloou.lou.util.Uscreen;
 import com.lyloou.lou.view.RatioColor;
 
-public class SkinChangeActivity extends Activity {
+public class ViewRatioColorActivity extends LouActivity {
     private Activity mContext;
     private RatioColor mRatioColor;
-    private ViewGroup mLayout;
+    private LinearLayout mLayout;
     private SharedPreferencesUtil mSpu;
     private static final int[] COLORS = new int[]{
             Color.parseColor("#990000"),
@@ -36,21 +38,21 @@ public class SkinChangeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_skin_change);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        mLayout = new LinearLayout(mContext);
+        mLayout.setOrientation(LinearLayout.VERTICAL);
+        final int PADDING = Uscreen.dp2Px(mContext, 16);
+        mLayout.setPadding(PADDING, PADDING * 2, PADDING, PADDING);
+
+        setContentView(mLayout);
 
         mSpu = SharedPreferencesUtil.getInstance(mContext);
-
         initView();
     }
 
 
     private void initView() {
-        mLayout = (ViewGroup) findViewById(R.id.llyt_main);
-        if (mLayout == null) {
-            throw new NullPointerException("未找到视图");
-        }
-
         mRatioColor = new RatioColor(mContext);
         mRatioColor.addItems(COLORS);
         mRatioColor.setOnCheckedColorListener(new RatioColor.onCheckedColorListener() {
@@ -68,7 +70,7 @@ public class SkinChangeActivity extends Activity {
 
 
     public void setCurrentBgColor(int color) {
-        mLayout.setBackgroundColor(color);
+        getWindow().getDecorView().setBackgroundColor(color);
         mRatioColor.setCheckedColor(color);
         if (mSpu.getSkin() != color) {
             mSpu.saveSkin(color);

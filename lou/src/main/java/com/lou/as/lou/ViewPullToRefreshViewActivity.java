@@ -9,13 +9,13 @@ import com.lyloou.lou.view.PullToRefreshView;
 
 import java.util.ArrayList;
 
-public class PullToRefreshActivity extends Activity {
+public class ViewPullToRefreshViewActivity extends Activity {
     private LouAdapter<String> mPtrLvAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pull_to_refresh);
+        setContentView(R.layout.activity_view_pull_to_refresh_view);
 
         final PullToRefreshView ptrLv = (PullToRefreshView) findViewById(R.id.ptrlv);
         ptrLv.setAdapter(mPtrLvAdapter = new LouAdapter<String>(ptrLv, android.R.layout.simple_list_item_1) {
@@ -31,7 +31,7 @@ public class PullToRefreshActivity extends Activity {
         }
         mPtrLvAdapter.initList(strs);
 
-        ptrLv.setHeadView(R.layout.fragment_scan_pull_to_refresh);
+        ptrLv.setHeadView(R.layout.item_view_pull_to_refresh_view);
         ptrLv.setOnChangeStatusListener(new PullToRefreshView.OnChangeStatusListener() {
             @Override
             public void changeStatus(int status, int currentPaddingTop) {

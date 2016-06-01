@@ -7,14 +7,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.ListView;
+
+import com.lyloou.lou.util.Uscreen;
 
 
 /**
@@ -91,7 +91,7 @@ public class PullToRefreshView extends ListView {
         if (mLoaded) {
             changeStatus(OnChangeStatusListener.STATUS_COMPLETE, currentPaddingTop);
         } else {
-            int boundary = ScreenUtil.dp2Px(getContext(), 2);
+            int boundary = Uscreen.dp2Px(getContext(), 2);
             if (currentPaddingTop > -boundary) {
                 if (currentPaddingTop > 0)
                     currentPaddingTop = 0;
@@ -181,28 +181,29 @@ public class PullToRefreshView extends ListView {
         animator.setDuration(400);
         animator.start();
     }
-    
+
     /**
      * 外部调用，用于恢复视图；
+     *
      * @param loaded 是否已经加载过数据；
      */
-    public void recover(boolean loaded){
-    	if(loaded){
-    	  changeStatus(OnChangeStatusListener.STATUS_COMPLETE, 0);
-          recoverPullView();
-    	} else {
-    		recoverPullView();
-    	}
+    public void recover(boolean loaded) {
+        if (loaded) {
+            changeStatus(OnChangeStatusListener.STATUS_COMPLETE, 0);
+            recoverPullView();
+        } else {
+            recoverPullView();
+        }
     }
-    
+
 
     /**
      * 外部调用，用于一开始的时候显示正在运行；
      */
-    public void initRunning(){
-    	changePullViewPaddingTop(0);
-    	changeStatus(OnChangeStatusListener.STATUS_RUNNING, mHeadView.getPaddingTop());
-    	mLoaded = true;
+    public void initRunning() {
+        changePullViewPaddingTop(0);
+        changeStatus(OnChangeStatusListener.STATUS_RUNNING, mHeadView.getPaddingTop());
+        mLoaded = true;
     }
 
     // 用于回调的接口；
@@ -229,43 +230,6 @@ public class PullToRefreshView extends ListView {
     }
     // ~~~~~~~~~~~~~~~~~
 
-    // --------------------帮助类
-    private static class ScreenUtil {
 
-        public static DisplayMetrics getMetrics(Context context) {
-            DisplayMetrics metrics = new DisplayMetrics();
-            WindowManager wm = (WindowManager) context
-                    .getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
-            display.getMetrics(metrics);
-            return metrics;
-        }
-
-        public static int getScreenWidth(Context context) {
-            return getMetrics(context).widthPixels;
-        }
-
-        public static int getScreenHeight(Context context) {
-            return getMetrics(context).heightPixels;
-        }
-
-        public static float getScreenDensity(Context context) {
-            return getMetrics(context).density;
-        }
-
-        public static float getScreenScaleDensity(Context context) {
-            return getMetrics(context).scaledDensity;
-        }
-
-        public static int dp2Px(Context context, float dp) {
-            float px = (int) (getScreenDensity(context) * dp);
-            return (int) (px + 0.5f);
-        }
-
-        public static float sp2Px(Context context, float sp) {
-            float px = getScreenScaleDensity(context);
-            return sp * px;
-        }
-    }
 }
 
