@@ -1,1 +1,1 @@
-include ':loulib', ':lou'
+include ':loulib', ':loudemo'
