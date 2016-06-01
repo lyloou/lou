@@ -1,3 +1,6 @@
+#### loulib 5--1.0.1(2016.06.01)
+* add: add LouAbsBroadcast.java
+
 #### loulib 4--1.0(2016.05.20)
 * add: add Lou.mmap
 
