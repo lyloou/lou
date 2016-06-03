@@ -9,9 +9,15 @@ import android.graphics.drawable.DrawableContainer;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.VelocityTrackerCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -24,6 +30,7 @@ import android.widget.RadioGroup;
 import android.widget.Scroller;
 
 import com.lyloou.lou.R;
+import com.lyloou.lou.util.Ulog;
 import com.lyloou.lou.util.Uscreen;
 
 public class RatioColor extends RadioGroup {
@@ -50,8 +57,10 @@ public class RatioColor extends RadioGroup {
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, W));
         // 设置默认样式
         setProperties(Color.parseColor("#eeeeee"), RadioGroup.HORIZONTAL, Gravity.START);
-    }
 
+        mDetector = new GestureDetectorCompat(getContext(), new MyGestureListener());
+    }
+    private GestureDetectorCompat mDetector;
 
     public void setProperties(int bgColor, int orientation, int gravity) {
         setBackgroundColor(bgColor);
@@ -86,7 +95,7 @@ public class RatioColor extends RadioGroup {
      * 根据一组颜色值添加一组元素
      */
 
-    public void addItems(int[] colorArray) {
+    public void addItems(int ...colorArray) {
         for (int color : colorArray) {
             addItem(color);
         }
@@ -207,21 +216,53 @@ public class RatioColor extends RadioGroup {
         invalidate();
     }
 
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+
+            mScroller.forceFinished(true);
+            ViewCompat.postInvalidateOnAnimation(RatioColor.this);
+            Log.e("Lou", "---- when down ");
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2,
+                               float velocityX, float velocityY) {
+            Log.e("Lou", "velocityX: "+velocityX);
+            mScroller.forceFinished(true);
+            int width = (getChildCount()+1)*W;
+            Log.e("Lou", "width: "+width);
+            width = width - Uscreen.getScreenWidth(CONTEXT);
+            Log.e("Lou", "width2: "+width);
+            mScroller.fling(getScrollX(), 0, (int)- velocityX, 0, 0, width,0, 0 );
+//            ViewCompat.postInvalidateOnAnimation(RatioColor.this);
+            return true;
+        }
+
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        mDetector.onTouchEvent(event);
+
         int x = (int) event.getX();
         int y = (int) event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mLastX = (int) event.getX();
+                Log.e("Lou", "DOWN");
                 break;
             case MotionEvent.ACTION_MOVE:
                 int deltaX = x - mLastX;
                 int deltaY = y - mLastY;
                 scrollBy(-deltaX, 0);
+                Log.e("Lou", "MOVE");
                 break;
             case MotionEvent.ACTION_UP:
+                Log.e("Lou", "UPPPPP");
                 // 松开后判断是否需要回弹
                 int scrollX = getScrollX();
                 int maxX = getChildCount() * W - getWidth();
@@ -234,6 +275,7 @@ public class RatioColor extends RadioGroup {
         }
         mLastX = x;
         mLastY = y;
+
         return true;
     }
 
@@ -244,7 +286,6 @@ public class RatioColor extends RadioGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-
         boolean intercepted = false;
         int x = (int) ev.getX();
         int y = (int) ev.getY();

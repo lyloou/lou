@@ -13,7 +13,7 @@ import com.lyloou.lou.view.RatioColor;
 public class ViewRatioColorActivity extends LouActivity {
     private Activity mContext;
     private RatioColor mRatioColor;
-    private LinearLayout mLayout;
+
     private SharedPreferencesUtil mSpu;
     private static final int[] COLORS = new int[]{
             Color.parseColor("#990000"),
@@ -31,6 +31,22 @@ public class ViewRatioColorActivity extends LouActivity {
             Color.GREEN,
             Color.BLACK,
             Color.WHITE,
+            Color.LTGRAY,
+            Color.RED,
+            Color.CYAN,
+            Color.DKGRAY,
+            Color.YELLOW,
+            Color.GREEN,
+            Color.BLACK,
+            Color.WHITE,
+            Color.LTGRAY,
+            Color.RED,
+            Color.CYAN,
+            Color.DKGRAY,
+            Color.YELLOW,
+            Color.GREEN,
+            Color.BLACK,
+            Color.WHITE,
     };
 
 
@@ -40,19 +56,24 @@ public class ViewRatioColorActivity extends LouActivity {
         mContext = this;
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-        mLayout = new LinearLayout(mContext);
-        mLayout.setOrientation(LinearLayout.VERTICAL);
-        final int PADDING = Uscreen.dp2Px(mContext, 16);
-        mLayout.setPadding(PADDING, PADDING * 2, PADDING, PADDING);
-
-        setContentView(mLayout);
-
-        mSpu = SharedPreferencesUtil.getInstance(mContext);
+        initData();
         initView();
     }
 
 
+    private void initData() {
+        mSpu = SharedPreferencesUtil.getInstance(mContext);
+    }
+
+
     private void initView() {
+
+        LinearLayout layout = new LinearLayout(mContext);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final int PADDING = Uscreen.dp2Px(mContext, 16);
+        layout.setPadding(PADDING, PADDING * 2, PADDING, PADDING);
+        setContentView(layout);
+
         mRatioColor = new RatioColor(mContext);
         mRatioColor.addItems(COLORS);
         mRatioColor.setOnCheckedColorListener(new RatioColor.onCheckedColorListener() {
@@ -62,7 +83,7 @@ public class ViewRatioColorActivity extends LouActivity {
             }
         });
 
-        mLayout.addView(mRatioColor);
+        layout.addView(mRatioColor);
 
         // 设置当前背景色
         setCurrentBgColor(mSpu.getSkin());
