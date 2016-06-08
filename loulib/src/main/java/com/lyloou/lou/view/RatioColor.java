@@ -10,14 +10,12 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.VelocityTrackerCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -30,7 +28,6 @@ import android.widget.RadioGroup;
 import android.widget.Scroller;
 
 import com.lyloou.lou.R;
-import com.lyloou.lou.util.Ulog;
 import com.lyloou.lou.util.Uscreen;
 
 public class RatioColor extends RadioGroup {
@@ -60,6 +57,7 @@ public class RatioColor extends RadioGroup {
 
         mDetector = new GestureDetectorCompat(getContext(), new MyGestureListener());
     }
+
     private GestureDetectorCompat mDetector;
 
     public void setProperties(int bgColor, int orientation, int gravity) {
@@ -95,7 +93,7 @@ public class RatioColor extends RadioGroup {
      * 根据一组颜色值添加一组元素
      */
 
-    public void addItems(int ...colorArray) {
+    public void addItems(int... colorArray) {
         for (int color : colorArray) {
             addItem(color);
         }
@@ -230,14 +228,12 @@ public class RatioColor extends RadioGroup {
         @Override
         public boolean onFling(MotionEvent event1, MotionEvent event2,
                                float velocityX, float velocityY) {
-            Log.e("Lou", "velocityX: "+velocityX);
             mScroller.forceFinished(true);
-            int width = (getChildCount()+1)*W;
-            Log.e("Lou", "width: "+width);
-            width = width - Uscreen.getScreenWidth(CONTEXT);
-            Log.e("Lou", "width2: "+width);
-            mScroller.fling(getScrollX(), 0, (int)- velocityX, 0, 0, width,0, 0 );
-//            ViewCompat.postInvalidateOnAnimation(RatioColor.this);
+            // 最大宽度=子视图宽度-视图自身宽度
+            int maxWidth = getChildCount() * W - (getWidth() - getPaddingStart() - getPaddingEnd());
+            if (maxWidth < 0) maxWidth = 0;
+            mScroller.fling(getScrollX(), 0, (int) -velocityX, 0, 0, maxWidth, 0, 0);
+            ViewCompat.postInvalidateOnAnimation(RatioColor.this);
             return true;
         }
 
@@ -253,16 +249,13 @@ public class RatioColor extends RadioGroup {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mLastX = (int) event.getX();
-                Log.e("Lou", "DOWN");
                 break;
             case MotionEvent.ACTION_MOVE:
                 int deltaX = x - mLastX;
                 int deltaY = y - mLastY;
                 scrollBy(-deltaX, 0);
-                Log.e("Lou", "MOVE");
                 break;
             case MotionEvent.ACTION_UP:
-                Log.e("Lou", "UPPPPP");
                 // 松开后判断是否需要回弹
                 int scrollX = getScrollX();
                 int maxX = getChildCount() * W - getWidth();

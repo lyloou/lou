@@ -52,11 +52,11 @@ public class SettingLayout extends LinearLayout {
         addView(v, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, Uscreen.dp2Px(mContext, 48)));
         // 添加到SparseArray中，便于后期进行其他操作；
         mItemViews.put(item.titleStrId, v);
-        refreshItem(item);
+        updateItem(item);
         return this;
     }
 
-    public SettingLayout refreshItem(final Item item) {
+    public SettingLayout updateItem(final Item item) {
         if (item == null) {
             throw new NullPointerException("Item为空");
         }

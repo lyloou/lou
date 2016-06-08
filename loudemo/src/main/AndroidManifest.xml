@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.lou.as.lou">
+    
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>
 
     <application
         android:name=".App"
@@ -18,18 +21,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".ViewRatioColorActivity"/>
+        <activity android:name=".ViewRatioColorHomeActivity">
+        </activity>
 
         <!-- 已经测完 -->
         <!--
 
-        <activity android:name=".ViewRatioColorActivity"/>
-        <activity android:name=".ViewRatioColorHomeActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
 
         <activity
             android:name=".DialogActivity"

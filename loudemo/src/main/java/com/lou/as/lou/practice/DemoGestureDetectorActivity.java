@@ -7,8 +7,13 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.TextView;
 
+import com.lou.as.lou.R;
+import com.lou.as.lou.ViewSettingLayoutActivity;
+import com.lyloou.lou.util.Uapk;
+import com.lyloou.lou.util.Utoast;
 
 
 public class DemoGestureDetectorActivity extends Activity implements
@@ -33,6 +38,16 @@ public class DemoGestureDetectorActivity extends Activity implements
         // Set the gesture detector as the double tap 
         // listener. 
         mDetector.setOnDoubleTapListener(this);
+
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uapk.addShortcutToLauncher(DemoGestureDetectorActivity.this,
+                        "你好", R.mipmap.ic_launcher, ViewSettingLayoutActivity.class);
+                Utoast.show(DemoGestureDetectorActivity.this , "添加成功");
+            }
+        });
+
     }
 
 

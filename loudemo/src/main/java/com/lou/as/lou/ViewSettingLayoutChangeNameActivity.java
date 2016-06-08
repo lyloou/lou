@@ -28,7 +28,7 @@ public class ViewSettingLayoutChangeNameActivity extends LouActivity {
     public void ok(View view){
         EditText etName = (EditText) findViewById(R.id.et_name);
         sItem.contentStr = etName.getText().toString();
-        sLayout.refreshItem(sItem);
+        sLayout.updateItem(sItem);
         finish();
     }
 }

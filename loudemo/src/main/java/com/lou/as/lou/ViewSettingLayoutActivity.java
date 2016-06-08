@@ -41,7 +41,7 @@ public class ViewSettingLayoutActivity extends LouActivity {
                         item.contentStr = "静音";
                         break;
                 }
-                layout.refreshItem(item);
+                layout.updateItem(item);
                 Utoast.show(mContext, "点击了：" + mContext.getString(item.titleStrId));
             }
         };
