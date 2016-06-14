@@ -10,8 +10,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.lou.as.lou.AdapterActivity;
 import com.lou.as.lou.R;
-import com.lou.as.lou.ViewSettingLayoutActivity;
 import com.lyloou.lou.util.Uapk;
 import com.lyloou.lou.util.Utoast;
 
@@ -42,8 +42,9 @@ public class DemoGestureDetectorActivity extends Activity implements
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uapk.addShortcutToLauncher(DemoGestureDetectorActivity.this,
-                        "你好", R.mipmap.ic_launcher, ViewSettingLayoutActivity.class);
+
+                Uapk.addActivityShortcut(DemoGestureDetectorActivity.this.getApplicationContext(),
+                        "新3", R.mipmap.ic_launcher, AdapterActivity.class);
                 Utoast.show(DemoGestureDetectorActivity.this , "添加成功");
             }
         });

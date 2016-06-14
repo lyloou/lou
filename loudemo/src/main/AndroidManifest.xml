@@ -25,10 +25,14 @@
         <activity android:name=".ViewRatioColorHomeActivity">
         </activity>
 
+        <activity
+            android:exported="true"
+            android:name=".AdapterActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
         <!-- 已经测完 -->
         <!--
-
-
         <activity
             android:name=".DialogActivity"
             android:configChanges="orientation|screenSize">

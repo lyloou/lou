@@ -142,12 +142,15 @@ public abstract class LouAdapter<T> extends BaseAdapter {
         updateChange();
     }
 
-    public List<T> getCheckedItems(){
+    public List<T> getCheckedItems() {
         SparseBooleanArray sba = mListView.getCheckedItemPositions();
         ArrayList<T> checkedLists = new ArrayList<>();
         for (int i = 0; i < sba.size(); i++) {
             if (sba.valueAt(i)) {
-                checkedLists.add(getItem(sba.keyAt(i)));
+                int position = sba.keyAt(i);
+                if (position != -1)
+                    checkedLists.add(
+                            getItem(sba.keyAt(i)));
             }
         }
         return checkedLists;
@@ -258,6 +261,12 @@ public abstract class LouAdapter<T> extends BaseAdapter {
      */
     public void deleteItemWithAnim(final int position) {
         final View view = getIndexView(position);
+        // 如果删除的元素未显示，则调用deleteItem方法删除
+        if(view == null){
+            deleteItem(position);
+            return;
+        }
+
         final int initHeight = view.getMeasuredHeight();
         Animation anim = new Animation() {
             @Override
@@ -419,11 +428,12 @@ public abstract class LouAdapter<T> extends BaseAdapter {
         }
 
         //----------------- 网络加载图片（2016.03.26）
+
         /**
          * 网络加载图片；（使用了开源库：Picasso）[Picasso](https://github.com/square/picasso)
          *
          * @param viewId     要设置的ImageView或者
-         * @param url 要显示的图片地址
+         * @param url        要显示的图片地址
          * @param roundShape 是否设置圆角；
          * @return 返回自己，链式编程；
          */
