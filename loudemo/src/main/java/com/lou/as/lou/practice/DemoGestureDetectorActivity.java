@@ -14,6 +14,7 @@ import com.lou.as.lou.AdapterActivity;
 import com.lou.as.lou.R;
 import com.lyloou.lou.util.Uapk;
 import com.lyloou.lou.util.Utoast;
+import com.orhanobut.logger.Logger;
 
 
 public class DemoGestureDetectorActivity extends Activity implements
@@ -27,6 +28,14 @@ public class DemoGestureDetectorActivity extends Activity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Logger.init("Lou");
+        Logger.i("Who are you???");
+        Logger.d("Who are you???");
+        Logger.e("Who are you???");
+        Logger.w("Who are you???");
+        Logger.xml("Who are you???");
+        Logger.json("Who are you???");
+
         TextView tv = new TextView(this);
         tv.setText("Hello world");
         tv.setGravity(Gravity.CENTER);

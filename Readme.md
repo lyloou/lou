@@ -12,3 +12,7 @@ dependencies {
     compile 'com.lyloou:lou:1.0.0'
 }
 ```
+
+## Some Lib Be Added
+- [x] [Picasso](https://github.com/square/picasso)
+- [x] [Logger](https://github.com/orhanobut/logger)

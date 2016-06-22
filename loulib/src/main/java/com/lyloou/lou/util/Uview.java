@@ -1,6 +1,7 @@
 package com.lyloou.lou.util;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -360,5 +361,15 @@ public class Uview {
             }
 
         }
+    }
+
+    public static void finishActivityByClickView(final Activity context, View v){
+        clickEffectByAlphaWithSrc(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                context.finish();
+            }
+        }, v);
     }
 }

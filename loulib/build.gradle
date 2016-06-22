@@ -45,7 +45,6 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-
     // test
     compile 'junit:junit:4.12'
 
@@ -54,6 +53,10 @@ dependencies {
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.android.support:design:23.4.0'
 
+
     // third
+    // 加载网络图片： https://github.com/square/picasso
     compile 'com.squareup.picasso:picasso:2.5.2'
+    // 打印漂亮日志：https://github.com/orhanobut/logger
+    compile 'com.github.orhanobut:logger:1.12'
 }
