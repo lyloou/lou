@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@mipmap/reminder_slider" />
+        android:src="@mipmap/view_count_view_pointer" />
 
     <!-- 遮罩层 -->
 
@@ -40,7 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="4"
-            android:background="@drawable/gradient_count_view" />
+            android:background="@drawable/view_count_view_gradient_shape" />
 
         <View
             android:layout_width="0dp"

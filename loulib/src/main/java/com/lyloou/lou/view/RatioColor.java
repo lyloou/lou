@@ -121,7 +121,7 @@ public class RatioColor extends RadioGroup {
         rbtn.setFocusableInTouchMode(false);
         rbtn.setLayoutParams(new RadioGroup.LayoutParams(W, W));
         rbtn.setButtonDrawable(new ColorDrawable(Color.TRANSPARENT)); // 取消默认的样式
-        rbtn.setBackgroundResource(R.drawable.selector_skin_color); // 设置自己的样式（shape）
+        rbtn.setBackgroundResource(R.drawable.view_ratio_color_selector); // 设置自己的样式（shape）
 
         // 动态设置颜色值（基于selector）
         StateListDrawable gradientDrawable = (StateListDrawable) rbtn.getBackground();

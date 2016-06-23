@@ -22,8 +22,9 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:text="标题"
+        android:text=""
         android:textSize="14sp" />
+
     <ImageView
         android:id="@+id/iv_set_to_right"
         android:layout_width="14dp"
@@ -31,7 +32,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="4dp"
-        android:background="@mipmap/ic_go"
+        android:background="@mipmap/view_setting_layout_next"
         android:visibility="gone" />
     <TextView
         android:id="@+id/tv_set_unit"
@@ -41,7 +42,7 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:text="单位"
+        android:text=""
         android:textSize="14sp"
         android:visibility="gone" />
     <TextView
@@ -52,7 +53,7 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:text="内容"
+        android:text=""
         android:textSize="14sp"
         android:visibility="gone" />
     <View

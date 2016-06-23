@@ -11,12 +11,19 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.NumberPicker;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Uview {
 
@@ -371,5 +378,47 @@ public class Uview {
                 context.finish();
             }
         }, v);
+    }
+
+    public static void changeTimePickerSepColor(ViewGroup group, int color) {
+        for(NumberPicker np : getNumberPickers(group)){
+            changeNumberPickerSepColor(np, color);
+        }
+    }
+
+
+    private static List<NumberPicker> getNumberPickers(ViewGroup group){
+        List<NumberPicker> lists = new ArrayList<NumberPicker>();
+        if(group == null){
+            return lists;
+        }
+
+        for(int i=0; i<group.getChildCount();i++){
+            View v = group.getChildAt(i);
+            if( v instanceof NumberPicker){
+                lists.add((NumberPicker) v);
+            } else if(v instanceof LinearLayout){
+                List<NumberPicker> ls = getNumberPickers((ViewGroup) v);
+                if(ls.size()>0){
+                    return ls;
+                }
+            }
+        }
+        return lists;
+    }
+
+    public static void changeNumberPickerSepColor(NumberPicker np, int color) {
+        Field[] pickerFields = NumberPicker.class.getDeclaredFields();
+        for(Field f : pickerFields){
+            if(f.getName().equals("mSelectionDivider")){
+                try{
+                    f.setAccessible(true);
+                    f.set(np, new ColorDrawable(color));
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
     }
 }

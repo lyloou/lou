@@ -48,7 +48,7 @@ public class SettingLayout extends LinearLayout {
         }
         // 从布局中加载得到视图；
         @SuppressLint("InflateParams")
-        View v = LayoutInflater.from(mContext).inflate(R.layout.item_setting_layout, null);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.item_view_setting_layout, null);
         addView(v, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, Uscreen.dp2Px(mContext, 48)));
         // 添加到SparseArray中，便于后期进行其他操作；
         mItemViews.put(item.titleStrId, v);
