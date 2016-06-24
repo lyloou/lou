@@ -32,7 +32,7 @@
         </activity>
 
         <!-- 已经测完 -->
-        <!--
+
         <activity
             android:name=".DialogActivity"
             android:configChanges="orientation|screenSize">
@@ -42,37 +42,37 @@
             </intent-filter>
         </activity>
 
+        <!--
+            <activity
+                android:name=".ViewSettingLayoutActivity"
+                android:configChanges="orientation|screenSize">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+            </activity>
 
-        <activity
-            android:name=".ViewSettingLayoutActivity"
-            android:configChanges="orientation|screenSize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            <activity android:name=".ViewSettingLayoutChangeNameActivity" />
 
-        <activity android:name=".ViewSettingLayoutChangeNameActivity" />
+            <activity
+                android:name=".AdapterActivity"
+                android:label="@string/title_activity_demo_adapter"
+                android:theme="@style/AppTheme.NoActionBar">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+            </activity>
 
-        <activity
-            android:name=".AdapterActivity"
-            android:label="@string/title_activity_demo_adapter"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".ViewCountViewActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        -->
+            <activity
+                android:name=".ViewCountViewActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+            </activity>
+            -->
 
     </application>
 

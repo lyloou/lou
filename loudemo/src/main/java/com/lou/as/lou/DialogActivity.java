@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.lyloou.lou.dialog.LouDialogAtBottom;
 import com.lyloou.lou.dialog.LouDialogProgressTips;
 import com.lyloou.lou.dialog.LouDialogToast;
 import com.lyloou.lou.util.Uview;
@@ -25,7 +26,8 @@ public class DialogActivity extends AppCompatActivity {
 
         Uview.clickEffectByNoEffect(mClickListener,
                 findViewById(R.id.btn_show_progressDialog),
-                findViewById(R.id.btn_show_toastDialog));
+                findViewById(R.id.btn_show_toastDialog),
+                findViewById(R.id.btn_show_LouDialogAtBottom));
     }
 
     private android.view.View.OnClickListener mClickListener = new View.OnClickListener() {
@@ -44,6 +46,12 @@ public class DialogActivity extends AppCompatActivity {
                     break;
                 case R.id.btn_show_toastDialog:
                     LouDialogToast.show(mContext, "欢迎您！");
+                    break;
+                case R.id.btn_show_LouDialogAtBottom:
+                    LouDialogAtBottom louDialogAtBottom = LouDialogAtBottom
+                            .newInstance(mContext, R.layout.activity_dialog);
+                    louDialogAtBottom.draggable(true);
+                    louDialogAtBottom.show();
                     break;
             }
         }
