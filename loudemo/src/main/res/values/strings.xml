@@ -23,4 +23,7 @@
     <string name="app_name_13">摇一摇</string>
     <string name="app_name_14">购物</string>
     <string name="app_name_15">游戏</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

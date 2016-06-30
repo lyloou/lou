@@ -35,10 +35,7 @@ public class LouDialogAtBottom {
                 .setCancelable(true);
     }
 
-    private static final String TAG = "LouDialogAtBottom";
-
-    private int mDownY = 0;
-
+    private int mDownY;
     public LouDialogAtBottom draggable(boolean dragable) {
         if (!dragable) return this;
 

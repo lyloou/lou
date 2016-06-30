@@ -51,8 +51,8 @@ public class DialogActivity extends AppCompatActivity {
                     break;
                 case R.id.btn_show_LouDialogAtBottom:
                     // 使用自定义的自底而上的Dialog
-                    LouDialogAtBottom.newInstance(mContext,
-                            R.layout.activity_dialog).draggable(true).show();
+                    LouDialogAtBottom
+                            .newInstance(mContext, R.layout.activity_dialog).draggable(true).show();
                     break;
                 case R.id.btn_show_LouDialogAtBottomSheet:
                     // 使用支持库的自底而上的Dialog

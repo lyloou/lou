@@ -16,3 +16,7 @@ dependencies {
 ## Some Lib Be Added
 - [x] [Picasso](https://github.com/square/picasso)
 - [x] [Logger](https://github.com/orhanobut/logger)
+
+## My AS's Setting
+- file: `tools/setting.jar`
+- use it: File --> Import Settings --> ...
