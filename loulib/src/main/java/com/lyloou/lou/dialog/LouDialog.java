@@ -4,21 +4,15 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.v4.view.MarginLayoutParamsCompat;
-import android.util.Log;
 import android.util.SparseArray;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.lyloou.lou.util.Ulog;
 import com.lyloou.lou.util.Uview;
 
 public final class LouDialog {

@@ -3,6 +3,7 @@ package com.lyloou.lou.dialog;
 import android.app.Activity;
 import android.graphics.Color;
 import android.support.annotation.MainThread;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -57,7 +58,7 @@ public class LouDialogProgressTips {
     // 创建 Dialog 需要在主线程中运行；
     @MainThread
     public static LouDialogProgressTips getInstance(Activity context) {
-        if(context == null){
+        if (context == null) {
             throw new NullPointerException("The context can't be null");
         }
 
@@ -67,22 +68,29 @@ public class LouDialogProgressTips {
         return sLouDialogProgressTips = new LouDialogProgressTips(context);
     }
 
+    public static void dismiss() {
+        if (sLouDialogProgressTips != null)
+            sLouDialogProgressTips.hide();
+    }
+
 
     public void show(final String tips) {
         if (sContext != null && mProgressDialog != null) {
             if (!mProgressDialog.isShowing()) {
                 mProgressDialog.show();
             }
-            sContext.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setTips(tips);
-                }
-            });
+
+            if (!TextUtils.isEmpty(tips))
+                sContext.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setTips(tips);
+                    }
+                });
         }
     }
 
-    public void dismiss() {
+    public void hide() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }

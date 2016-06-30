@@ -1,10 +1,10 @@
 package com.lyloou.lou.test;
 
-import org.junit.Test;
-
 import com.lyloou.lou.util.Udata;
 
 import junit.framework.Assert;
+
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;

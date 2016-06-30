@@ -55,9 +55,9 @@ public class Uapk {
     }
 
     /**
-     * 功能：添加快捷图标到桌面
-     * <p>
-     * <p>
+     * 功能：给Activity添加快捷图标到桌面
+     * <p/>
+     * <p/>
      * 注意：需要权限支持：
      * {@code
      * <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
@@ -66,19 +66,14 @@ public class Uapk {
      * @param context
      * @param shortcutName
      * @param iconId
-     * @param clazz        要执行的Activity需要指定export属性,
-     *                     否则点击图标没有反应
-     *                     {@code android:exported="true"},
-     *                     clazz要和context属于同一个packageName.
-     *                     <p>
+     * @param clazz        被添加快捷方式的Activity需要在Manifest中指定export属性, 否则点击图标没有反应
+     *                     {@code android:exported="true"}, clazz要和context属于同一个packageName.
+     *                     <p/>
      *                     android:exported
-     *                     <p>
      *                     这个属性用于设置该Activity能否由另一个应用程序的组件来启动，如果设置为true，则可以启动，否则不能启动。如果设置为false，那么该Activity只能被同一个应用程序中的组件或带有相同用户ID的应用程序来启动。
-     *                     <p>
      *                     它的默认值要依赖与该Activity是否包含了Intent过滤器。如果没有任何过滤器，则意味着该Activity只能通过明确的类名来调用，这样就暗示者该Activity只能在应用程序内部使用（因为其他用户不会知道它的类名），因此在这种情况下，默认值是false。在另一方面，至少存在一个过滤器，则暗示着该Activity可被外部使用，因此默认值是true。
-     *                     <p>
      *                     这个属性不是限制Activity暴露给其他应用程序的唯一方法。还可以使用权限来限制外部实体对该Activity的调用。
-     *                     <p>
+     *                     <p/>
      *                     http://blog.csdn.net/mark0614/article/details/8704934
      */
     public static void addActivityShortcut(Context context,

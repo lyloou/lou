@@ -8,10 +8,10 @@
               tools:context=".DialogActivity">
 
     <TextView
-        android:text="我是标题"
-        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="48dp"/>
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="我是标题"/>
 
     <Button
         android:id="@+id/btn_show_progressDialog"
@@ -38,5 +38,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show Bottom Dialog"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+    <Button
+        android:id="@+id/btn_show_LouDialogAtBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show Bottom Sheet Dialog"/>
 
 </LinearLayout>

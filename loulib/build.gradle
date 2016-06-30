@@ -9,7 +9,7 @@ publish {
     //项目名称
     artifactId = 'lou'
     //版本号
-    publishVersion = '1.0.0'
+    publishVersion = '1.0.1'
     //描述，不重要
     desc = 'The Lou Library'
     //网站，不重要
@@ -17,13 +17,17 @@ publish {
 
 }
 
+ext{
+    supportLibVersion = '24.0.0'
+}
+
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion "${supportLibVersion}"
 
     defaultConfig {
         minSdkVersion 18
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 5
         versionName "1.0.1"
     }
@@ -38,7 +42,6 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
-
 }
 
 
@@ -49,9 +52,11 @@ dependencies {
     compile 'junit:junit:4.12'
 
     // android
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.android.support:design:23.4.0'
+    // 支持库：https://github.com/codepath/android_guides/wiki/Design-Support-Library#setup
+    compile "com.android.support:appcompat-v7:${supportLibVersion}"
+    compile "com.android.support:support-v4:${supportLibVersion}"
+    compile "com.android.support:design:${supportLibVersion}"
+    compile "com.android.support:recyclerview-v7:${supportLibVersion}"
 
 
     // third

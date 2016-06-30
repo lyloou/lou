@@ -2,6 +2,7 @@ package com.lou.as.lou;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -12,7 +13,6 @@ import com.lyloou.lou.util.Uview;
 
 public class DialogActivity extends AppCompatActivity {
 
-    LouDialogProgressTips mProgressTipsDialog;
     Activity mContext;
 
     @Override
@@ -22,12 +22,12 @@ public class DialogActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_dialog);
 
-        mProgressTipsDialog = LouDialogProgressTips.getInstance(mContext);
-
         Uview.clickEffectByNoEffect(mClickListener,
                 findViewById(R.id.btn_show_progressDialog),
                 findViewById(R.id.btn_show_toastDialog),
-                findViewById(R.id.btn_show_LouDialogAtBottom));
+                findViewById(R.id.btn_show_LouDialogAtBottom),
+                findViewById(R.id.btn_show_LouDialogAtBottomSheet)
+        );
     }
 
     private android.view.View.OnClickListener mClickListener = new View.OnClickListener() {
@@ -35,23 +35,30 @@ public class DialogActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_show_progressDialog:
-                    mProgressTipsDialog.show("扫描中...");
+                    // 使用自定义的ProgressBar
+                    LouDialogProgressTips.getInstance(mContext).show("扫描中...");
                     v.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mProgressTipsDialog.dismiss();
+                            LouDialogProgressTips.dismiss();
                         }
                     }, 2000);
 
                     break;
                 case R.id.btn_show_toastDialog:
+                    // 使用自定义的Toast
                     LouDialogToast.show(mContext, "欢迎您！");
                     break;
                 case R.id.btn_show_LouDialogAtBottom:
-                    LouDialogAtBottom louDialogAtBottom = LouDialogAtBottom
-                            .newInstance(mContext, R.layout.activity_dialog);
-                    louDialogAtBottom.draggable(true);
-                    louDialogAtBottom.show();
+                    // 使用自定义的自底而上的Dialog
+                    LouDialogAtBottom.newInstance(mContext,
+                            R.layout.activity_dialog).draggable(true).show();
+                    break;
+                case R.id.btn_show_LouDialogAtBottomSheet:
+                    // 使用支持库的自底而上的Dialog
+                    BottomSheetDialog bsd = new BottomSheetDialog(mContext);
+                    bsd.setContentView(R.layout.activity_dialog);
+                    bsd.show();
                     break;
             }
         }

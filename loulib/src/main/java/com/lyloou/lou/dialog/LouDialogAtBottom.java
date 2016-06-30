@@ -2,7 +2,6 @@ package com.lyloou.lou.dialog;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,15 +33,14 @@ public class LouDialogAtBottom {
                 .setPositionAndAlpha(Gravity.BOTTOM, 0, 0, 1f)
                 .setDimAmount(0.6f)
                 .setCancelable(true);
-
     }
 
     private static final String TAG = "LouDialogAtBottom";
 
     private int mDownY = 0;
 
-    public void draggable(boolean dragable) {
-        if (!dragable) return;
+    public LouDialogAtBottom draggable(boolean dragable) {
+        if (!dragable) return this;
 
         final View layoutView = mLouDialog.getLayoutView();
         final ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) layoutView.getLayoutParams();
@@ -98,6 +96,8 @@ public class LouDialogAtBottom {
                 valueAnimator.start();
             }
         });
+
+        return this;
     }
 
     public <T extends View> T getView(int viewId) {
