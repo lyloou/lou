@@ -15,7 +15,6 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".practice.DemoGestureDetectorActivity"/>
 
-
         <!-- ============= -->
         <!-- 已经测完 START -->
         <!-- ============= -->
@@ -32,11 +31,14 @@
         <activity android:name=".ViewSettingLayoutActivity"/>
         <activity android:name=".ViewSettingLayoutChangeNameActivity"/>
         <activity android:name=".ViewCountViewActivity"/>
+        <activity android:name=".android_guides.TabLayoutAndViewPagerActivity"/>
         <!-- ============= -->
         <!-- 已经测完 END -->
         <!-- ============= -->
 
-        <activity android:name=".android_guides.TabLayoutAndViewPagerActivity">
+
+        <activity
+            android:name=".practice.DemoActivityAnimationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
