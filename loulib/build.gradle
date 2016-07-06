@@ -1,6 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 
+ext {
+    supportLibVersion = '24.0.0'
+    libVersion = '1.0.1'
+}
+
 publish {
     //bintray.com用户名
     userOrg = 'lyloou'
@@ -9,17 +14,13 @@ publish {
     //项目名称
     artifactId = 'lou'
     //版本号
-    publishVersion = '1.0.1'
+    publishVersion = "${supportLibVersion}"
     //描述，不重要
     desc = 'The Lou Library'
     //网站，不重要
     website = 'https://github.com/lyloou/lou'
-
 }
 
-ext{
-    supportLibVersion = '24.0.0'
-}
 
 android {
     compileSdkVersion 24
@@ -28,9 +29,10 @@ android {
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 24
-        versionCode 5
-        versionName "1.0.1"
+        versionCode 6
+        versionName "${supportLibVersion}"
     }
+    
     buildTypes {
         release {
             minifyEnabled false
@@ -56,7 +58,6 @@ dependencies {
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
     compile "com.android.support:recyclerview-v7:${supportLibVersion}"
-
 
     // third
     // 加载网络图片： https://github.com/square/picasso

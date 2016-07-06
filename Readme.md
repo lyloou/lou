@@ -1,4 +1,4 @@
-# Loulib
+# Loulib —— Make development easier
 
 ---
 ## Desc
@@ -9,7 +9,7 @@ add below code to `app/build.gradle`
 ```
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.lyloou:lou:1.0.0'
+    compile 'com.lyloou:lou:1.0.1'
 }
 ```
 
