@@ -247,6 +247,23 @@ public class Uview {
         return outBitmap;
     }
 
+    /**
+     * // 圆角图片
+     * Uview.getBitmapByXfermode(v.getContext(),
+     * resId,
+     * Color.parseColor("#993382"),
+     * Uscreen.dp2Px(v.getContext(), 48),
+     * Uscreen.dp2Px(v.getContext(), 48),
+     * PorterDuff.Mode.SRC_IN);
+     *
+     * @param context
+     * @param resId
+     * @param dstColor
+     * @param width
+     * @param height
+     * @param mode
+     * @return
+     */
     public static Bitmap getBitmapByXfermode(Context context,
                                              int resId,
                                              int dstColor,
@@ -348,7 +365,7 @@ public class Uview {
 
     public static void enable(boolean enable, boolean withAnim, View... vs) {
         for (View v : vs) {
-            if(v == null){
+            if (v == null) {
                 continue;
             }
 
@@ -370,7 +387,7 @@ public class Uview {
         }
     }
 
-    public static void finishActivityByClickView(final Activity context, View v){
+    public static void finishActivityByClickView(final Activity context, View v) {
         clickEffectByAlphaWithSrc(new OnClickListener() {
 
             @Override
@@ -381,25 +398,25 @@ public class Uview {
     }
 
     public static void changeTimePickerSepColor(ViewGroup group, int color) {
-        for(NumberPicker np : getNumberPickers(group)){
+        for (NumberPicker np : getNumberPickers(group)) {
             changeNumberPickerSepColor(np, color);
         }
     }
 
 
-    private static List<NumberPicker> getNumberPickers(ViewGroup group){
+    private static List<NumberPicker> getNumberPickers(ViewGroup group) {
         List<NumberPicker> lists = new ArrayList<NumberPicker>();
-        if(group == null){
+        if (group == null) {
             return lists;
         }
 
-        for(int i=0; i<group.getChildCount();i++){
+        for (int i = 0; i < group.getChildCount(); i++) {
             View v = group.getChildAt(i);
-            if( v instanceof NumberPicker){
+            if (v instanceof NumberPicker) {
                 lists.add((NumberPicker) v);
-            } else if(v instanceof LinearLayout){
+            } else if (v instanceof LinearLayout) {
                 List<NumberPicker> ls = getNumberPickers((ViewGroup) v);
-                if(ls.size()>0){
+                if (ls.size() > 0) {
                     return ls;
                 }
             }
@@ -409,12 +426,12 @@ public class Uview {
 
     public static void changeNumberPickerSepColor(NumberPicker np, int color) {
         Field[] pickerFields = NumberPicker.class.getDeclaredFields();
-        for(Field f : pickerFields){
-            if(f.getName().equals("mSelectionDivider")){
-                try{
+        for (Field f : pickerFields) {
+            if (f.getName().equals("mSelectionDivider")) {
+                try {
                     f.setAccessible(true);
                     f.set(np, new ColorDrawable(color));
-                } catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
