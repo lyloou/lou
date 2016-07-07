@@ -2,7 +2,6 @@ package com.lyloou.lou.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -262,7 +261,7 @@ public abstract class LouAdapter<T> extends BaseAdapter {
     public void deleteItemWithAnim(final int position) {
         final View view = getIndexView(position);
         // 如果删除的元素未显示，则调用deleteItem方法删除
-        if(view == null){
+        if (view == null) {
             deleteItem(position);
             return;
         }
@@ -438,7 +437,10 @@ public abstract class LouAdapter<T> extends BaseAdapter {
          * @return 返回自己，链式编程；
          */
         public ViewHolder putImg(final int viewId, final String url, boolean roundShape) {
+            return putImg(viewId, url, R.mipmap.ic_launcher, roundShape);
+        }
 
+        public ViewHolder putImg(final int viewId, final String url, final int placeholderImgId, boolean roundShape) {
             // 如果 viewId不是继承自 ImageView 或者 url为null, 则不做任何处理；
             if (!(getView(viewId) instanceof ImageView) || url == null) {
                 return this;
@@ -449,15 +451,16 @@ public abstract class LouAdapter<T> extends BaseAdapter {
 
             if (!roundShape) {
                 // 该库已经做了错位处理了（如果只是将加载的图片加载到ImageView的话，就不需要错位问题）；
-                Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher).into(imageView);
+                Picasso.with(context).load(url).placeholder(placeholderImgId).into(imageView);
                 return this;
             } else {
                 new AsyncTask<Void, Void, Bitmap>() {
+                    Bitmap bitmap;
 
                     @Override
                     protected void onPreExecute() {
                         // 首先设置默认图片
-                        Bitmap bitmap = Uview.getBitmapByXfermode(context, R.mipmap.ic_launcher,
+                        bitmap = Uview.getBitmapByXfermode(context, placeholderImgId,
                                 Color.parseColor("#993382"),
                                 Uscreen.dp2Px(context, 48),
                                 Uscreen.dp2Px(context, 48),
@@ -471,21 +474,18 @@ public abstract class LouAdapter<T> extends BaseAdapter {
 
                     @Override
                     protected Bitmap doInBackground(Void... params) {
-                        Bitmap bitmap = null;
                         try {
-                            bitmap = Picasso.with(context).load(url).placeholder(R.mipmap.ic_launcher).get();
+                            bitmap = Picasso.with(context).load(url).placeholder(placeholderImgId).get();
+                            // 设置圆角
+                            bitmap = Uview.getBitmapByXfermode(context, bitmap,
+                                    Color.parseColor("#993382"),
+                                    Uscreen.dp2Px(context, 48),
+                                    Uscreen.dp2Px(context, 48),
+                                    PorterDuff.Mode.SRC_IN);
                         } catch (IOException e) {
-//                            e.printStackTrace();
-                            // 网络不可用使用默认图片
-                            bitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+                            // 网络不可用时，使用默认图片
                         }
 
-                        // 设置圆角
-                        bitmap = Uview.getBitmapByXfermode(context, bitmap,
-                                Color.parseColor("#993382"),
-                                Uscreen.dp2Px(context, 48),
-                                Uscreen.dp2Px(context, 48),
-                                PorterDuff.Mode.SRC_IN);
                         return bitmap;
                     }
 
