@@ -10,6 +10,7 @@ import com.lyloou.lou.dialog.LouDialogAtBottom;
 import com.lyloou.lou.dialog.LouDialogProgressTips;
 import com.lyloou.lou.dialog.LouDialogToast;
 import com.lyloou.lou.util.Ulog;
+import com.lyloou.lou.util.Usp;
 import com.lyloou.lou.util.Uview;
 
 public class DialogActivity extends AppCompatActivity {
@@ -29,13 +30,28 @@ public class DialogActivity extends AppCompatActivity {
         Ulog.i("i: Hello World");
         Ulog.w("w: Hello World");
         Ulog.wtf("wtf: Hello World");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Ulog.w("w: wwwwwwwwwwwwww jjj");
+            }
+        }).start();
 
+        // Test Dialog
         Uview.clickEffectByNoEffect(mClickListener,
                 findViewById(R.id.btn_show_progressDialog),
                 findViewById(R.id.btn_show_toastDialog),
                 findViewById(R.id.btn_show_LouDialogAtBottom),
                 findViewById(R.id.btn_show_LouDialogAtBottomSheet)
         );
+
+        //: Test Usp.java
+        String KEY_FIRST = "FIRST";
+        Ulog.d("Before First:" + Usp.init(this).getInt(KEY_FIRST, 22));
+        Usp.init(this).putInt(KEY_FIRST, 101).commit();
+        Ulog.d("After First:" + Usp.init(this).getInt(KEY_FIRST, 23));
+
+
     }
 
     private android.view.View.OnClickListener mClickListener = new View.OnClickListener() {

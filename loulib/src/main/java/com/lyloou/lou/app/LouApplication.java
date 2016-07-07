@@ -64,6 +64,9 @@ public abstract class LouApplication extends Application {
     protected void initLogger() {
         Logger
                 .init("Ulog")                 // default PRETTYLOGGER or use just init()
+                .methodCount(1)
+                .methodOffset(1)
+//                .hideThreadInfo()
                 .logLevel(DEBUG ? LogLevel.FULL : LogLevel.NONE);       // default LogLevel.FULL
     }
 

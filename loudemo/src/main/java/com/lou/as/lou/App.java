@@ -11,8 +11,4 @@ public class App extends LouApplication {
         return null;
     }
 
-    @Override
-    protected void initLogger() {
-        super.initLogger();
-    }
 }
