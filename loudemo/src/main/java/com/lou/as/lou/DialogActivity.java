@@ -9,6 +9,7 @@ import android.view.View;
 import com.lyloou.lou.dialog.LouDialogAtBottom;
 import com.lyloou.lou.dialog.LouDialogProgressTips;
 import com.lyloou.lou.dialog.LouDialogToast;
+import com.lyloou.lou.util.Ulog;
 import com.lyloou.lou.util.Uview;
 
 public class DialogActivity extends AppCompatActivity {
@@ -21,6 +22,13 @@ public class DialogActivity extends AppCompatActivity {
         mContext = this;
 
         setContentView(R.layout.activity_dialog);
+
+        // Test Ulog.java
+        Ulog.d("Hello World");
+        Ulog.e("e:Hello World");
+        Ulog.i("i: Hello World");
+        Ulog.w("w: Hello World");
+        Ulog.wtf("wtf: Hello World");
 
         Uview.clickEffectByNoEffect(mClickListener,
                 findViewById(R.id.btn_show_progressDialog),

@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import com.lyloou.lou.other.CrashHandler;
 import com.lyloou.lou.util.Uapk;
 import com.lyloou.lou.util.Ustring;
+import com.orhanobut.logger.LogLevel;
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 
@@ -19,6 +21,7 @@ import java.util.ArrayList;
  * <li> 初始化崩溃日志的信息（需要提供有效日志路径，才会进行异常托管）；
  * <li> activity的管理；（需要结合LouActivity使用，才能通过LouApplication进行管理）
  * </ul>
+ *
  * @author Lou
  */
 public abstract class LouApplication extends Application {
@@ -31,13 +34,16 @@ public abstract class LouApplication extends Application {
         SKIP_WELCOME = false;
         DEBUG = Uapk.isDebugable(this);
 
-        // 根据路径的有效性，判断是否记录日志
+        // 根据路径的有效性，判断是否记录错误日志
         String crashLogPath = crashLogPath();
         if (!TextUtils.isEmpty(crashLogPath) && Ustring.isValidFilePath(crashLogPath)) {
             CrashHandler crash = CrashHandler.getInstance();
             crash.init(getApplicationContext());
             crash.setCrashDir(crashLogPath);
         }
+
+        // 初始化Logger
+        initLogger();
 
         super.onCreate();
     }
@@ -50,6 +56,16 @@ public abstract class LouApplication extends Application {
      * @return 有效路径的字符串表示（不包括文件名）
      */
     protected abstract String crashLogPath();
+
+
+    /**
+     * 继承的Application可以重写；
+     */
+    protected void initLogger() {
+        Logger
+                .init("Ulog")                 // default PRETTYLOGGER or use just init()
+                .logLevel(DEBUG ? LogLevel.FULL : LogLevel.NONE);       // default LogLevel.FULL
+    }
 
     //-----------------Activity管理；
     private static final ArrayList<Activity> sActivities = new ArrayList<Activity>();

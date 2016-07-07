@@ -9,7 +9,7 @@ add below code to `app/build.gradle`
 ```
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.lyloou:lou:1.0.1'
+    compile 'com.lyloou:lou:1.0.2'
 }
 ```
 

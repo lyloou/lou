@@ -3,7 +3,7 @@ apply plugin: 'com.novoda.bintray-release'
 
 ext {
     supportLibVersion = '24.0.0'
-    libVersion = '1.0.1'
+    libVersion = '1.0.2'
 }
 
 publish {
@@ -29,7 +29,7 @@ android {
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 24
-        versionCode 6
+        versionCode 7
         versionName "${supportLibVersion}"
     }
 

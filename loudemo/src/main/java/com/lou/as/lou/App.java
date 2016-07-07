@@ -10,4 +10,9 @@ public class App extends LouApplication {
     protected String crashLogPath() {
         return null;
     }
+
+    @Override
+    protected void initLogger() {
+        super.initLogger();
+    }
 }
