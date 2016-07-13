@@ -1,5 +1,6 @@
 package com.lyloou.lou.util;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -7,7 +8,34 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
+import java.util.List;
+
 public class Uapk {
+
+    /**
+     * 程序是否在前台运行
+     *
+     * @return
+     */
+    public static boolean isRunOnForeground(Context context) {
+        // Returns a list of application processes that are running on the device
+        ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(
+                Context.ACTIVITY_SERVICE);
+        String packageName = context.getApplicationContext().getPackageName();
+
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        if (appProcesses == null)
+            return false;
+
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.processName.equals(packageName)
+                    && appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public static String getAppVersionName(Context context) {
         PackageManager pm = context.getPackageManager();
