@@ -59,52 +59,52 @@ import java.util.Locale;
  */
 public class Udate {
 
-	public static String format(Date date, String pattern) {
-		return format(date, pattern, Locale.getDefault());
-	}
+    public static String format(Date date, String pattern) {
+        return format(date, pattern, Locale.getDefault());
+    }
 
-	public static String format(Date date, String pattern, Locale locale) {
-		SimpleDateFormat sdf = new SimpleDateFormat(pattern, locale);
-		return sdf.format(date);
-	}
+    public static String format(Date date, String pattern, Locale locale) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern, locale);
+        return sdf.format(date);
+    }
 
-	public static String format(long millisecond, String pattern) {
-		return format(millisecond, pattern, Locale.getDefault());
-	}
+    public static String format(long millisecond, String pattern) {
+        return format(millisecond, pattern, Locale.getDefault());
+    }
 
-	public static String format(long millisecond, String pattern, Locale locale) {
-		Date date = new Date(millisecond);
-		return format(date, pattern, locale);
-	}
+    public static String format(long millisecond, String pattern, Locale locale) {
+        Date date = new Date(millisecond);
+        return format(date, pattern, locale);
+    }
 
-	private static volatile Calendar c;
+    private static volatile Calendar c;
 
-	public static int getField(Date date, int field) {
-		if (c == null) {
-			c = Calendar.getInstance();
-		}
-		c.setTime(date);
-		return c.get(field);
-	}
+    public static int getField(Date date, int field) {
+        if (c == null) {
+            c = Calendar.getInstance();
+        }
+        c.setTime(date);
+        return c.get(field);
+    }
 
-	public static int getYear(Date date) {
-		return getField(date, Calendar.YEAR);
-	}
+    public static int getYear(Date date) {
+        return getField(date, Calendar.YEAR);
+    }
 
-	public static int getMonth(Date date) {
-		return getField(date, Calendar.MONTH);
-	}
+    public static int getMonth(Date date) {
+        return getField(date, Calendar.MONTH);
+    }
 
-	public static int getDay(Date date) {
-		return getField(date, Calendar.DAY_OF_MONTH);
-	}
+    public static int getDay(Date date) {
+        return getField(date, Calendar.DAY_OF_MONTH);
+    }
 
-	public static int getHour(Date date) {
-		return getField(date, Calendar.HOUR);
-	}
+    public static int getHour(Date date) {
+        return getField(date, Calendar.HOUR);
+    }
 
-	public static int getMinute(Date date) {
-		return getField(date, Calendar.MINUTE);
-	}
+    public static int getMinute(Date date) {
+        return getField(date, Calendar.MINUTE);
+    }
 
 }

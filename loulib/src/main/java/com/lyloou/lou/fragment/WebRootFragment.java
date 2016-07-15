@@ -143,8 +143,8 @@ public class WebRootFragment extends Fragment implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.tv_tips){
-                clickForRetry();
+        if (v.getId() == R.id.tv_tips) {
+            clickForRetry();
         }
     }
 

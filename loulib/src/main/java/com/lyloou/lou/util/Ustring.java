@@ -12,12 +12,12 @@ import java.util.Map;
  */
 public class Ustring {
 
-    public static boolean isValidFilePath(String path){
+    public static boolean isValidFilePath(String path) {
         File f = new File(path);
-        try{
+        try {
             f.getCanonicalPath();
             return true;
-        } catch (IOException e){
+        } catch (IOException e) {
             return false;
         }
     }
@@ -26,7 +26,7 @@ public class Ustring {
         String jsonStr = "{}";
         try {
             JSONObject json = new JSONObject();
-            for(String str: map.keySet()){
+            for (String str : map.keySet()) {
                 json.put(str, map.get(str));
             }
         } catch (JSONException e) {

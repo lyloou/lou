@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:background="#ffffff"
-    android:paddingEnd="16dp"
-    android:paddingStart="16dp" >
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="#ffffff"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
     <ImageView
         android:id="@+id/iv_set_icon"
         android:layout_width="48dp"
@@ -13,7 +14,8 @@
         android:layout_centerVertical="true"
         android:contentDescription="@string/app_name"
         android:padding="14dp"
-        android:visibility="gone" />
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tv_set_title"
         android:layout_width="wrap_content"
@@ -23,7 +25,7 @@
         android:gravity="center_vertical"
         android:maxLines="1"
         android:text=""
-        android:textSize="14sp" />
+        android:textSize="14sp"/>
 
     <ImageView
         android:id="@+id/iv_set_to_right"
@@ -33,7 +35,8 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="4dp"
         android:background="@mipmap/view_setting_layout_next"
-        android:visibility="gone" />
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tv_set_unit"
         android:layout_width="wrap_content"
@@ -44,7 +47,8 @@
         android:maxLines="1"
         android:text=""
         android:textSize="14sp"
-        android:visibility="gone" />
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tv_set_content"
         android:layout_width="wrap_content"
@@ -55,7 +59,8 @@
         android:maxLines="1"
         android:text=""
         android:textSize="14sp"
-        android:visibility="gone" />
+        android:visibility="gone"/>
+
     <View
         android:id="@+id/v_set_divider"
         android:layout_width="match_parent"
@@ -63,5 +68,5 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:background="#999999"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 </RelativeLayout>

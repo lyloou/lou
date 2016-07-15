@@ -15,25 +15,25 @@ import java.util.UUID;
  * 修改人： Lou
  * 修改时间：2016/7/13 14:22
  * 修改备注：
- * <p/>
+ * <p>
  * 用法：
  * {@code
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * // 初始化
  * LouSQLite.init(mContext, MyCallBack.getInstance());
- * <p/>
+ * <p>
  * Phrase phrase = new Phrase("青青子衿，悠悠我心");
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * // 从数据库中删除
  * LouSQLite.delete(MyCallBack.TABLE_PHRASE, MyCallBack.KEY_PHRASE_ID + "=?", new String[]{phrase.getId()});
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * // 插入一个数据到数据库
  * LouSQLite.insert(MyCallBack.TABLE_PHRASE, phrase);
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * // 插入一组数据
  * List<Phrase> lists =  Arrays.asList(
  * new Phrase("窈窕淑女，君子好逑"),
@@ -42,12 +42,12 @@ import java.util.UUID;
  * new Phrase("人生若只如初见")
  * );
  * LouSQLite.insert(MyCallBack.TABLE_PHRASE, lists);
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * // 更新到数据库
  * LouSQLite.update(MyCallBack.TABLE_PHRASE, phrase, MyCallBack.KEY_PHRASE_ID + "=?", new String[]{phrase.getId()});
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * //  查找
  * List<Phrase> lists = LouSQLite.query(MyCallBack.TABLE_PHRASE, "select * from " + MyCallBack.TABLE_PHRASE, null);
  * }

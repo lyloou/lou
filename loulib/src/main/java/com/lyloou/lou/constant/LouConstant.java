@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class LouConstant {
 
     // 测试
-    public static void main(String [] args){
+    public static void main(String[] args) {
         ByteArray byteArray = new ByteArray(10);
         System.out.println("byteArray = " + byteArray);
 

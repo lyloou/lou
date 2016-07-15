@@ -42,7 +42,7 @@ public class TabLayoutAndViewPagerFragment extends Fragment {
     }
 
     public static class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
-        private String tabTitles[] = new String[] { "Tab1", "Tab2", "Tab3" };
+        private String tabTitles[] = new String[]{"Tab1", "Tab2", "Tab3"};
         final int PAGE_COUNT = tabTitles.length;
         private Context context;
 

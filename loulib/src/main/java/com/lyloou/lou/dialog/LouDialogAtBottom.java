@@ -36,6 +36,7 @@ public class LouDialogAtBottom {
     }
 
     private int mDownY;
+
     public LouDialogAtBottom draggable(boolean dragable) {
         if (!dragable) return this;
 

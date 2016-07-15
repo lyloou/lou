@@ -167,7 +167,7 @@ public final class LouDialog {
         return (T) view;
     }
 
-    public View getLayoutView(){
+    public View getLayoutView() {
         return mLayoutView;
     }
 

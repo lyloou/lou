@@ -1,7 +1,6 @@
 package com.lou.as.lou.practice;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import com.lou.as.lou.AdapterActivity;
 import com.lou.as.lou.R;
-import com.lyloou.lou.activity.LouActivity;
 import com.lyloou.lou.util.Uapk;
 import com.lyloou.lou.util.Utoast;
 import com.orhanobut.logger.Logger;
@@ -56,7 +54,7 @@ public class DemoGestureDetectorActivity extends Activity implements
 
                 Uapk.addActivityShortcut(DemoGestureDetectorActivity.this.getApplicationContext(),
                         "新3", R.mipmap.ic_launcher, AdapterActivity.class);
-                Utoast.show(DemoGestureDetectorActivity.this , "添加成功");
+                Utoast.show(DemoGestureDetectorActivity.this, "添加成功");
             }
         });
 

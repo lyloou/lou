@@ -4,10 +4,9 @@ import com.orhanobut.logger.Logger;
 
 /**
  * 需要自定义Application，继承自LouApplication并在Mainfest中使用；
- *
+ * <p>
  * 注意：发布的版本不会打印，调试的版本会打印（这取决于LouApplication.initLogger中的配置）
- *  标签设置的是「Ulog」，可以以此过滤；
- *
+ * 标签设置的是「Ulog」，可以以此过滤；
  */
 public class Ulog {
 

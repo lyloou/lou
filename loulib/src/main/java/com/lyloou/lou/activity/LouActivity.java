@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import com.lyloou.lou.app.LouApplication;
-import com.lyloou.lou.util.Ulog;
 
 public class LouActivity extends AppCompatActivity {
 
@@ -24,7 +23,7 @@ public class LouActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         // 如果是TaskRoot，那么移到后台而不是退出程序；
-        if(event.getAction() == KeyEvent.KEYCODE_BACK && this.isTaskRoot()){
+        if (event.getAction() == KeyEvent.KEYCODE_BACK && this.isTaskRoot()) {
             moveTaskToBack(true);
         }
 

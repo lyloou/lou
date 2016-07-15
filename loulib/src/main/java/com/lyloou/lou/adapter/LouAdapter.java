@@ -174,7 +174,7 @@ public abstract class LouAdapter<T> extends BaseAdapter {
      * @return
      */
     private View updateView(int position, View convertView) {
-        ViewHolder holder = ViewHolder.getInstance(mContext, mLayoutId, convertView, position);
+        ViewHolder holder = ViewHolder.getInstance(mContext, mLayoutId, convertView);
         assign(holder, getItem(position));
         return holder.getConvertView();
     }
@@ -290,6 +290,14 @@ public abstract class LouAdapter<T> extends BaseAdapter {
     }
 
 
+    /**
+     * @param t
+     * @return the item's index in the list;
+     */
+    public int indexOf(T t) {
+        return mLists.indexOf(t);
+    }
+
     public void updateChange() {
         notifyDataSetChanged();
     }
@@ -306,7 +314,6 @@ public abstract class LouAdapter<T> extends BaseAdapter {
     public static class ViewHolder {
         private SparseArray<View> mViews;
         private View mConvertView;
-        private int mPosition;
 
         MARK mark;
 
@@ -314,24 +321,19 @@ public abstract class LouAdapter<T> extends BaseAdapter {
             NORMAL, DELETE
         }
 
-        private ViewHolder(Context context, int layoutId, int position) {
-            mPosition = position;
-            mViews = new SparseArray<View>();
+        private ViewHolder(Context context, int layoutId) {
+            mViews = new SparseArray<>();
             mConvertView = LayoutInflater.from(context).inflate(layoutId, null);
             mConvertView.setTag(this);
         }
 
         // 权限：default 包级私有
-        static ViewHolder getInstance(Context context, int layoutId, View convertView, int position) {
+        static ViewHolder getInstance(Context context, int layoutId, View convertView) {
             boolean needInflate = convertView == null || ((ViewHolder) convertView.getTag()).mark == MARK.DELETE;
             if (needInflate) {
-                return new ViewHolder(context, layoutId, position);
+                return new ViewHolder(context, layoutId);
             }
             return (ViewHolder) convertView.getTag();
-        }
-
-        public int getPosition() {
-            return mPosition;
         }
 
         public View getConvertView() {
