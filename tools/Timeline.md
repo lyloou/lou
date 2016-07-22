@@ -1,6 +1,10 @@
 # Loulib Timeline
 
 ---
+## 2016.07.22
+- Added: RecyclerView test.
+- Added: CardView test.
+- Added: ButterKnife, and test it.
 
 ## 2016.07.01
 - add: Animation Activity Demo;「loudemo」
