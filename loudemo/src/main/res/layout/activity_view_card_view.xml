@@ -14,6 +14,7 @@
     tools:context="com.lou.as.lou.practice.ViewCardViewActivity">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/practice_card_view_cv"
         android:clickable="true"
         android:layout_width="200dp"
         android:layout_height="200dp"
@@ -22,8 +23,7 @@
         card_view:cardCornerRadius="16dp">
 
         <TextView
-            android:id="@+id/practic_tv_card_view"
-            android:background="?android:selectableItemBackground"
+            android:id="@+id/practic_card_view_tv"
             android:clickable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

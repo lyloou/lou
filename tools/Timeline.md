@@ -2,6 +2,9 @@
 
 ---
 ## 2016.07.22
+- Added: Uview.rippleIt();
+
+## 2016.07.22
 - Added: RecyclerView test.
 - Added: CardView test.
 - Added: ButterKnife, and test it.

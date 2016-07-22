@@ -3,6 +3,7 @@ package com.lyloou.lou.util;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -20,6 +21,8 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+
+import com.lyloou.lou.R;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -436,6 +439,23 @@ public class Uview {
                 }
                 break;
             }
+        }
+    }
+
+    //: http://code.hootsuite.com/tips-and-tricks-for-android-material-support-library-2-electric-boogaloo/
+    public static void rippleIt(View ...views){
+        for(View view : views){
+            TypedArray typedArray = view.getContext().obtainStyledAttributes(new int[]{R.attr.selectableItemBackground});
+            view.setBackgroundResource(typedArray.getResourceId(0, 0));
+            typedArray.recycle();
+        }
+    }
+
+    public static void rippleItWithBorderless(View ...views){
+        for(View view : views){
+            TypedArray typedArray = view.getContext().obtainStyledAttributes(new int[]{R.attr.selectableItemBackgroundBorderless});
+            view.setBackgroundResource(typedArray.getResourceId(0, 0));
+            typedArray.recycle();
         }
     }
 }
