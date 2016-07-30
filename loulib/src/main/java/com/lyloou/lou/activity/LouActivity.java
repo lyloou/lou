@@ -1,5 +1,6 @@
 package com.lyloou.lou.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,10 +11,12 @@ import com.lyloou.lou.app.LouApplication;
 public class LouActivity extends AppCompatActivity {
 
     private static final String TAG = "LouActivity";
+    protected Activity mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
 
         Log.d(TAG, "--> There you are ==> onCreate: " + this.getClass().getSimpleName());
         LouApplication.addActivity(this);

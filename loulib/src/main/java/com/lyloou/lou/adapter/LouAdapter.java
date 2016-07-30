@@ -17,7 +17,9 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.lyloou.lou.R;
@@ -147,9 +149,16 @@ public abstract class LouAdapter<T> extends BaseAdapter {
         for (int i = 0; i < sba.size(); i++) {
             if (sba.valueAt(i)) {
                 int position = sba.keyAt(i);
+
+                // 对含有Header的ListView，将position对应关系进行调整；
+                if(mListView instanceof ListView){
+                    ListView lv = (ListView) mListView;
+                    position = position - lv.getHeaderViewsCount();
+                }
+
                 if (position != -1)
                     checkedLists.add(
-                            getItem(sba.keyAt(i)));
+                            getItem(position));
             }
         }
         return checkedLists;

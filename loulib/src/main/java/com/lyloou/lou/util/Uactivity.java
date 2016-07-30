@@ -1,5 +1,6 @@
 package com.lyloou.lou.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,6 +20,11 @@ public class Uactivity {
 
     public static void showApp(Context context, String packageName) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        context.startActivity(intent);
+    }
+
+    public static void start(Activity context, Class clazz){
+        Intent intent = new Intent(context, clazz);
         context.startActivity(intent);
     }
 }
