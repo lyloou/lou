@@ -10,7 +10,7 @@ import com.lyloou.lou.app.LouApplication;
 
 public class LouActivity extends AppCompatActivity {
 
-    private static final String TAG = "LouActivity";
+    protected final String TAG = getClass().getSimpleName();
     protected Activity mContext;
 
     @Override
@@ -18,7 +18,7 @@ public class LouActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mContext = this;
 
-        Log.d(TAG, "--> There you are ==> onCreate: " + this.getClass().getSimpleName());
+        Log.d(TAG, "--> onCreate: There you are ==> " + TAG);
         LouApplication.addActivity(this);
     }
 
@@ -26,17 +26,16 @@ public class LouActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         // 如果是TaskRoot，那么移到后台而不是退出程序；
-        if (event.getAction() == KeyEvent.KEYCODE_BACK && this.isTaskRoot()) {
-            moveTaskToBack(true);
-        }
-
+        // if (event.getAction() == KeyEvent.KEYCODE_BACK && this.isTaskRoot()) {
+        //    moveTaskToBack(true);
+        // }
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "--> There you are ==> onDestroy: " + this.getClass().getSimpleName());
+        Log.d(TAG, "--> onDestroy: There you are ==> " + TAG);
         LouApplication.removeActivity(this);
     }
 }

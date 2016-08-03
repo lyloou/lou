@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
  * Why & What is modified:
  */
 public class LouFragment extends Fragment {
+    protected final String TAG = getClass().getSimpleName();
     protected Activity mContext;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

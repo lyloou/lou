@@ -81,7 +81,7 @@ public class Udate {
 
     public static int getField(Date date, int field) {
         if (c == null) {
-            c = Calendar.getInstance();
+            c = Calendar.getInstance(Locale.US);
         }
         c.setTime(date);
         return c.get(field);
@@ -107,4 +107,15 @@ public class Udate {
         return getField(date, Calendar.MINUTE);
     }
 
+    public static int getHour24(Date date) {
+        return getField(date, Calendar.HOUR_OF_DAY);
+    }
+
+    public static int getDayOfWeek(Date date) {
+        return getField(date, Calendar.DAY_OF_WEEK);
+    }
+
+    public static int getSecond(Date date) {
+        return getField(date, Calendar.SECOND);
+    }
 }

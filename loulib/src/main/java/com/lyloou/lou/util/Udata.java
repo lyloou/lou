@@ -1,5 +1,8 @@
 package com.lyloou.lou.util;
 
+import android.util.Log;
+
+import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.Locale;
 
@@ -7,6 +10,52 @@ import java.util.Locale;
  * Created by Lou on 2016/4/10.
  */
 public class Udata {
+
+    // 根据mac地址获取序列化，mac后3字节合并后转10进制（不需要补0）：
+    // 例如：mac:44:a6:e5:0a:db:38 ==> 序列号:711480
+    public static String getSerialNumberByMac(String mac) {
+        String s1 = mac.substring(9, 11);
+        String s2 = mac.substring(12, 14);
+        String s3 = mac.substring(15);
+        int result = Integer.parseInt(s1 + s2 + s3, 16);
+        return "" + result;
+    }
+
+    /**
+     * MD5 加密
+     *
+     * @param s
+     * @return
+     */
+    public static String md5(String s) {
+        char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+        try {
+            byte[] btInput = s.getBytes();
+            // 获得MD5摘要算法的 MessageDigest 对象
+            MessageDigest mdInst = MessageDigest.getInstance("MD5");
+            // 使用指定的字节更新摘要
+            mdInst.update(btInput);
+            // 获得密文
+            byte[] md = mdInst.digest();
+            // 把密文转换成十六进制的字符串形式
+            int j = md.length;
+            char str[] = new char[j * 2];
+            int k = 0;
+            for (int i = 0; i < j; i++) {
+                byte byte0 = md[i];
+                str[k++] = hexDigits[byte0 >>> 4 & 0xf];
+                str[k++] = hexDigits[byte0 & 0xf];
+            }
+
+            String result = new String(str);
+            Log.i("md5", s + " --> " + result);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public static String byteArray2HexString(byte[] datas, int byteLength) {
         if (datas.length > byteLength) {
