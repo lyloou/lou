@@ -137,13 +137,12 @@ public class Udata {
         return result;
     }
 
-	/*
-     *
-	 * · hexString2Binary
-	 *
-	 *
-	 */
-
+    /**
+     * 从左向右依次递增
+     * @param data
+     * @param shift
+     * @return
+     */
     public static int getBit(int data, int shift) {
         if (data > 0xff) {
             throw new IllegalArgumentException();
@@ -151,10 +150,23 @@ public class Udata {
         return data >> shift & 0x01;
     }
 
+    /**
+     * 从左向右依次递增
+     * @param data
+     * @param shift
+     * @return
+     */
     public static int getBit(byte data, int shift) {
         return getBit(byte2Int(data), shift);
     }
 
+    /**
+     * 从左向右依次递增
+     * @param datas
+     * @param index
+     * @param shift
+     * @return
+     */
     public static int getBit(byte[] datas, int index, int shift) {
         return getBit(datas[index], shift);
     }
@@ -176,17 +188,15 @@ public class Udata {
      * @return 改变后的data;
      */
     public static byte changeBit(byte data, int index, int value) {
-        if (data > 0xff || value > 1 || value < 0) {
+        if (value > 1 || value < 0) {
             throw new IllegalArgumentException();
         }
 
-        byte result = 0;
         String tmp = getBitString(data, 8);
         char[] chars = tmp.toCharArray();
         chars[index] = (char) ('0' + value);
         tmp = String.valueOf(chars);
-        result = (byte) Integer.parseInt(tmp, 2);
-        return result;
+        return (byte) Integer.parseInt(tmp, 2);
     }
 
     /**
