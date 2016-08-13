@@ -128,6 +128,12 @@ public class LouSQLite extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * 注意：当删除多条数据时（例如：500条），通过循环的方式来一个一个的删除需要12s，而使用execSQL语句结合(delete from table id in())的方式只需要50ms
+     * @param tableName
+     * @param whereClause
+     * @param whereArgs
+     */
     public static void delete(String tableName, String whereClause, String[] whereArgs) {
         if (INSTANCE == null) {
             throw new IllegalStateException(ILLEGAL_OPREATION);
@@ -172,6 +178,50 @@ public class LouSQLite extends SQLiteOpenHelper {
         return lists;
     }
 
+
+    /**
+     * 删除表中的所有数据
+     * @param tableName
+     */
+    public static void deleteFrom(String tableName) {
+
+        if (INSTANCE == null) {
+            throw new IllegalStateException(ILLEGAL_OPREATION);
+        }
+
+        SQLiteDatabase db = INSTANCE.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            String sql = "DELETE FROM " + tableName;
+            db.execSQL(sql);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
+
+    /**
+     *
+     * 当操作数据较多时，直接使用sql语句或许效率更高
+     * @param sql 执行sql语句（例如: String sql = "delete from tableName where mac in ('24:71:89:0A:DD:82', '24:71:89:0A:DD:83','24:71:89:0A:DD:84')"）
+     * 注意：db.execSQL文档中有说明"the SQL statement to be executed. Multiple statements separated by semicolons are not supported."
+     */
+    public static void execSQL(String sql) {
+        if (INSTANCE == null) {
+            throw new IllegalStateException(ILLEGAL_OPREATION);
+        }
+
+        SQLiteDatabase db = INSTANCE.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.execSQL(sql);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Self
