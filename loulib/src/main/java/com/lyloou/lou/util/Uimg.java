@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.view.View;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,6 +25,26 @@ import java.io.IOException;
 public class Uimg {
 
     private static final String TAG = "Uimg";
+
+    /**
+     * 功能：通过view获取bitmap
+     * 参考资料：http://stackoverflow.com/questions/2339429/android-view-getdrawingcache-returns-null-only-null?noredirect=1&lq=1
+     *
+     * @param v
+     * @return 以view形式存在的bitmap
+     */
+    public static Bitmap getBitmap(View v) {
+        // 获取bgBitmap
+        v.setDrawingCacheEnabled(true);
+        v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
+
+        v.buildDrawingCache(true);
+        Bitmap bgBitmap = Bitmap.createBitmap(v.getDrawingCache());
+        v.setDrawingCacheEnabled(false); // clear drawing cache
+        return bgBitmap;
+    }
 
     // 保存到本地，并将名称添加到数据库中；
     // 注意文件名称不要包括「/」符号，通过openFileOutput保存的只能是“文件”不能是“文件夹/文件名”；

@@ -21,11 +21,6 @@
         <activity
             android:name=".DialogActivity"
             android:configChanges="orientation|screenSize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
 
         <!-- 其中exported属性 用来测试：给AdapterActivity添加桌面快捷方式 -->
@@ -45,7 +40,9 @@
 
         <activity android:name=".practice.ViewRecyclerViewActivity">
         </activity>
-        <activity android:name=".practice.ViewCardViewActivity">
+        <activity android:name=".practice.ViewCardViewActivity"></activity>
+
+        <activity android:name=".ViewColorPickerLayoutActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
