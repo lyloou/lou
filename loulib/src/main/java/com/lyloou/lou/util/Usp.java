@@ -56,44 +56,48 @@ public final class Usp {
         sEditor.commit();
     }
 
+    public void apply() {
+        sEditor.apply();
+    }
+
     public Usp clear() {
-        sEditor.clear().apply();
+        sEditor.clear();
         return sInstance;
     }
 
     public Usp putString(String var1, String var2) {
-        sEditor.putString(var1, var2).apply();
+        sEditor.putString(var1, var2);
         return sInstance;
     }
 
     public Usp putString(String var1, Set<String> var2) {
-        sEditor.putStringSet(var1, var2).apply();
+        sEditor.putStringSet(var1, var2);
         return sInstance;
     }
 
 
     public Usp putInt(String var1, int var2) {
-        sEditor.putInt(var1, var2).apply();
+        sEditor.putInt(var1, var2);
         return sInstance;
     }
 
     public Usp putLong(String var1, long var2) {
-        sEditor.putLong(var1, var2).apply();
+        sEditor.putLong(var1, var2);
         return sInstance;
     }
 
     public Usp putFloat(String var1, float var2) {
-        sEditor.putFloat(var1, var2).apply();
+        sEditor.putFloat(var1, var2);
         return sInstance;
     }
 
     public Usp putBoolean(String var1, boolean var2) {
-        sEditor.putBoolean(var1, var2).apply();
+        sEditor.putBoolean(var1, var2);
         return sInstance;
     }
 
     public Usp remove(String var1) {
-        sEditor.remove(var1).apply();
+        sEditor.remove(var1);
         return sInstance;
     }
 
