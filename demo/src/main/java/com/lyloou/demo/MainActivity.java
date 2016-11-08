@@ -3,17 +3,9 @@ package com.lyloou.demo;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.lyloou.lou.activity.LouActivity;
 import com.lyloou.lou.util.Uvolley;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -50,13 +42,12 @@ public class MainActivity extends LouActivity {
 
                     @Override
                     public void doResponse(final String responseInfo) {
-                        showResult("\ndoGetForStringRequest:\n" + responseInfo);
-
+                        showResult("doGetForStringRequest:\n" + responseInfo);
                     }
 
                     @Override
                     public void doError(String errorMsg) {
-                        showResult("\n" + "doGetForStringRequest:\n error");
+                        showResult("doGetForStringRequest:\n error");
                     }
                 });
             }
@@ -73,13 +64,13 @@ public class MainActivity extends LouActivity {
 
                     @Override
                     public void doResponse(final String responseInfo) {
-                        showResult("\ndoGetForJsonObjectRequest:\n" + responseInfo);
+                        showResult("doGetForJsonObjectRequest:\n" + responseInfo);
 
                     }
 
                     @Override
                     public void doError(String errorMsg) {
-                        showResult("\n" + "doGetForJsonObjectRequest:\n error");
+                        showResult("doGetForJsonObjectRequest:\n error");
                     }
                 });
             }
@@ -91,17 +82,17 @@ public class MainActivity extends LouActivity {
                 Uvolley.getInstance().doPostForJsonObjectRequest(new Uvolley.ICallBackForPost() {
                     @Override
                     public String getUrl() {
-                        return URL_STRING_REQUEST;
+                        return "https://api.weixin.qq.com/sns/userinfo";
                     }
 
                     @Override
                     public void doResponse(String responseInfo) {
-                        showResult("\ndoPostForJsonObjectRequest:\n" + responseInfo);
+                        showResult("doPostForJsonObjectRequest:\n" + responseInfo);
                     }
 
                     @Override
                     public void doError(String errorMsg) {
-                        showResult("\n" + "doPostForJsonObjectRequest:\n error");
+                        showResult("doPostForJsonObjectRequest:\n error");
                     }
 
                     @Override
@@ -120,17 +111,17 @@ public class MainActivity extends LouActivity {
                 Uvolley.getInstance().doPostForStringRequest(new Uvolley.ICallBackForPost() {
                     @Override
                     public String getUrl() {
-                        return URL_STRING_REQUEST;
+                        return "https://api.weixin.qq.com/sns/userinfo";
                     }
 
                     @Override
                     public void doResponse(String responseInfo) {
-                        showResult("\ndoPostForStringRequest:\n" + responseInfo);
+                        showResult("doPostForStringRequest:\n" + responseInfo);
                     }
 
                     @Override
                     public void doError(String errorMsg) {
-                        showResult("\n" + "doPostForStringRequest:\n error");
+                        showResult("doPostForStringRequest:\n error");
 
                     }
 

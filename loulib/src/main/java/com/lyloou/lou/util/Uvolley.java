@@ -41,6 +41,11 @@ public class Uvolley {
         mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
+
+    public RequestQueue getRequestQueue() {
+        return mRequestQueue;
+    }
+
     public static Uvolley init(Context context) {
         if (INSTANCE == null) {
             INSTANCE = new Uvolley(context);
