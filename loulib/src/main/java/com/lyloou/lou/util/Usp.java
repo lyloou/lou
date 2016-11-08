@@ -70,7 +70,7 @@ public final class Usp {
         return sInstance;
     }
 
-    public Usp putString(String var1, Set<String> var2) {
+    public Usp putStringSet(String var1, Set<String> var2) {
         sEditor.putStringSet(var1, var2);
         return sInstance;
     }
