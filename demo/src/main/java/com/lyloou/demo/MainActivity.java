@@ -31,6 +31,7 @@ public class MainActivity extends LouActivity {
     public static final String URL_STRING_REQUEST = "http://api.androidhive.info/volley/string_response.html";
 
     private void initView() {
+        showResult(BuildConfig.CHANNEL);
         mTextView.postDelayed(new Runnable() {
             @Override
             public void run() {
