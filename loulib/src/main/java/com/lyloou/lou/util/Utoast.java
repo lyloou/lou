@@ -16,46 +16,24 @@ public class Utoast {
     }
 
     public static void show(Context context, CharSequence text, int mode) {
-        switch (mode) {
-            case 0:
-                if (mToast == null) {
-                    mToast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
-                } else {
-                    mToast.setText(text);
-                    mToast.setDuration(Toast.LENGTH_SHORT);
-                }
-                break;
-            case 1:
-                if (mToast == null) {
-                    mToast = Toast.makeText(context, text, Toast.LENGTH_LONG);
-                } else {
-                    mToast.setText(text);
-                    mToast.setDuration(Toast.LENGTH_LONG);
-                }
-                break;
+        if (mToast == null) {
+            mToast = Toast.makeText(context, text, mode);
+        } else {
+            mToast.setText(text);
+            mToast.setDuration(mode);
         }
         mToast.show();
     }
 
     public static void show(Context context, int resId, int mode) {
-        switch (mode) {
-            case 0:
-                if (mToast == null) {
-                    mToast = Toast.makeText(context, resId, Toast.LENGTH_SHORT);
-                } else {
-                    mToast.setText(resId);
-                    mToast.setDuration(Toast.LENGTH_SHORT);
-                }
-                break;
-            case 1:
-                if (mToast == null) {
-                    mToast = Toast.makeText(context, resId, Toast.LENGTH_LONG);
-                } else {
-                    mToast.setText(resId);
-                    mToast.setDuration(Toast.LENGTH_LONG);
-                }
-                break;
+
+        if (mToast == null) {
+            mToast = Toast.makeText(context, resId, mode);
+        } else {
+            mToast.setText(resId);
+            mToast.setDuration(mode);
         }
+
         mToast.show();
     }
 

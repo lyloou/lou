@@ -37,6 +37,7 @@ import java.util.Map;
  * @author user
  */
 public class CrashHandler implements UncaughtExceptionHandler {
+    public static final String ERROR_TIPS = "Unfortunately, Application has stoped.";
     private static String LOG_DIR = "/CRASH_LOG/";
     private final String TAG = "CrashHandler";
 
@@ -50,7 +51,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     private Map<String, String> infos = new HashMap<String, String>();
 
     //用于格式化日期,作为日志文件名的一部分
-    private DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.getDefault());
+    private DateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault());
 
     /**
      * 保证只有一个CrashHandler实例
@@ -126,7 +127,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
             @Override
             public void run() {
                 Looper.prepare();
-                Toast.makeText(mContext, "Unfortunately, Application has stooped.", Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, ERROR_TIPS, Toast.LENGTH_LONG).show();
                 Looper.loop();
             }
         }.start();
@@ -197,7 +198,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
         try {
             long timestamp = System.currentTimeMillis();
             String time = formatter.format(new Date());
-            String fileName = "crash-" + time + "-" + timestamp % 1000 + ".log";
+            String fileName = "crash_" + time + "_" + timestamp % 1000 + ".log";
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 File dir = new File(getCrashDir());
                 if (!dir.exists()) {

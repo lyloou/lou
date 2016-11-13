@@ -4,16 +4,17 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -40,6 +41,11 @@ public class Uvolley {
         mRequestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
+
+    public RequestQueue getRequestQueue() {
+        return mRequestQueue;
+    }
+
     public static Uvolley init(Context context) {
         if (INSTANCE == null) {
             INSTANCE = new Uvolley(context);
@@ -47,10 +53,14 @@ public class Uvolley {
         return INSTANCE;
     }
 
-    public <T> void addToRequestQueue(Request<T> req, String tag) {
+    public static Uvolley getInstance() {
         if (INSTANCE == null) {
             throw new NullPointerException("请先调用init(context)进行初始化");
         }
+        return INSTANCE;
+    }
+
+    public <T> void addToRequestQueue(Request<T> req, String tag) {
         // set the default tag if tag is empty
         req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
         mRequestQueue.add(req);
@@ -61,45 +71,39 @@ public class Uvolley {
     }
 
     public void cancelPendingRequests(Object tag) {
-        if (INSTANCE == null) {
-            throw new NullPointerException("请先调用init(context)进行初始化");
-        }
         mRequestQueue.cancelAll(tag);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // post
-    ///////////////////////////////////////////////////////////////////////////
-    public interface ICallBackForPost {
+    public static interface ICallBackForPost {
         String getUrl();
 
-        void doResponse(ResponseInfo responseInfo);
+        void doResponse(String responseInfo);
 
-        void doError();
+        void doError(String errorMsg);
 
         void assignParams(Map<String, String> params);
     }
 
-    public void post(final ICallBackForPost callBack) {
-        StringRequest sr = new StringRequest(Request.Method.POST, callBack.getUrl(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d(TAG, response);
-                ResponseInfo info = ResponseInfo.valueOf(response);
-                if (info != null) {
-                    callBack.doResponse(info);
-                } else {
-                    callBack.doError();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-                callBack.doError();
-            }
+    public void doPostForStringRequest(final ICallBackForPost callBack) {
+        StringRequest sr = new StringRequest(
+                Request.Method.POST,
+                callBack.getUrl(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, response);
+                        callBack.doResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLog.d(TAG, "Error: " + error.getMessage());
+                        callBack.doError(error.getMessage());
+                    }
 
-        }) {
+                }
+        ) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
@@ -110,88 +114,86 @@ public class Uvolley {
         addToRequestQueue(sr);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // get
-    ///////////////////////////////////////////////////////////////////////////
+    public void doPostForJsonObjectRequest(final ICallBackForPost callBack, JSONObject jsonObject) {
+        JsonRequest<JSONObject> jsonRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                callBack.getUrl(),
+                jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        callBack.doResponse(response.toString());
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        callBack.doError(error.getMessage());
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Accept", "application/json");
+                headers.put("Content-Type", "application/json; charset=UTF-8");
+                return headers;
+            }
+        };
+        addToRequestQueue(jsonRequest);
+    }
+
     public interface ICallBackForGet {
         String getUrl();
 
-        void doResponse(ResponseInfo responseInfo);
+        void doResponse(String responseInfo);
 
-        void doError();
+        void doError(String errorMsg);
     }
 
-    public void get(final ICallBackForGet callBack) {
-        final JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, callBack.getUrl(), null,
+    public void doGetForJsonObjectRequest(final ICallBackForGet callBack) {
+        final JsonObjectRequest jsonObjReq = new JsonObjectRequest(
+                Request.Method.GET,
+                callBack.getUrl(),
+                null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG, response.toString());
-                        ResponseInfo info = ResponseInfo.valueOf(response);
-                        if (info != null) {
-                            callBack.doResponse(info);
-                        } else {
-                            callBack.doError();
-                        }
+                        callBack.doResponse(response.toString());
                     }
-                }, new Response.ErrorListener() {
+                },
+                new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-                callBack.doError();
-            }
-        });
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLog.d(TAG, "Error: " + error.getMessage());
+                        callBack.doError(error.getMessage());
+                    }
+                }
+        );
         addToRequestQueue(jsonObjReq);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // response info 返回的信息
-    // 格式1：{"status":4,"message":"手机号已注册","data":[]} // 其中，data是jsonObject字符串；
-    // 格式2：{"status":0,"message":"操作成功","data":[]}
-    ///////////////////////////////////////////////////////////////////////////
-    public static class ResponseInfo {
-        public final int status;
-        public final String message;
-        public final String data;
-
-        public ResponseInfo(int status, String message, String data) {
-            this.status = status;
-            this.message = message;
-            this.data = data;
-        }
-
-
-        public static ResponseInfo valueOf(JSONObject jsonObject) {
-            ResponseInfo info = null;
-            try {
-                info = new ResponseInfo
-                        (
-                                jsonObject.getInt("status"),
-                                jsonObject.getString("message"),
-                                jsonObject.getString("data")
-                        );
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return info;
-        }
-
-        public static ResponseInfo valueOf(String jsonString) {
-            ResponseInfo info = null;
-            try {
-                info = ResponseInfo.valueOf(new JSONObject(jsonString));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return info;
-        }
-
-
-        @Override
-        public String toString() {
-            return "\n\nstatus: " + status + " \nmessage:" + message + " \ndata:" + data;
-        }
+    public void doGetForStringRequest(final ICallBackForGet callBack) {
+        StringRequest request = new StringRequest(
+                StringRequest.Method.GET,
+                callBack.getUrl(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, response);
+                        callBack.doResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLog.d(TAG, "Error: " + error.getMessage());
+                        callBack.doError(error.getMessage());
+                    }
+                }
+        );
+        addToRequestQueue(request);
     }
-
 }
