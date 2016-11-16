@@ -63,6 +63,19 @@ public class Uapk {
         return versionCode;
     }
 
+    public static String getApplicationMetaValue(Context context, String name) {
+        String value = "";
+        try {
+            ApplicationInfo appInfo = context.getPackageManager()
+                    .getApplicationInfo(context.getPackageName(),
+                            PackageManager.GET_META_DATA);
+            value = appInfo.metaData.getString(name);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+
     public static boolean isDebugable(Context context) {
         try {
             ApplicationInfo info = context.getApplicationInfo();
