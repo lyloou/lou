@@ -1,6 +1,6 @@
 /*
  * *****************************************************************************************
- * Copyright  (c) 2016. Lou Li
+ * Copyright  (c) 2016 Lou
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,19 @@
  * *****************************************************************************************
  */
 
-package com.lyloou.demo.view.impl;
+package com.lyloou.demo.view;
 
-import android.os.Bundle;
-import android.widget.TextView;
-
-import com.lyloou.demo.R;
-import com.lyloou.lou.activity.LouActivity;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public class MainActivity extends LouActivity {
-
-
-    @BindView(R.id.textView)
-    TextView mTextView;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-
-    }
-
+/**
+ * Author:    Lou
+ * Version:   V1.0
+ * Date:      2016.11.18 14:28
+ * <p>
+ * Description:
+ */
+public interface IUserView {
+    int getId();
+    String getFirstName();
+    String getLastName();
+    void setFirstName(String firstName);
+    void setLastName(String lastName);
 }

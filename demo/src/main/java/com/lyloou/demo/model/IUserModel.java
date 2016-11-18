@@ -1,5 +1,6 @@
 /*
- * Copyright  (c) 2016. Lou Li
+ * *****************************************************************************************
+ * Copyright  (c) 2016 Lou
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,22 +13,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * *****************************************************************************************
  */
 
-package com.lyloou.demo.model.impl;
+package com.lyloou.demo.model;
 
-import com.lyloou.demo.model.IConnectionStatus;
+import com.lyloou.demo.bean.UserBean;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2016.11.17 19:35
+ * Date:      2016.11.18 14:31
  * <p>
  * Description:
  */
-public class ConnectionStatus implements IConnectionStatus {
-    @Override
-    public boolean isOnLine() {
-        return true;
-    }
+public interface IUserModel {
+    void setId(int id);
+    void setFirstName(String firstName);
+    void setLastName(String lastName);
+    int getId();
+    UserBean load(int id);
 }

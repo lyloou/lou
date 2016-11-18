@@ -1,6 +1,6 @@
 /*
  * *****************************************************************************************
- * Copyright  (c) 2016. Lou Li
+ * Copyright  (c) 2016 Lou
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,46 +16,37 @@
  * *****************************************************************************************
  */
 
-package com.lyloou.demo.presenter;
-
-import com.lyloou.demo.model.IConnectionStatus;
-import com.lyloou.demo.model.impl.ConnectionStatus;
-import com.lyloou.demo.view.ISplashView;
+package com.lyloou.demo.bean;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2016.11.17 19:41
+ * Date:      2016.11.18 14:26
  * <p>
  * Description:
  */
-public class SplashPresenter {
-    private IConnectionStatus mStatus;
-    private ISplashView mView;
+public class UserBean {
+    private String mFirstName;
+    private String mLastName;
 
-    public SplashPresenter(IConnectionStatus status) {
-        mStatus = status;
+    public UserBean(String firstName, String lastName) {
+        mFirstName = firstName;
+        mLastName = lastName;
     }
 
-    public SplashPresenter() {
-        this(new ConnectionStatus());
+    public String getFirstName() {
+        return mFirstName;
     }
 
-    public ISplashView getView() {
-        return mView;
+    public void setFirstName(String firstName) {
+        mFirstName = firstName;
     }
 
-    public void setView(ISplashView view) {
-        mView = view;
+    public String getLastName() {
+        return mLastName;
     }
 
-    public void didFinishLoading(){
-        ISplashView view = getView();
-        if(mStatus.isOnLine()){
-            view.moveToMainView();
-        } else {
-            view.hideProgress();
-            view.showNoInetErrorMsg();
-        }
+    public void setLastName(String lastName) {
+        mLastName = lastName;
     }
 }
