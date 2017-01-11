@@ -180,7 +180,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
         for (Map.Entry<String, String> entry : infos.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            sb.append(key + "=" + value + "\n");
+            sb.append(key).append("=").append(value).append("\n");
         }
 
         Writer writer = new StringWriter();

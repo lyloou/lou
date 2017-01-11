@@ -22,9 +22,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.lyloou.demo.presenter.UserPresenter;
 import com.lyloou.demo.view.IUserView;
 import com.lyloou.lou.activity.LouActivity;
+
+import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,10 +94,21 @@ public class MainActivity extends LouActivity implements IUserView {
                 mPresenter.saveUser(getId(), getFirstName(), getLastName());
                 break;
             case R.id.btn_load:
-                mPresenter.loadUser(getId());
+//                mPresenter.loadUser(getId());
+                downloadImg("");
                 break;
         }
 
         mPresenter.showCurrent(this);
+    }
+
+    private void downloadImg(String url) {
+        try {
+            File file = Glide.with(this).load(url).downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }
