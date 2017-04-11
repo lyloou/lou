@@ -94,8 +94,8 @@ public class MainActivity extends LouActivity implements IUserView {
                 mPresenter.saveUser(getId(), getFirstName(), getLastName());
                 break;
             case R.id.btn_load:
-//                mPresenter.loadUser(getId());
-                downloadImg("");
+                mPresenter.loadUser(getId());
+//                downloadImg("");
                 break;
         }
 
