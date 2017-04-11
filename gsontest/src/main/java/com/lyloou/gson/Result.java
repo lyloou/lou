@@ -16,24 +16,30 @@
  * *****************************************************************************************
  */
 
-package com.lyloou.retrofittest;
-
-import java.util.List;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Headers;
-import retrofit2.http.Path;
+package com.lyloou.gson;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.04.11 11:56
+ * Date:      2017.04.11 16:50
  * <p>
  * Description:
  */
-public interface IpService {
-    @GET("json/{ip}")
-    Call<ResponseBody> getIp(@Path("ip") String ip);
+public class Result<T> {
+    public int code;
+    public String message;
+    public T data;
+
+    public Result(int code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "Result: code=" + code
+                + " message=" + message
+                + " T=" + data.toString();
+    }
 }

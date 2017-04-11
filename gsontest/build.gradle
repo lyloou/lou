@@ -16,24 +16,12 @@
  * *****************************************************************************************
  */
 
-package com.lyloou.retrofittest;
+apply plugin: 'java'
 
-import java.util.List;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Headers;
-import retrofit2.http.Path;
-
-/**
- * Author:    Lou
- * Version:   V1.0
- * Date:      2017.04.11 11:56
- * <p>
- * Description:
- */
-public interface IpService {
-    @GET("json/{ip}")
-    Call<ResponseBody> getIp(@Path("ip") String ip);
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.google.code.gson:gson:2.8.0'
 }
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
