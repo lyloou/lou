@@ -29,10 +29,13 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':loulib')
 
+    compile 'com.squareup:android-times-square:1.6.5@aar'
+
     // ButterKnife注解： https://github.com/JakeWharton/butterknife
     // 注意：如果想要在lib/app中使用Butterknife库，则需要在当前module的build.gradle中添加compile信息;
     // 如果你在lib库的build.gradle中引用了Butterknife的compile信息，然后想要在app中直接使用Butterknife，这样的结果是注解失败；
     // （即：loulib中的butterknife不能直接在loudemo中使用，在loudemo中须再次引入到build.gradle中）；
     compile 'com.jakewharton:butterknife:8.2.1'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
 }
