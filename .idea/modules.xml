@@ -3,11 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gsontest/gsontest.iml" filepath="$PROJECT_DIR$/gsontest/gsontest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java/java.iml" filepath="$PROJECT_DIR$/java/java.iml" />
       <module fileurl="file://$PROJECT_DIR$/lou.iml" filepath="$PROJECT_DIR$/lou.iml" />
       <module fileurl="file://$PROJECT_DIR$/loudemo/loudemo.iml" filepath="$PROJECT_DIR$/loudemo/loudemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/loulib/loulib.iml" filepath="$PROJECT_DIR$/loulib/loulib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/retrofittest/retrofittest.iml" filepath="$PROJECT_DIR$/retrofittest/retrofittest.iml" />
     </modules>
   </component>
 </project>

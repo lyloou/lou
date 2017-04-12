@@ -1,1 +1,1 @@
-include ':loulib', ':loudemo', ':demo', ':retrofittest', ':gsontest'
+include ':loulib', ':loudemo', ':demo', ':java'
