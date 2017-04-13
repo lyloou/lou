@@ -61,4 +61,9 @@ public class UserPresenter implements UserContract.Presenter {
         mView.showLastName(user.getLastName());
         return user;
     }
+
+    @Override
+    public void setting() {
+        mView.showSetting();
+    }
 }

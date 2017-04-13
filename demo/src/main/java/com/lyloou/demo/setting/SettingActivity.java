@@ -14,31 +14,24 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo.user;
+package com.lyloou.demo.setting;
 
-import com.lyloou.demo.BasePresenter;
-import com.lyloou.demo.BaseView;
-import com.lyloou.demo.data.User;
+import android.os.Bundle;
+
+import com.lyloou.demo.R;
+import com.lyloou.lou.activity.LouActivity;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.04.13 10:36
+ * Date:      2017.04.13 14:44
  * <p>
  * Description:
  */
-public interface UserContract {
-    interface View extends BaseView<Presenter>{
-        void showId(String id);
-        void showFirstName(String firstName);
-        void showLastName(String lastName);
-
-        void showSetting();
-    }
-
-    interface Presenter extends BasePresenter{
-        void save(User user);
-        User load(String id);
-        void setting();
+public class SettingActivity extends LouActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setting);
     }
 }

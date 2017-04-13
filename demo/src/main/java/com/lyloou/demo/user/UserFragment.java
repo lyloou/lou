@@ -16,6 +16,7 @@
 
 package com.lyloou.demo.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -27,6 +28,7 @@ import android.widget.EditText;
 
 import com.lyloou.demo.R;
 import com.lyloou.demo.data.User;
+import com.lyloou.demo.setting.SettingActivity;
 import com.lyloou.lou.fragment.LouFragment;
 import com.lyloou.lou.util.Uview;
 
@@ -54,6 +56,8 @@ public class UserFragment extends LouFragment implements UserContract.View {
     @BindView(R.id.btn_load)
     Button mBtnLoad;
     Unbinder unbinder;
+    @BindView(R.id.btn_setting)
+    Button mBtnSetting;
 
     public static UserFragment newInstance() {
 
@@ -75,7 +79,7 @@ public class UserFragment extends LouFragment implements UserContract.View {
     }
 
     private void initView(View view) {
-        Uview.clickEffectByAlpha(new View.OnClickListener() {
+        Uview.clickEffectByNoEffect(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String id = mEtId.getText().toString();
@@ -89,9 +93,12 @@ public class UserFragment extends LouFragment implements UserContract.View {
                     case R.id.btn_save:
                         mPresenter.save(new User(id, firstName, lastName));
                         break;
+                    case R.id.btn_setting:
+                        mPresenter.setting();
+                        break;
                 }
             }
-        }, mBtnLoad, mBtnSave);
+        }, mBtnLoad, mBtnSave, mBtnSetting);
     }
 
     @Override
@@ -118,6 +125,12 @@ public class UserFragment extends LouFragment implements UserContract.View {
     @Override
     public void showLastName(String lastName) {
         mEtLastName.setText(lastName);
+    }
+
+    @Override
+    public void showSetting() {
+        Intent intent = new Intent(mContext, SettingActivity.class);
+        startActivity(intent);
     }
 
     @Override
