@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -13,7 +12,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="ID"/>
+            android:text="ID" />
 
         <EditText
             android:id="@+id/et_id"
@@ -21,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="id"
-            android:inputType="number"/>
+            android:inputType="number" />
     </TableRow>
 
     <TableRow
@@ -32,14 +31,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="First Name"/>
+            android:text="First Name" />
 
         <EditText
             android:id="@+id/et_first_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="first name"/>
+            android:hint="first name" />
     </TableRow>
 
     <TableRow
@@ -50,14 +49,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Last Name"/>
+            android:text="Last Name" />
 
         <EditText
             android:id="@+id/et_last_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="last name"/>
+            android:hint="last name" />
     </TableRow>
 
     <TableRow
@@ -69,15 +68,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="onClick"
-            android:text="Save"/>
+            android:text="Save" />
 
         <Button
             android:id="@+id/btn_load"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Load"
-            android:onClick="onClick"/>
+            android:text="Load" />
     </TableRow>
 </TableLayout>

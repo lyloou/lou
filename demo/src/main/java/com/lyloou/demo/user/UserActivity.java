@@ -16,78 +16,17 @@
 
 package com.lyloou.demo.user;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.app.Fragment;
 
-import com.lyloou.demo.R;
-import com.lyloou.demo.data.User;
-import com.lyloou.lou.activity.LouActivity;
+import com.lyloou.lou.activity.SingleFragmentActivity;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+public class UserActivity extends SingleFragmentActivity {
 
-public class UserActivity extends LouActivity implements UserContract.View {
-    UserContract.Presenter mPresenter;
-    @BindView(R.id.et_id)
-    EditText mEtId;
-    @BindView(R.id.et_first_name)
-    EditText mEtFirstName;
-    @BindView(R.id.et_last_name)
-    EditText mEtLastName;
-    @BindView(R.id.btn_save)
-    Button mBtnSave;
-    @BindView(R.id.btn_load)
-    Button mBtnLoad;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        mPresenter = new UserPresenter(this);
+    public Fragment createFragment() {
+        UserFragment userFragment = UserFragment.newInstance();
+        new UserPresenter(userFragment);
+        return userFragment;
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mPresenter.start();
-    }
-
-    @Override
-    public void setPresenter(UserContract.Presenter presenter) {
-        mPresenter = presenter;
-    }
-
-    @Override
-    public void showId(String id) {
-        mEtId.setText(id);
-    }
-
-    @Override
-    public void showFirstName(String firstName) {
-        mEtFirstName.setText(firstName);
-    }
-
-    @Override
-    public void showLastName(String lastName) {
-        mEtLastName.setText(lastName);
-    }
-
-    public void onClick(View view) {
-        String id = mEtId.getText().toString();
-        String firstName = mEtFirstName.getText().toString();
-        String lastName = mEtLastName.getText().toString();
-
-        switch (view.getId()) {
-            case R.id.btn_load:
-                mPresenter.load(id);
-                break;
-            case R.id.btn_save:
-                mPresenter.save(new User(id, firstName, lastName));
-                break;
-        }
-    }
-
 }

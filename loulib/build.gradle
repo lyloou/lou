@@ -28,7 +28,7 @@ android {
     buildToolsVersion "${supportLibVersion}"
 
     defaultConfig {
-        minSdkVersion 18
+        minSdkVersion 15
         targetSdkVersion 24
         versionCode 7
         versionName "${libVersion}"
@@ -72,4 +72,5 @@ dependencies {
 
     // 注解
     compile 'com.jakewharton:butterknife:8.2.1'
+    apt 'com.jakewharton:butterknife-compiler:8.2.1'
 }
