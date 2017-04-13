@@ -1,6 +1,5 @@
 /*
- * *****************************************************************************************
- * Copyright  (c) 2016 Lou
+ * Copyright  (c) 2017 Lyloou
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +12,42 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * *****************************************************************************************
  */
 
-package com.lyloou.demo.bean;
+package com.lyloou.demo.data;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2016.11.18 14:26
+ * Date:      2017.04.13 10:20
  * <p>
  * Description:
  */
-public class UserBean {
+public class User {
+    private final String mId;
     private String mFirstName;
     private String mLastName;
 
-    public UserBean(String firstName, String lastName) {
-        mFirstName = firstName;
-        mLastName = lastName;
+    public User(String mId, String mFirstName, String mLastName) {
+        this.mId = mId;
+        this.mFirstName = mFirstName;
+        this.mLastName = mLastName;
+    }
+
+    public String getId() {
+        return mId;
     }
 
     public String getFirstName() {
         return mFirstName;
     }
 
-    public void setFirstName(String firstName) {
-        mFirstName = firstName;
-    }
-
     public String getLastName() {
         return mLastName;
+    }
+
+    public void setFirstName(String firstName) {
+        mFirstName = firstName;
     }
 
     public void setLastName(String lastName) {

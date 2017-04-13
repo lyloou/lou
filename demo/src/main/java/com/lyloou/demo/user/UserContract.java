@@ -1,6 +1,5 @@
 /*
- * *****************************************************************************************
- * Copyright  (c) 2016 Lou
+ * Copyright  (c) 2017 Lyloou
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +12,30 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * *****************************************************************************************
  */
 
-package com.lyloou.demo.view;
+package com.lyloou.demo.user;
+
+import com.lyloou.demo.BasePresenter;
+import com.lyloou.demo.BaseView;
+import com.lyloou.demo.data.User;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2016.11.18 14:28
+ * Date:      2017.04.13 10:36
  * <p>
  * Description:
  */
-public interface IUserView {
-    int getId();
-    String getFirstName();
-    String getLastName();
-    void setFirstName(String firstName);
-    void setLastName(String lastName);
+public interface UserContract {
+    interface View extends BaseView<Presenter>{
+        void showId(String id);
+        void showFirstName(String firstName);
+        void showLastName(String lastName);
+    }
+
+    interface Presenter extends BasePresenter{
+        void save(User user);
+        User load(String id);
+    }
 }

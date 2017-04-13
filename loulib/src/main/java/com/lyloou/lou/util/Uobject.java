@@ -1,6 +1,5 @@
 /*
- * *****************************************************************************************
- * Copyright  (c) 2016 Lou
+ * Copyright  (c) 2017 Lyloou
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * *****************************************************************************************
  */
 
-package com.lyloou.demo.model;
-
-import com.lyloou.demo.bean.UserBean;
+package com.lyloou.lou.util;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2016.11.18 14:31
+ * Date:      2017.04.13 12:08
  * <p>
  * Description:
  */
-public interface IUserModel {
-    void setId(int id);
-    void setFirstName(String firstName);
-    void setLastName(String lastName);
-    int getId();
-    UserBean load(int id);
+public final class Uobject {
+    // link: com.google.common.base.Preconditions
+    public static <T> T checkNotNull(T reference) {
+        if (reference == null) {
+            throw new NullPointerException();
+        } else {
+            return reference;
+        }
+    }
 }
