@@ -8,9 +8,6 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.lyloou.lou.R;
-
-import butterknife.ButterKnife;
 
 /**
  * 类描述：自定义的扇形进度条

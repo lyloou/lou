@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -21,12 +20,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.lyloou.lou.R;
 import com.lyloou.lou.util.Uscreen;
 import com.lyloou.lou.util.Uview;
-import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,12 +114,12 @@ public abstract class LouAdapter<T> extends BaseAdapter {
         }, 160);
     }
 
-    public void setChoiceMode(int mode) {
-        mListView.setChoiceMode(mode);
-    }
-
     public int getChoiceMode() {
         return mListView.getChoiceMode();
+    }
+
+    public void setChoiceMode(int mode) {
+        mListView.setChoiceMode(mode);
     }
 
     public void deleteChoicedItem() {
@@ -323,14 +319,9 @@ public abstract class LouAdapter<T> extends BaseAdapter {
      * Created by Lou on 2016/3/23.
      */
     public static class ViewHolder {
+        MARK mark;
         private SparseArray<View> mViews;
         private View mConvertView;
-
-        MARK mark;
-
-        enum MARK {
-            NORMAL, DELETE
-        }
 
         private ViewHolder(Context context, int layoutId) {
             mViews = new SparseArray<>();
@@ -439,86 +430,8 @@ public abstract class LouAdapter<T> extends BaseAdapter {
             }
         }
 
-        //----------------- 网络加载图片（2016.03.26）
-
-        /**
-         * 网络加载图片；（使用了开源库：Picasso）[Picasso](https://github.com/square/picasso)
-         *
-         * @param viewId     要设置的ImageView或者
-         * @param url        要显示的图片地址
-         * @param roundShape 是否设置圆角；
-         * @return 返回自己，链式编程；
-         */
-        public ViewHolder putImg(final int viewId, final String url, boolean roundShape) {
-            return putImg(viewId, url, R.mipmap.ic_launcher, roundShape);
+        enum MARK {
+            NORMAL, DELETE
         }
-
-        public ViewHolder putImg(final int viewId, final String url, final int placeholderImgId, boolean roundShape) {
-            // 如果 viewId不是继承自 ImageView 或者 url为null, 则不做任何处理；
-            if (!(getView(viewId) instanceof ImageView) || url == null) {
-                return this;
-            }
-
-            final ImageView imageView = getView(viewId);
-            final Context context = imageView.getContext();
-
-            if (!roundShape) {
-                // 该库已经做了错位处理了（如果只是将加载的图片加载到ImageView的话，就不需要错位问题）；
-                Picasso.with(context).load(url).placeholder(placeholderImgId).into(imageView);
-                return this;
-            } else {
-                new AsyncTask<Void, Void, Bitmap>() {
-                    Bitmap bitmap;
-
-                    @Override
-                    protected void onPreExecute() {
-                        // 首先设置默认图片
-                        bitmap = Uview.getBitmapByXfermode(context, placeholderImgId,
-                                Color.parseColor("#993382"),
-                                Uscreen.dp2Px(context, 48),
-                                Uscreen.dp2Px(context, 48),
-                                PorterDuff.Mode.SRC_IN);
-                        imageView.setImageBitmap(bitmap);
-
-                        // 由于只是从网络获取图片，没有处理错位问题，这里需要单独处理；
-                        // 防止图片过多导致显示错乱（用url来作为验证）；
-                        imageView.setTag(url);
-                    }
-
-                    @Override
-                    protected Bitmap doInBackground(Void... params) {
-                        try {
-                            bitmap = Picasso.with(context).load(url).placeholder(placeholderImgId).get();
-                            // 设置圆角
-                            bitmap = Uview.getBitmapByXfermode(context, bitmap,
-                                    Color.parseColor("#993382"),
-                                    Uscreen.dp2Px(context, 48),
-                                    Uscreen.dp2Px(context, 48),
-                                    PorterDuff.Mode.SRC_IN);
-                        } catch (IOException e) {
-                            // 网络不可用时，使用默认图片
-                        }
-
-                        return bitmap;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Bitmap bitmap) {
-                        if (bitmap == null) {
-                            return;
-                        }
-
-                        // 防止图片错乱；
-                        String url2 = (String) imageView.getTag();
-                        if (url.equals(url2)) {
-                            imageView.setImageBitmap(bitmap);
-                        }
-                    }
-                }.execute();
-            }
-            return this;
-        }
-        // ~~~~~~~~~~~~~~~~
-
     }
 }
