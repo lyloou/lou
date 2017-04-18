@@ -29,6 +29,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Uview {
+    public static void post(final int visibility, View... v) {
+        for (final View view : v) {
+            if (view != null && view.getVisibility() != visibility) {
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.setVisibility(visibility);
+                    }
+                });
+            }
+        }
+    }
 
     public static void clickEffectByAlpha(OnClickListener clickListener, View... views) {
         clickEffectByAlpha(clickListener, true, true, views);
