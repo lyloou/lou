@@ -1,8 +1,9 @@
 package com.lyloou.lou.activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import com.lyloou.lou.R;
 
@@ -25,7 +26,7 @@ public abstract class SingleFragmentActivity extends LouActivity {
      * Add Fragment to Activity
      */
     private void addFragmentToActivity() {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
 
         // Try to get fragment from FragmentManager's Queue.
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);

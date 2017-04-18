@@ -1,3 +1,3 @@
 ``` groove
-compile 'com.lyloou:lou:1.0.3'
+compile 'com.lyloou:lou:1.0.4'
 ```
