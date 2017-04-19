@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.lou.as.lou">
+          package="com.lou.as.lou">
 
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
-    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>
 
     <application
         android:name=".App"
@@ -13,42 +13,40 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".practice.DemoGestureDetectorActivity" />
+        <activity android:name=".practice.DemoGestureDetectorActivity"/>
 
         <!-- ============= -->
         <!-- 已经测完 START -->
         <!-- ============= -->
         <activity
             android:name=".DialogActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize">
+
+        </activity>
 
         <!-- 其中exported属性 用来测试：给AdapterActivity添加桌面快捷方式 -->
         <activity
             android:name=".AdapterActivity"
-            android:exported="true" />
-        <activity android:name=".ViewRatioColorActivity" />
-        <activity android:name=".ViewRatioColorHomeActivity" />
-        <activity android:name=".ViewSettingLayoutActivity" />
-        <activity android:name=".ViewSettingLayoutChangeNameActivity" />
-        <activity android:name=".ViewCountViewActivity" />
-        <activity android:name=".android_guides.TabLayoutAndViewPagerActivity" />
-        <activity android:name=".practice.DemoActivityAnimationActivity" />
-        <activity android:name=".ViewColorPickerLayoutActivity" />
+            android:exported="true"/>
+        <activity android:name=".ViewRatioColorActivity"/>
+        <activity android:name=".ViewRatioColorHomeActivity"/>
+        <activity android:name=".ViewSettingLayoutActivity"/>
+        <activity android:name=".ViewSettingLayoutChangeNameActivity"/>
+        <activity android:name=".ViewCountViewActivity"/>
+        <activity android:name=".android_guides.TabLayoutAndViewPagerActivity"/>
+        <activity android:name=".practice.DemoActivityAnimationActivity"/>
+        <activity android:name=".ViewColorPickerLayoutActivity"/>
         <!-- ============= -->
         <!-- 已经测完 END -->
         <!-- ============= -->
 
-        <activity android:name=".practice.ViewRecyclerViewActivity"></activity>
-        <activity android:name=".practice.ViewCardViewActivity" />
-
-        <activity
-            android:name=".ViewTimeSquareActivity"
-            android:label="@string/title_activity_view_time_square"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".practice.ViewRecyclerViewActivity"/>
+        <activity android:name=".practice.ViewCardViewActivity"/>
+        <activity android:name=".ViewSwipeRefreshLayoutActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>
