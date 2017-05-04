@@ -16,9 +16,9 @@
 
 package com.lyloou.douban;
 
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import rx.Observable;
 
 /**
  * Author:    Lou
@@ -29,5 +29,5 @@ import retrofit2.http.Query;
  */
 public interface MovieService {
     @GET("top250")
-    Call<Movie> getTopMovie(@Query("start") int start, @Query("count") int count);
+    Observable<Movie> getTopMovie(@Query("start") int start, @Query("count") int count);
 }

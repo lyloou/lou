@@ -25,11 +25,13 @@ import android.widget.Toast;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,20 +56,30 @@ public class MainActivity extends AppCompatActivity {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.douban.com/v2/movie/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
-        MovieService service = retrofit.create(MovieService.class);
-        Call<Movie> movies = service.getTopMovie(0, 10);
-        movies.enqueue(new Callback<Movie>() {
-            @Override
-            public void onResponse(Call<Movie> call, Response<Movie> response) {
-                mTv.setText(response.body().toString());
-            }
+        MovieService movieService = retrofit.create(MovieService.class);
+        Observable<Movie> topMovie = movieService.getTopMovie(0, 10);
+        topMovie
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Movie>() {
+                    @Override
+                    public void onCompleted() {
+                        Toast.makeText(MainActivity.this, "Completed!", Toast.LENGTH_SHORT).show();
+                    }
 
-            @Override
-            public void onFailure(Call<Movie> call, Throwable t) {
-                mTv.setText(t.getMessage());
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(Movie movie) {
+                        Toast.makeText(MainActivity.this, "11111", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
