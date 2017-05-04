@@ -22,6 +22,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -59,26 +61,29 @@ public class MainActivity extends AppCompatActivity {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
+
         MovieService movieService = retrofit.create(MovieService.class);
-        Observable<Movie> topMovie = movieService.getTopMovie(0, 10);
+        Observable<HttpResult<List<Subject>>> topMovie = movieService.getTopMovie(0, 10);
         topMovie
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Movie>() {
+                .subscribe(new Subscriber<HttpResult<List<Subject>>>() {
                     @Override
                     public void onCompleted() {
                         Toast.makeText(MainActivity.this, "Completed!", Toast.LENGTH_SHORT).show();
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        mTv.setText(e.getMessage());
+
                     }
 
                     @Override
-                    public void onNext(Movie movie) {
-                        Toast.makeText(MainActivity.this, "11111", Toast.LENGTH_SHORT).show();
+                    public void onNext(HttpResult<List<Subject>> subjectHttpResult) {
+                        mTv.setText(subjectHttpResult.toString());
                     }
                 });
     }
