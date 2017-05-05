@@ -82,6 +82,11 @@ public class MainActivity extends AppCompatActivity {
                     public void call(List<Subject> subjects) {
                         mTv.setText(Arrays.toString(subjects.toArray()));
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mTv.setText(throwable.getMessage());
+                    }
                 })
         ;
     }
