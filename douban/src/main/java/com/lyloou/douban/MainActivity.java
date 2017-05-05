@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -31,8 +32,9 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getBaseContext();
         ButterKnife.bind(this);
     }
 
@@ -63,28 +66,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         MovieService movieService = retrofit.create(MovieService.class);
-        Observable<HttpResult<List<Subject>>> topMovie = movieService.getTopMovie(0, 10);
+        Observable<HttpResult<List<Subject>>> topMovie = movieService.getTopMovie(0, 20);
         topMovie
+                .map(new Func1<HttpResult<List<Subject>>, List<Subject>>() {
+                    @Override
+                    public List<Subject> call(HttpResult<List<Subject>> listHttpResult) {
+                        return listHttpResult.getSubjects();
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<HttpResult<List<Subject>>>() {
+                .subscribe(new Action1<List<Subject>>() {
                     @Override
-                    public void onCompleted() {
-                        Toast.makeText(MainActivity.this, "Completed!", Toast.LENGTH_SHORT).show();
-
+                    public void call(List<Subject> subjects) {
+                        mTv.setText(Arrays.toString(subjects.toArray()));
                     }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        mTv.setText(e.getMessage());
-
-                    }
-
-                    @Override
-                    public void onNext(HttpResult<List<Subject>> subjectHttpResult) {
-                        mTv.setText(subjectHttpResult.toString());
-                    }
-                });
+                })
+        ;
     }
 }
