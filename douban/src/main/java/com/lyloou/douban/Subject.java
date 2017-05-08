@@ -44,7 +44,7 @@ public class Subject {
 
 
     private RatingBean rating;
-    private String title;
+    private String title = "unknow";
     private int collect_count;
     private String original_title;
     private String subtype;
