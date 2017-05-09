@@ -29,7 +29,7 @@ import rx.Observable;
  * <p>
  * Description:
  */
-public interface MovieService {
+public interface SubjectService {
     @GET("top250")
     Observable<HttpResult<List<Subject>>> getTopMovie(@Query("start") int start, @Query("count") int count);
 }

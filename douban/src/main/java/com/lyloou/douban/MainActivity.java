@@ -22,11 +22,11 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +45,46 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity {
 
 
+    private static final String TAG = "MainActivity";
     @Bind(R.id.rv)
     RecyclerView mRv;
     @Bind(R.id.srl)
     SwipeRefreshLayout mSrl;
+    boolean mIsLoading = false;
+    List<Subject> mData;
+    Retrofit mRetrofit = null;
+    SubjectService mSubjectService = null;
+    private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+            int totalItemCount = layoutManager.getItemCount();
+
+            if (totalItemCount < 250 && lastVisibleItem >= totalItemCount - 4) {
+                // 注意：要限制请求，否则请求太多次数，导致服务器崩溃或者服务器拒绝请求（罪过，罪过）。
+                if (mIsLoading) {
+                    Log.i(TAG, "onScrolled: " + "加载中---------");
+                } else {
+                    Log.i(TAG, "onScrolled: " + "加载更多了=======》");
+                    loadSubject();
+                }
+
+            }
+
+            Log.d(TAG, "onScrolled: lastVisibleItem=" + lastVisibleItem);
+            Log.d(TAG, "onScrolled: totalItemCount=" + totalItemCount);
+
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,21 +94,21 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initView();
     }
-    List<Subject> mData;
+
     private void initView() {
         mData = getData();
         mRv.setAdapter(new SubjectAdapter(this, mData));
         mRv.setLayoutManager(new LinearLayoutManager(this));
 
+        mRv.addOnScrollListener(mListener);
 
         mSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mData.clear();
                 mRv.getAdapter().notifyDataSetChanged();
-                Toast.makeText(MainActivity.this, "正在加载，请稍后。。。", Toast.LENGTH_SHORT).show();
-
-                getMovies();
+                Utoast.show(MainActivity.this, "正在加载，请稍后。。。");
+                loadSubject();
             }
         });
     }
@@ -88,7 +124,57 @@ public class MainActivity extends AppCompatActivity {
         return subjects;
     }
 
-    static class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
+    public void loadSubject() {
+
+        if (mRetrofit == null) {
+            mRetrofit = new Retrofit.Builder()
+                    .baseUrl("https://api.douban.com/v2/movie/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .build();
+            mSubjectService = mRetrofit.create(SubjectService.class);
+        }
+
+        mIsLoading = true;
+
+        Observable<HttpResult<List<Subject>>> topMovie = mSubjectService.getTopMovie(mData.size(), 20);
+        topMovie
+                .map(new Func1<HttpResult<List<Subject>>, List<Subject>>() {
+                    @Override
+                    public List<Subject> call(HttpResult<List<Subject>> listHttpResult) {
+                        return listHttpResult.getSubjects();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Subject>>() {
+                    @Override
+                    public void call(List<Subject> subjects) {
+                        mData.addAll(subjects);
+
+                        mRv.getAdapter().notifyDataSetChanged();
+                        mSrl.setRefreshing(false);
+
+                        mIsLoading = false;
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e(TAG, "call: error", throwable);
+                        mRetrofit = null;
+                        mSubjectService = null;
+                        mSrl.setRefreshing(false);
+                        Utoast.show(MainActivity.this, "网络异常:" + throwable.getMessage());
+
+                        mIsLoading = false;
+                    }
+                })
+        ;
+    }
+
+    static class
+    SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
         List<Subject> mSubjects;
         private Context mContext;
 
@@ -124,43 +210,5 @@ public class MainActivity extends AppCompatActivity {
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
             }
         }
-    }
-
-    public void getMovies() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.douban.com/v2/movie/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-
-
-        MovieService movieService = retrofit.create(MovieService.class);
-        Observable<HttpResult<List<Subject>>> topMovie = movieService.getTopMovie(20, 40);
-        topMovie
-                .map(new Func1<HttpResult<List<Subject>>, List<Subject>>() {
-                    @Override
-                    public List<Subject> call(HttpResult<List<Subject>> listHttpResult) {
-                        return listHttpResult.getSubjects();
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Subject>>() {
-                    @Override
-                    public void call(List<Subject> subjects) {
-                        // mTv.setText(Arrays.toString(subjects.toArray()));
-                        mData.addAll(subjects);
-
-                        mRv.getAdapter().notifyDataSetChanged();
-                        mSrl.setRefreshing(false);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        // mTv.setText(throwable.getMessage());
-                    }
-                })
-        ;
     }
 }
