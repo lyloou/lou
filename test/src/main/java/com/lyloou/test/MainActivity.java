@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.douban;
+package com.lyloou.test;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -22,26 +22,24 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     SwipeRefreshLayout mSrl;
     boolean mIsLoading = false;
     List<Subject> mData;
+    Retrofit mRetrofit = null;
+    SubjectService mSubjectService = null;
     private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onScrolled: lastVisibleItem=" + lastVisibleItem);
             Log.d(TAG, "onScrolled: totalItemCount=" + totalItemCount);
 
+
         }
     };
 
@@ -108,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 mRv.getAdapter().notifyDataSetChanged();
                 Utoast.show(MainActivity.this, "正在加载，请稍后。。。");
                 loadSubject();
-//                loadSubjectsByZip();
             }
         });
     }
@@ -124,52 +124,20 @@ public class MainActivity extends AppCompatActivity {
         return subjects;
     }
 
-    public void loadSubjectsByZip() {
-
-        mIsLoading = true;
-
-        Observable<HttpResult<List<Subject>>> topMovie1 = NetWork.getSubjectService().getTopMovie(0, 20);
-        Observable<HttpResult<List<Subject>>> topMovie2 = NetWork.getSubjectService().getTopMovie(21, 20);
-        Observable.zip(topMovie1, topMovie2, new Func2<HttpResult<List<Subject>>, HttpResult<List<Subject>>, List<Subject>>() {
-            @Override
-            public List<Subject> call(HttpResult<List<Subject>> listHttpResult, HttpResult<List<Subject>> listHttpResult2) {
-                List<Subject> subjects = new ArrayList<Subject>(listHttpResult.getSubjects());
-                subjects.addAll(listHttpResult2.getSubjects());
-                return subjects;
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Subject>>() {
-                    @Override
-                    public void call(List<Subject> subjects) {
-                        mData.addAll(subjects);
-
-                        mRv.getAdapter().notifyDataSetChanged();
-                        mSrl.setRefreshing(false);
-
-                        mIsLoading = false;
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.e(TAG, "call: error", throwable);
-                        mSrl.setRefreshing(false);
-                        Utoast.show(MainActivity.this, "网络异常:" + throwable.getMessage());
-
-                        mIsLoading = false;
-                    }
-                })
-        ;
-    }
-
     public void loadSubject() {
 
+        if (mRetrofit == null) {
+            mRetrofit = new Retrofit.Builder()
+                    .baseUrl("https://api.douban.com/v2/movie/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .build();
+            mSubjectService = mRetrofit.create(SubjectService.class);
+        }
 
         mIsLoading = true;
 
-        Observable<HttpResult<List<Subject>>> topMovie = NetWork.getSubjectService().getTopMovie(mData.size(), 20);
+        Observable<HttpResult<List<Subject>>> topMovie = mSubjectService.getTopMovie(mData.size(), 20);
         topMovie
                 .map(new Func1<HttpResult<List<Subject>>, List<Subject>>() {
                     @Override
@@ -184,20 +152,22 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void call(List<Subject> subjects) {
                         mData.addAll(subjects);
-                        mRv.getAdapter().notifyDataSetChanged();
 
+                        mRv.getAdapter().notifyDataSetChanged();
                         mSrl.setRefreshing(false);
+
                         mIsLoading = false;
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         Log.e(TAG, "call: error", throwable);
+                        mRetrofit = null;
+                        mSubjectService = null;
                         mSrl.setRefreshing(false);
-                        mIsLoading = false;
-
                         Utoast.show(MainActivity.this, "网络异常:" + throwable.getMessage());
 
+                        mIsLoading = false;
                     }
                 })
         ;
@@ -223,21 +193,6 @@ public class MainActivity extends AppCompatActivity {
         public void onBindViewHolder(SubjectHolder holder, int position) {
             Subject subject = mSubjects.get(position);
             holder.tvTitle.setText(subject.getTitle());
-            holder.tvYear.setText(subject.getYear());
-            Subject.ImagesBean images = subject.getImages();
-            if (images != null) {
-                String small = images.getSmall();
-                if (!TextUtils.isEmpty(small)) {
-                    Glide.with(mContext)
-                            .load(small)
-                            .placeholder(R.mipmap.ic_launcher)
-                            .centerCrop()
-                            .crossFade()
-                            .into(holder.ivThumb);
-                }
-            }
-
-
         }
 
         @Override
@@ -248,15 +203,11 @@ public class MainActivity extends AppCompatActivity {
         static class SubjectHolder extends RecyclerView.ViewHolder {
             View view;
             TextView tvTitle;
-            TextView tvYear;
-            ImageView ivThumb;
 
             public SubjectHolder(View itemView) {
                 super(itemView);
                 view = itemView;
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvYear = (TextView) view.findViewById(R.id.tv_year);
-                ivThumb = (ImageView) view.findViewById(R.id.iv_thumb);
             }
         }
     }
