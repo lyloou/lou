@@ -22,11 +22,15 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d(TAG, "onScrolled: lastVisibleItem=" + lastVisibleItem);
             Log.d(TAG, "onScrolled: totalItemCount=" + totalItemCount);
-
 
         }
     };
@@ -193,6 +196,21 @@ public class MainActivity extends AppCompatActivity {
         public void onBindViewHolder(SubjectHolder holder, int position) {
             Subject subject = mSubjects.get(position);
             holder.tvTitle.setText(subject.getTitle());
+            holder.tvYear.setText(subject.getYear());
+            Subject.ImagesBean images = subject.getImages();
+            if(images != null){
+                String small = images.getSmall();
+                if (!TextUtils.isEmpty(small)) {
+                    Glide.with(mContext)
+                            .load(small)
+                            .placeholder(R.mipmap.ic_launcher)
+                            .centerCrop()
+                            .crossFade()
+                            .into(holder.ivThumb);
+                }
+            }
+
+
         }
 
         @Override
@@ -203,11 +221,15 @@ public class MainActivity extends AppCompatActivity {
         static class SubjectHolder extends RecyclerView.ViewHolder {
             View view;
             TextView tvTitle;
+            TextView tvYear;
+            ImageView ivThumb;
 
             public SubjectHolder(View itemView) {
                 super(itemView);
                 view = itemView;
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
+                tvYear = (TextView) view.findViewById(R.id.tv_year);
+                ivThumb = (ImageView) view.findViewById(R.id.iv_thumb);
             }
         }
     }
