@@ -17,6 +17,7 @@
 package com.lyloou.demo.user;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.lyloou.demo.R;
 import com.lyloou.demo.data.User;
@@ -58,6 +60,8 @@ public class UserFragment extends LouFragment implements UserContract.View {
     Unbinder unbinder;
     @BindView(R.id.btn_setting)
     Button mBtnSetting;
+    @BindView(R.id.iv_voice)
+    ImageView mIvVoice;
 
     public static UserFragment newInstance() {
 
@@ -99,6 +103,19 @@ public class UserFragment extends LouFragment implements UserContract.View {
                 }
             }
         }, mBtnLoad, mBtnSave, mBtnSetting);
+
+        mIvVoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AnimationDrawable animationDrawable = (AnimationDrawable) mIvVoice.getBackground();
+                if (animationDrawable.isRunning()) {
+                    animationDrawable.stop();
+                    animationDrawable.selectDrawable(0);
+                } else {
+                    animationDrawable.start();
+                }
+            }
+        });
     }
 
     @Override
