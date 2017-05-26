@@ -112,17 +112,14 @@ public class Uanimator {
 
     public static void animHeightToView(final Activity context, final View v, final boolean isToShow, final long duration) {
 
-        if (isToShow) {
-            // 显示：通过上下文获取可见度是 gone 的 view 的高度；
-            Display display = context.getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            v.measure(size.x, size.y);
-            int start = v.getMeasuredHeight();
-            animHeightToView(v, 0, start, isToShow, duration);
-        } else {
-            // 隐藏：从当前高度变化到0，最后设置不可见；
-            animHeightToView(v, v.getLayoutParams().height, 0, isToShow, duration);
-        }
+        // 显示：通过上下文获取可见度是 gone 的 view 的高度；
+        Display display = context.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        v.measure(size.x, size.y);
+        int height = v.getMeasuredHeight();
+        int start = isToShow ? 0 : height;
+        int end = isToShow ? height : 0;
+        animHeightToView(v, start, end, isToShow, duration);
     }
 }
