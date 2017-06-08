@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "MainActivity";
-    @Bind(R.id.rv)
-    RecyclerView mRv;
+    @Bind(R.id.erv)
+    EmptyRecyclerView mErv;
     @Bind(R.id.srl)
     SwipeRefreshLayout mSrl;
     boolean mIsLoading = false;
@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
             if (totalItemCount < 250 && lastVisibleItem >= totalItemCount - 4) {
                 // 注意：要限制请求，否则请求太多次数，导致服务器崩溃或者服务器拒绝请求（罪过，罪过）。
                 if (mIsLoading) {
-                    Log.i(TAG, "onScrolled: " + "加载中---------");
+                    Log.i(TAG, "加载中...");
                 } else {
-                    Log.i(TAG, "onScrolled: " + "加载更多了=======》");
+                    Log.i(TAG, "加载更多了.");
                     loadSubject();
                 }
 
@@ -96,32 +96,35 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         mData = getData();
-        mRv.setAdapter(new SubjectAdapter(this, mData));
-        mRv.setLayoutManager(new LinearLayoutManager(this));
 
-        mRv.addOnScrollListener(mListener);
+        View emptyView = findViewById(R.id.rlyt_empty);
+        mErv.setEmptyView(emptyView);
+        mErv.setHasFixedSize(true);
+        mErv.setAdapter(new SubjectAdapter(this, mData));
+        mErv.setLayoutManager(new LinearLayoutManager(this));
+        mErv.addItemDecoration(new ItemOffsetDecoration(20));
+
+        ImageView emptyIcon = (ImageView) emptyView.findViewById(R.id.iv_empty);
+        Glide.with(this).load("http://cherylgood.cn/images/404.gif").asGif().placeholder(R.mipmap.empty).into(emptyIcon);
+        mErv.addOnScrollListener(mListener);
+        mErv.getAdapter().notifyDataSetChanged();
 
         mSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mData.clear();
-                mRv.getAdapter().notifyDataSetChanged();
+                mErv.getAdapter().notifyDataSetChanged();
                 Utoast.show(MainActivity.this, "正在加载，请稍后。。。");
                 loadSubject();
 //                loadSubjectsByZip();
             }
         });
+        // 开始加载数据
+        loadSubject();
     }
 
     private List<Subject> getData() {
-        ArrayList<Subject> subjects = new ArrayList<>();
-        subjects.add(new Subject());
-        subjects.add(new Subject());
-        subjects.add(new Subject());
-        subjects.add(new Subject());
-        subjects.add(new Subject());
-        subjects.add(new Subject());
-        return subjects;
+        return new ArrayList<>();
     }
 
     public void loadSubjectsByZip() {
@@ -130,14 +133,15 @@ public class MainActivity extends AppCompatActivity {
 
         Observable<HttpResult<List<Subject>>> topMovie1 = NetWork.getSubjectService().getTopMovie(0, 20);
         Observable<HttpResult<List<Subject>>> topMovie2 = NetWork.getSubjectService().getTopMovie(21, 20);
-        Observable.zip(topMovie1, topMovie2, new Func2<HttpResult<List<Subject>>, HttpResult<List<Subject>>, List<Subject>>() {
-            @Override
-            public List<Subject> call(HttpResult<List<Subject>> listHttpResult, HttpResult<List<Subject>> listHttpResult2) {
-                List<Subject> subjects = new ArrayList<Subject>(listHttpResult.getSubjects());
-                subjects.addAll(listHttpResult2.getSubjects());
-                return subjects;
-            }
-        })
+        Observable
+                .zip(topMovie1, topMovie2, new Func2<HttpResult<List<Subject>>, HttpResult<List<Subject>>, List<Subject>>() {
+                    @Override
+                    public List<Subject> call(HttpResult<List<Subject>> listHttpResult, HttpResult<List<Subject>> listHttpResult2) {
+                        List<Subject> subjects = new ArrayList<Subject>(listHttpResult.getSubjects());
+                        subjects.addAll(listHttpResult2.getSubjects());
+                        return subjects;
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -146,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                     public void call(List<Subject> subjects) {
                         mData.addAll(subjects);
 
-                        mRv.getAdapter().notifyDataSetChanged();
+                        mErv.getAdapter().notifyDataSetChanged();
                         mSrl.setRefreshing(false);
 
                         mIsLoading = false;
@@ -165,8 +169,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadSubject() {
-
-
         mIsLoading = true;
 
         Observable<HttpResult<List<Subject>>> topMovie = NetWork.getSubjectService().getTopMovie(mData.size(), 20);
@@ -184,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void call(List<Subject> subjects) {
                         mData.addAll(subjects);
-                        mRv.getAdapter().notifyDataSetChanged();
+                        mErv.getAdapter().notifyDataSetChanged();
 
                         mSrl.setRefreshing(false);
                         mIsLoading = false;
@@ -203,8 +205,7 @@ public class MainActivity extends AppCompatActivity {
         ;
     }
 
-    static class
-    SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
+    static class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
         List<Subject> mSubjects;
         private Context mContext;
 
