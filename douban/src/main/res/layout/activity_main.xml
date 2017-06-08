@@ -33,7 +33,7 @@
             android:background="#f5f5f5"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/movie_item"/>
+            tools:listitem="@layout/item"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

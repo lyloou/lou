@@ -41,7 +41,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -116,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
                 mErv.getAdapter().notifyDataSetChanged();
                 Utoast.show(MainActivity.this, "正在加载，请稍后。。。");
                 loadSubject();
-//                loadSubjectsByZip();
             }
         });
         // 开始加载数据
@@ -125,47 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Subject> getData() {
         return new ArrayList<>();
-    }
-
-    public void loadSubjectsByZip() {
-
-        mIsLoading = true;
-
-        Observable<HttpResult<List<Subject>>> topMovie1 = NetWork.getSubjectService().getTopMovie(0, 20);
-        Observable<HttpResult<List<Subject>>> topMovie2 = NetWork.getSubjectService().getTopMovie(21, 20);
-        Observable
-                .zip(topMovie1, topMovie2, new Func2<HttpResult<List<Subject>>, HttpResult<List<Subject>>, List<Subject>>() {
-                    @Override
-                    public List<Subject> call(HttpResult<List<Subject>> listHttpResult, HttpResult<List<Subject>> listHttpResult2) {
-                        List<Subject> subjects = new ArrayList<Subject>(listHttpResult.getSubjects());
-                        subjects.addAll(listHttpResult2.getSubjects());
-                        return subjects;
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Subject>>() {
-                    @Override
-                    public void call(List<Subject> subjects) {
-                        mData.addAll(subjects);
-
-                        mErv.getAdapter().notifyDataSetChanged();
-                        mSrl.setRefreshing(false);
-
-                        mIsLoading = false;
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.e(TAG, "call: error", throwable);
-                        mSrl.setRefreshing(false);
-                        Utoast.show(MainActivity.this, "网络异常:" + throwable.getMessage());
-
-                        mIsLoading = false;
-                    }
-                })
-        ;
     }
 
     public void loadSubject() {
@@ -205,45 +162,75 @@ public class MainActivity extends AppCompatActivity {
         ;
     }
 
-    static class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectHolder> {
-        List<Subject> mSubjects;
+    private static class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private static final int TYPE_HEADER = 0;
+        private static final int TYPE_ITEM = 1;
+        private static final int TYPE_FOOTER = 2;
+        List<Subject> mList;
         private Context mContext;
 
-        public SubjectAdapter(Context context, List<Subject> subjects) {
+        SubjectAdapter(Context context, List<Subject> list) {
             mContext = context;
-            mSubjects = subjects;
+            mList = list;
         }
 
         @Override
-        public SubjectHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View inflate = LayoutInflater.from(mContext).inflate(R.layout.movie_item, parent, false);
-            return new SubjectHolder(inflate);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            if (viewType == TYPE_ITEM) {
+                View view = inflater.inflate(R.layout.item, parent, false);
+                return new SubjectHolder(view);
+            } else if (viewType == TYPE_HEADER) {
+                View view = inflater.inflate(R.layout.header, parent, false);
+                return new HeaderHolder(view);
+            } else if (viewType == TYPE_FOOTER) {
+                View view = inflater.inflate(R.layout.footer, parent, false);
+                return new FooterHolder(view);
+            }
+            throw new RuntimeException("there is no type that matches the type " + viewType + " make sure you using types correctly.");
         }
 
         @Override
-        public void onBindViewHolder(SubjectHolder holder, int position) {
-            Subject subject = mSubjects.get(position);
-            holder.tvTitle.setText(subject.getTitle());
-            holder.tvYear.setText(subject.getYear());
-            Subject.ImagesBean images = subject.getImages();
-            if (images != null) {
-                String small = images.getSmall();
-                if (!TextUtils.isEmpty(small)) {
-                    Glide.with(mContext)
-                            .load(small)
-                            .placeholder(R.mipmap.ic_launcher)
-                            .centerCrop()
-                            .crossFade()
-                            .into(holder.ivThumb);
+        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+            if (viewHolder instanceof SubjectHolder) {
+                SubjectHolder holder = (SubjectHolder) viewHolder;
+                Subject subject = mList.get(position - 1); // 注意需要减去header的数量
+                holder.tvTitle.setText(subject.getTitle());
+                holder.tvYear.setText(subject.getYear());
+                Subject.ImagesBean images = subject.getImages();
+                if (images != null) {
+                    String small = images.getSmall();
+                    if (!TextUtils.isEmpty(small)) {
+                        Glide.with(mContext)
+                                .load(small)
+                                .placeholder(R.mipmap.ic_launcher)
+                                .centerCrop()
+                                .crossFade()
+                                .into(holder.ivThumb);
+                    }
                 }
+            } else if (viewHolder instanceof HeaderHolder) {
+
+            } else if (viewHolder instanceof FooterHolder) {
+
             }
 
+        }
 
+        @Override
+        public int getItemViewType(int position) {
+            if (position == 0) {
+                return TYPE_HEADER;
+            }
+            if (position > mList.size()) {
+                return TYPE_FOOTER;
+            }
+            return TYPE_ITEM;
         }
 
         @Override
         public int getItemCount() {
-            return mSubjects.size();
+            return mList.size() + 2;
         }
 
         static class SubjectHolder extends RecyclerView.ViewHolder {
@@ -258,6 +245,18 @@ public class MainActivity extends AppCompatActivity {
                 tvTitle = (TextView) view.findViewById(R.id.tv_title);
                 tvYear = (TextView) view.findViewById(R.id.tv_year);
                 ivThumb = (ImageView) view.findViewById(R.id.iv_thumb);
+            }
+        }
+
+        private static class HeaderHolder extends RecyclerView.ViewHolder {
+            public HeaderHolder(View inflate) {
+                super(inflate);
+            }
+        }
+
+        private static class FooterHolder extends RecyclerView.ViewHolder {
+            public FooterHolder(View inflate) {
+                super(inflate);
             }
         }
     }
