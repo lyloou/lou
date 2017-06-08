@@ -94,9 +94,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mData = getData();
+        mData = new ArrayList<>();
 
         View emptyView = findViewById(R.id.rlyt_empty);
+        mErv.setItemTypeCount(3);
         mErv.setEmptyView(emptyView);
         mErv.setHasFixedSize(true);
         mErv.setAdapter(new SubjectAdapter(this, mData));
@@ -119,10 +120,6 @@ public class MainActivity extends AppCompatActivity {
         });
         // 开始加载数据
         loadSubject();
-    }
-
-    private List<Subject> getData() {
-        return new ArrayList<>();
     }
 
     public void loadSubject() {

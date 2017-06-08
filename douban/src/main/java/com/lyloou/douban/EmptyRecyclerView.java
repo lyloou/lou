@@ -33,6 +33,7 @@ import android.view.View;
 public class EmptyRecyclerView extends RecyclerView {
     private ICallBack mCallBack;
     private View mEmptyView;
+    private int mItemTypeCount = 1;
     AdapterDataObserver mObserver = new AdapterDataObserver() {
         @Override
         public void onChanged() {
@@ -71,9 +72,13 @@ public class EmptyRecyclerView extends RecyclerView {
         checkIfEmpty();
     }
 
+    public void setItemTypeCount(int itemTypeCount) {
+        this.mItemTypeCount = itemTypeCount;
+    }
+
     private void checkIfEmpty() {
         if (mEmptyView != null && getAdapter() != null) {
-            boolean isEmpty = getAdapter().getItemCount() == 0;
+            boolean isEmpty = getAdapter().getItemCount() <= mItemTypeCount - 1;
             mEmptyView.setVisibility(isEmpty ? VISIBLE : GONE);
             setVisibility(isEmpty ? GONE : VISIBLE);
             if (isEmpty && mCallBack != null) {
