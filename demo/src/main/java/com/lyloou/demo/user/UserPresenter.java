@@ -53,7 +53,7 @@ public class UserPresenter implements UserContract.Presenter {
 
         User user = REPO.get(id);
         if(user == null){
-            user = new User("-1", "f", "l");
+            user = new User("0", "firstname", "lastname");
         }
 
         mView.showId(user.getId());

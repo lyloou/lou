@@ -24,15 +24,15 @@ package com.lyloou.demo.data;
  * Description:
  */
 public class User {
+    public User(String id, String firstName, String lastName) {
+        mId = id;
+        mFirstName = firstName;
+        mLastName = lastName;
+    }
+
     private final String mId;
     private String mFirstName;
     private String mLastName;
-
-    public User(String mId, String mFirstName, String mLastName) {
-        this.mId = mId;
-        this.mFirstName = mFirstName;
-        this.mLastName = mLastName;
-    }
 
     public String getId() {
         return mId;
@@ -44,13 +44,5 @@ public class User {
 
     public String getLastName() {
         return mLastName;
-    }
-
-    public void setFirstName(String firstName) {
-        mFirstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        mLastName = lastName;
     }
 }

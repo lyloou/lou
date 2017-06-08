@@ -85,7 +85,7 @@ public class SettingActivity extends LouActivity {
                 .build();
 
         IpService ipService = retrofit.create(IpService.class);
-        Observable<IpDetail> call = ipService.getIp2("104.168.94.8");
+        Observable<IpDetail> call = ipService.getIp2("183.15.177.188");
         call
                 .subscribeOn(Schedulers.io())
                 .doOnNext(new Action1<IpDetail>() {
@@ -110,7 +110,7 @@ public class SettingActivity extends LouActivity {
 
                     @Override
                     public void onNext(IpDetail ipDetail) {
-                        System.out.println(Thread.currentThread().getName()+" <-------");
+                        System.out.println(Thread.currentThread().getName() + " <-------");
                         System.out.println(ipDetail.getCity());
                     }
                 });
@@ -123,7 +123,7 @@ public class SettingActivity extends LouActivity {
 //                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
         IpService ipService = retrofit.create(IpService.class);
-        Call<ResponseBody> call = ipService.getIp("104.168.94.8");
+        Call<ResponseBody> call = ipService.getIp("183.15.177.188");
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -138,7 +138,8 @@ public class SettingActivity extends LouActivity {
     }
 
     private void loadImgByGlideFromWeb() {
-        Observable.just("https://avatars3.githubusercontent.com/u/66577?v=3&s=40")
+        Observable
+                .just("https://avatars3.githubusercontent.com/u/66577?v=3&s=40")
                 .map(new Func1<String, Bitmap>() {
                     @Override
                     public Bitmap call(String s) {
@@ -163,16 +164,17 @@ public class SettingActivity extends LouActivity {
     }
 
     private void showImg() {
-        Observable.create(new Observable.OnSubscribe<Bitmap>() {
-            @Override
-            public void call(Subscriber<? super Bitmap> subscriber) {
-                System.out.println("1:" + Thread.currentThread().getName());
-                SystemClock.sleep(3000);
-                Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
-                subscriber.onNext(bitmap);
-                subscriber.onCompleted();
-            }
-        })
+        Observable
+                .create(new Observable.OnSubscribe<Bitmap>() {
+                    @Override
+                    public void call(Subscriber<? super Bitmap> subscriber) {
+                        System.out.println("1:" + Thread.currentThread().getName());
+                        SystemClock.sleep(3000);
+                        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+                        subscriber.onNext(bitmap);
+                        subscriber.onCompleted();
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Bitmap>() {
