@@ -16,19 +16,14 @@
 
 package com.lyloou.douban;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -47,12 +42,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "MainActivity";
+    private static final int TOTAL_ITEM_SIZE = 60;
     @Bind(R.id.erv)
     EmptyRecyclerView mErv;
     @Bind(R.id.srl)
     SwipeRefreshLayout mSrl;
     boolean mIsLoading = false;
     List<Subject> mData;
+    SubjectAdapter mSubjectAdapter;
     private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -67,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
             int totalItemCount = layoutManager.getItemCount();
 
-            if (totalItemCount < 250 && lastVisibleItem >= totalItemCount - 4) {
+            if (totalItemCount < TOTAL_ITEM_SIZE && lastVisibleItem >= totalItemCount - 4) {
                 // 注意：要限制请求，否则请求太多次数，导致服务器崩溃或者服务器拒绝请求（罪过，罪过）。
                 if (mIsLoading) {
                     Log.i(TAG, "加载中...");
@@ -76,6 +73,14 @@ public class MainActivity extends AppCompatActivity {
                     loadSubject();
                 }
 
+            } else if (totalItemCount >= TOTAL_ITEM_SIZE) {
+                if (!mSubjectAdapter.isMaxed())
+                    mErv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSubjectAdapter.setMaxed(true);
+                        }
+                    });
             }
 
             Log.d(TAG, "onScrolled: lastVisibleItem=" + lastVisibleItem);
@@ -88,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getBaseContext();
         ButterKnife.bind(this);
         initView();
     }
@@ -100,14 +104,14 @@ public class MainActivity extends AppCompatActivity {
         mErv.setItemTypeCount(3);
         mErv.setEmptyView(emptyView);
         mErv.setHasFixedSize(true);
-        mErv.setAdapter(new SubjectAdapter(this, mData));
+        mSubjectAdapter = new SubjectAdapter(this, mData);
+        mErv.setAdapter(mSubjectAdapter);
         mErv.setLayoutManager(new LinearLayoutManager(this));
         mErv.addItemDecoration(new ItemOffsetDecoration(20));
+        mErv.addOnScrollListener(mListener);
 
         ImageView emptyIcon = (ImageView) emptyView.findViewById(R.id.iv_empty);
         Glide.with(this).load("http://cherylgood.cn/images/404.gif").asGif().placeholder(R.mipmap.empty).into(emptyIcon);
-        mErv.addOnScrollListener(mListener);
-        mErv.getAdapter().notifyDataSetChanged();
 
         mSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -159,102 +163,5 @@ public class MainActivity extends AppCompatActivity {
         ;
     }
 
-    private static class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private static final int TYPE_HEADER = 0;
-        private static final int TYPE_ITEM = 1;
-        private static final int TYPE_FOOTER = 2;
-        List<Subject> mList;
-        private Context mContext;
 
-        SubjectAdapter(Context context, List<Subject> list) {
-            mContext = context;
-            mList = list;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(mContext);
-            if (viewType == TYPE_ITEM) {
-                View view = inflater.inflate(R.layout.item, parent, false);
-                return new SubjectHolder(view);
-            } else if (viewType == TYPE_HEADER) {
-                View view = inflater.inflate(R.layout.header, parent, false);
-                return new HeaderHolder(view);
-            } else if (viewType == TYPE_FOOTER) {
-                View view = inflater.inflate(R.layout.footer, parent, false);
-                return new FooterHolder(view);
-            }
-            throw new RuntimeException("there is no type that matches the type " + viewType + " make sure you using types correctly.");
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-            if (viewHolder instanceof SubjectHolder) {
-                SubjectHolder holder = (SubjectHolder) viewHolder;
-                Subject subject = mList.get(position - 1); // 注意需要减去header的数量
-                holder.tvTitle.setText(subject.getTitle());
-                holder.tvYear.setText(subject.getYear());
-                Subject.ImagesBean images = subject.getImages();
-                if (images != null) {
-                    String small = images.getSmall();
-                    if (!TextUtils.isEmpty(small)) {
-                        Glide.with(mContext)
-                                .load(small)
-                                .placeholder(R.mipmap.ic_launcher)
-                                .centerCrop()
-                                .crossFade()
-                                .into(holder.ivThumb);
-                    }
-                }
-            } else if (viewHolder instanceof HeaderHolder) {
-
-            } else if (viewHolder instanceof FooterHolder) {
-
-            }
-
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return TYPE_HEADER;
-            }
-            if (position > mList.size()) {
-                return TYPE_FOOTER;
-            }
-            return TYPE_ITEM;
-        }
-
-        @Override
-        public int getItemCount() {
-            return mList.size() + 2;
-        }
-
-        static class SubjectHolder extends RecyclerView.ViewHolder {
-            View view;
-            TextView tvTitle;
-            TextView tvYear;
-            ImageView ivThumb;
-
-            public SubjectHolder(View itemView) {
-                super(itemView);
-                view = itemView;
-                tvTitle = (TextView) view.findViewById(R.id.tv_title);
-                tvYear = (TextView) view.findViewById(R.id.tv_year);
-                ivThumb = (ImageView) view.findViewById(R.id.iv_thumb);
-            }
-        }
-
-        private static class HeaderHolder extends RecyclerView.ViewHolder {
-            public HeaderHolder(View inflate) {
-                super(inflate);
-            }
-        }
-
-        private static class FooterHolder extends RecyclerView.ViewHolder {
-            public FooterHolder(View inflate) {
-                super(inflate);
-            }
-        }
-    }
 }
