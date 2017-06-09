@@ -117,8 +117,6 @@ public class MainActivity extends AppCompatActivity {
         mSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Utoast.show(MainActivity.this, "正在加载，请稍后。。。");
-
                 mErv.post(new Runnable() {
                     @Override
                     public void run() {
@@ -134,12 +132,24 @@ public class MainActivity extends AppCompatActivity {
         loadDatas();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mSubjectAdapter.getListSize() == 0) {
+            loadDatas();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        unSubscribe();
+        super.onDestroy();
+    }
+
     public void loadDatas() {
 
-        // 解决加载混淆的问题
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
-        }
+        // 通过取消上次加载，来防止出现加载数据混淆的问题（）
+        unSubscribe();
 
         mIsLoading = true;
         Observable<HttpResult<List<Subject>>> topMovie = NetWork.getSubjectService().getTopMovie(mSubjectAdapter.getListSize(), 20);
@@ -170,6 +180,12 @@ public class MainActivity extends AppCompatActivity {
                         Utoast.show(MainActivity.this, "网络异常:" + throwable.getMessage());
                     }
                 });
+    }
+
+    private void unSubscribe() {
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
+        }
     }
 
 
