@@ -1,1 +1,1 @@
-include ':demo', ':douban', ':test'
+include ':demo', ':douban', ':test', ':java'
