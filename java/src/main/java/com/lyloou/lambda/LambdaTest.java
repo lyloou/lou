@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package com.lyloou.test;
-
-import java.util.List;
-
-import retrofit2.http.GET;
-import retrofit2.http.Query;
-import rx.Observable;
+package com.lyloou.lambda;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.05.04 15:17
+ * Date:      2017.06.09 19:01
  * <p>
  * Description:
  */
-public interface SubjectService {
-    @GET("top250")
-    Observable<HttpResult<List<Subject>>> getTopMovie(@Query("start") int start, @Query("count") int count);
+public class LambdaTest {
+    public static void main(String[] args) {
+        System.out.println("hello, world");
+    }
 }

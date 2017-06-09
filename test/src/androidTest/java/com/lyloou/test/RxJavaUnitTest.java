@@ -16,30 +16,28 @@
 
 package com.lyloou.test;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import junit.framework.Assert;
+
+import org.junit.Test;
+
+import io.reactivex.Observable;
+
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.05.09 14:18
+ * Date:      2017.06.09 14:56
  * <p>
  * Description:
  */
-public class Hi {
-    public static void main(String[] args) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS'Z'");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
-        String strDate = "2017-05-09T14:28:32.974Z";
-        try {
-            Date inputDate = inputFormat.parse(strDate);
-            String outputDate = outputFormat.format(inputDate);
+public class RxJavaUnitTest {
+    String result;
 
-            System.out.println(outputDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+    @Test
+    public void returnAValue() {
+        result = "";
+        Observable.just("hello").subscribe(s -> result = s);
 
+        Assert.assertTrue(result.equals("hello"));
     }
 }

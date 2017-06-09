@@ -16,21 +16,8 @@
   -->
 
 
-<android.support.v4.widget.SwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:id="@+id/srl"
-    android:layout_height="match_parent"
-    tools:context="com.lyloou.test.MainActivity">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/movie_item"/>
-
-</android.support.v4.widget.SwipeRefreshLayout>
-
-
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_width="match_parent"
+          android:id="@+id/tv"
+          android:text="hello, world"
+          android:layout_height="wrap_content"/>
