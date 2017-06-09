@@ -22,17 +22,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -48,8 +48,12 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.srl)
     SwipeRefreshLayout mSrl;
     boolean mIsLoading = false;
-    List<Subject> mData;
     SubjectAdapter mSubjectAdapter;
+    @Bind(R.id.iv_empty)
+    ImageView mIvEmpty;
+    @Bind(R.id.rlyt_empty)
+    RelativeLayout mRlytEmpty;
+    Subscription mSubscription;
     private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -70,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, "加载中...");
                 } else {
                     Log.i(TAG, "加载更多了.");
-                    loadSubject();
+                    loadDatas();
                 }
 
             } else if (totalItemCount >= TOTAL_ITEM_SIZE) {
@@ -78,13 +82,14 @@ public class MainActivity extends AppCompatActivity {
                     mErv.post(new Runnable() {
                         @Override
                         public void run() {
+                            // 控制footer的显示情况
                             mSubjectAdapter.setMaxed(true);
                         }
                     });
             }
 
-            Log.d(TAG, "onScrolled: lastVisibleItem=" + lastVisibleItem);
-            Log.d(TAG, "onScrolled: totalItemCount=" + totalItemCount);
+            Log.d(TAG, "lastVisibleItem=" + lastVisibleItem);
+            Log.d(TAG, "totalItemCount=" + totalItemCount);
 
         }
     };
@@ -98,39 +103,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mData = new ArrayList<>();
-
-        View emptyView = findViewById(R.id.rlyt_empty);
-        mErv.setItemTypeCount(3);
-        mErv.setEmptyView(emptyView);
-        mErv.setHasFixedSize(true);
-        mSubjectAdapter = new SubjectAdapter(this, mData);
+        mSubjectAdapter = new SubjectAdapter(this);
         mErv.setAdapter(mSubjectAdapter);
+        mErv.setItemTypeCount(mSubjectAdapter.getItemTypeCount());
+        mErv.setEmptyView(mRlytEmpty);
+        mErv.setHasFixedSize(true);
         mErv.setLayoutManager(new LinearLayoutManager(this));
         mErv.addItemDecoration(new ItemOffsetDecoration(20));
         mErv.addOnScrollListener(mListener);
 
-        ImageView emptyIcon = (ImageView) emptyView.findViewById(R.id.iv_empty);
-        Glide.with(this).load("http://cherylgood.cn/images/404.gif").asGif().placeholder(R.mipmap.empty).into(emptyIcon);
+        Glide.with(this).load("http://cherylgood.cn/images/404.gif").asGif().placeholder(R.mipmap.empty).into(mIvEmpty);
 
         mSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mData.clear();
-                mErv.getAdapter().notifyDataSetChanged();
                 Utoast.show(MainActivity.this, "正在加载，请稍后。。。");
-                loadSubject();
+
+                mErv.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSubjectAdapter.setMaxed(false);
+                    }
+                });
+                mSubjectAdapter.clearAll();
+                loadDatas();
             }
         });
+
         // 开始加载数据
-        loadSubject();
+        loadDatas();
     }
 
-    public void loadSubject() {
-        mIsLoading = true;
+    public void loadDatas() {
 
-        Observable<HttpResult<List<Subject>>> topMovie = NetWork.getSubjectService().getTopMovie(mData.size(), 20);
-        topMovie
+        // 解决加载混淆的问题
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
+        }
+
+        mIsLoading = true;
+        Observable<HttpResult<List<Subject>>> topMovie = NetWork.getSubjectService().getTopMovie(mSubjectAdapter.getListSize(), 20);
+        mSubscription = topMovie
                 .map(new Func1<HttpResult<List<Subject>>, List<Subject>>() {
                     @Override
                     public List<Subject> call(HttpResult<List<Subject>> listHttpResult) {
@@ -143,9 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Action1<List<Subject>>() {
                     @Override
                     public void call(List<Subject> subjects) {
-                        mData.addAll(subjects);
-                        mErv.getAdapter().notifyDataSetChanged();
-
+                        mSubjectAdapter.addAll(subjects);
                         mSrl.setRefreshing(false);
                         mIsLoading = false;
                     }
@@ -157,10 +168,8 @@ public class MainActivity extends AppCompatActivity {
                         mIsLoading = false;
 
                         Utoast.show(MainActivity.this, "网络异常:" + throwable.getMessage());
-
                     }
-                })
-        ;
+                });
     }
 
 

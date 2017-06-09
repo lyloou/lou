@@ -32,12 +32,12 @@ public class NetWork {
 
     public static SubjectService getSubjectService() {
         if (sSubjectService == null) {
-            Retrofit mRetrofit = new Retrofit.Builder()
+            Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("https://api.douban.com/v2/movie/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .build();
-            sSubjectService = mRetrofit.create(SubjectService.class);
+            sSubjectService = retrofit.create(SubjectService.class);
         }
         return sSubjectService;
     }

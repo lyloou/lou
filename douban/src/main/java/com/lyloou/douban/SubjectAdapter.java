@@ -27,19 +27,20 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_FOOTER = 2;
-    List<Subject> mList;
-    boolean mMaxed;
+    private List<Subject> mList;
+    private boolean mMaxed;
     private Context mContext;
 
-    SubjectAdapter(Context context, List<Subject> list) {
+    SubjectAdapter(Context context) {
         mContext = context;
-        mList = list;
+        mList = new ArrayList<>();
     }
 
     @Override
@@ -103,7 +104,7 @@ class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (position == 0) {
             return TYPE_HEADER;
         }
-        if (position > mList.size()) {
+        if (position > getListSize()) {
             return TYPE_FOOTER;
         }
         return TYPE_ITEM;
@@ -111,7 +112,25 @@ class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mList.size() + 2;
+        return getListSize() + 2;
+    }
+
+    public void clearAll() {
+        mList.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<Subject> subjects) {
+        mList.addAll(subjects);
+        notifyDataSetChanged();
+    }
+
+    public int getListSize() {
+        return mList.size();
+    }
+
+    public int getItemTypeCount() {
+        return 3;
     }
 
     private static class SubjectHolder extends RecyclerView.ViewHolder {
