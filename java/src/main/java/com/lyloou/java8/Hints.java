@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+package com.lyloou.java8;
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    compile 'io.reactivex.rxjava2:rxjava:2.0.8'
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@interface Hints {
+    Hint[] value();
 }

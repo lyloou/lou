@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-package com.lyloou.lambda;
+package com.lyloou.java8;
 
-/**
- * Author:    Lou
- * Version:   V1.0
- * Date:      2017.06.09 19:01
- * <p>
- * Description:
- */
-public class LambdaTest {
-    public static void main(String[] args) {
-        System.out.println("hello, world");
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("bbb");
-        }).start();
-    }
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Repeatable(Hints.class)
+@interface Hint {
+    String value();
 }

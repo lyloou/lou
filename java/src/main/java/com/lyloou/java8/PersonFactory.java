@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package com.lyloou.lambda;
+package com.lyloou.java8;
 
-/**
- * Author:    Lou
- * Version:   V1.0
- * Date:      2017.06.09 19:01
- * <p>
- * Description:
- */
-public class LambdaTest {
-    public static void main(String[] args) {
-        System.out.println("hello, world");
+interface PersonFactory<P extends Person> {
+        P create(String firstName, String lastName);
     }
-}
