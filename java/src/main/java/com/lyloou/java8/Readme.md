@@ -13,4 +13,3 @@ https://github.com/winterbe/java8-tutorial#functional-interfaces
 
 ## 参考资料
 - [java8-tutorial](https://github.com/winterbe/java8-tutorial)
-- http://winterbe.com/posts/2014/07/31/java8-stream-tutorial-examples/
