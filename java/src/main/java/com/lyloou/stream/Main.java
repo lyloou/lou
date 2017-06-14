@@ -16,10 +16,13 @@
 
 package com.lyloou.stream;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -38,6 +41,143 @@ public class Main {
 
     public static void main(String[] args) {
 
+        String[] strs = {"a1", "b3", "C1", "d2", "C2", "b2", "e4", "E3", "E3", "e1", "a2"};
+
+        Stream.of(strs)
+                .map(String::toUpperCase)
+                .peek(s -> {
+                    System.out.println("peek:" + s);
+                })
+                .filter(s -> s.startsWith("A"))
+                .forEach(System.out::println);
+        ;
+
+    }
+
+    private static void sampleD() {
+        String[] strs = {"a1", "b3", "C1", "d2", "C2", "b2", "e4", "E3", "E3", "e1", "a2"};
+
+        Arrays.parallelSort(strs);
+        System.out.println(Arrays.toString(strs));
+
+        Arrays.asList("a1", "b3", "C1", "d2", "C2", "b2", "e4", "E3", "E3", "e1", "a2")
+                .parallelStream()
+                .filter(s -> {
+                    System.out.printf("filter: %s [%s]\n", s, Thread.currentThread().getName());
+                    return true;
+                })
+                .map(s -> {
+                    System.out.printf("map: %s [%s]\n", s, Thread.currentThread().getName());
+                    return s.toUpperCase();
+                })
+                .sorted((o1, o2) -> {
+                    System.out.printf("sorted: %s <> %s [%s]\n", o1, o2, Thread.currentThread().getName());
+                    return o1.compareTo(o2);
+                })
+                .forEachOrdered(s -> {
+                    System.out.printf("forEach: %s [%s]\n", s, Thread.currentThread().getName());
+                });
+//                .forEach(s -> {
+//                    System.out.printf("forEach: %s [%s]\n", s, Thread.currentThread().getName());
+//                });
+
+        ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
+        System.out.println(forkJoinPool.getParallelism());
+    }
+
+    private static void sampleC() {
+        List<Person> persons = Arrays.asList(new Person("Max", 18)
+                , new Person("Peter", 23)
+                , new Person("Pamela", 23)
+                , new Person("Davida", 12)
+        );
+
+        Integer r = persons
+                .parallelStream()
+                .reduce(0
+                        , (sum, person) -> {
+                            System.out.printf("accumulate sum=%s; person=%s\n", sum, person);
+                            return sum += person.age;
+                        }
+                        , ((sum, sum2) -> {
+                            System.out.printf("combiner: sum=%s, sum1=%s\n", sum, sum2);
+                            return sum + sum2;
+                        }));
+        System.out.println(r);
+
+
+        Person result = persons.stream()
+                .reduce(new Person("", 0), ((person, person2) -> {
+                    person.age += person2.age;
+                    person.name += person2.name;
+                    return person;
+                }));
+        System.out.println(result.name);
+        System.out.println(result.age);
+
+
+        persons.stream()
+                .reduce(((person, person2) -> person.age > person2.age ? person : person2))
+                .ifPresent(System.out::println);
+    }
+
+    private static void sampleA() {
+        // 如果遇到了 null， 就会停止向下执行
+        Optional.of(new Outer())
+                .flatMap(outer -> {
+                    outer.nested = new Nested();
+                    System.out.println("1");
+                    return Optional.ofNullable(outer.nested);
+                })
+                .flatMap(nested -> {
+//                    nested.inner = new Inner();
+                    System.out.println("2");
+                    return Optional.ofNullable(nested.inner);
+
+                })
+                .flatMap(inner -> {
+                    inner.foo = "hello, world";
+                    System.out.println("3");
+                    return Optional.ofNullable(inner.foo);
+                })
+                .ifPresent(System.out::println);
+    }
+
+    private static void sample9() {
+        String d = null;
+        Optional.ofNullable(d).ifPresent(System.out::println);
+    }
+
+    private static void sample8() {
+        // 感觉这些代码像机关枪一样 😄
+        IntStream.range(1, 4)
+                .mapToObj(value -> new Foo("Foo" + value))
+                .peek(foo ->
+                        IntStream.range(1, 4)
+                                .mapToObj(value -> new Bar("Bar" + value + " <- " + foo.name))
+                                .forEach(bar -> foo.bars.add(bar)))
+                .flatMap(foo -> foo.bars.stream())
+                .forEach(bar -> System.out.println(bar.name));
+    }
+
+    private static void sample7() {
+        List<Foo> foos = new ArrayList<>();
+        IntStream.range(1, 4)
+                .forEach(value -> foos.add(new Foo("Foo" + value)));
+        foos.forEach(foo ->
+                IntStream.range(1, 4)
+                        .forEach(value -> foo.bars.add(new Bar("Bar" + value + " <- " + foo.name))));
+        System.out.println(foos);
+
+        foos.stream()
+                .flatMap(foo -> {
+                    System.out.println(foo.name);
+                    return foo.bars.stream();
+                })
+                .forEach(bar -> System.out.println(bar.name));
+    }
+
+    private static void sample6() {
         List<Person> persons = Arrays.asList(new Person("Max", 18)
                 , new Person("Peter", 23)
                 , new Person("Pamela", 23)
@@ -75,8 +215,6 @@ public class Main {
                 .filter(person -> person.name.startsWith("P"))
                 .collect(Collectors.toList())
         );
-
-
     }
 
     private static void smaple5() {
