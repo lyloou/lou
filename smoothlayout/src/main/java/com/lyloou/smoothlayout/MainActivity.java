@@ -20,12 +20,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -42,6 +40,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        showAppbarlayout();
+//        showToolbar();
+        showViewpager();
+//        showSpringindor();
+//        showCoordinate();
+    }
+
+    private void showAppbarlayout() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         setContentView(R.layout.activity_appbarlayout);
@@ -49,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle("开大门");
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_arrow_back);
+        toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         tvTitle.setTextColor(Color.WHITE);
         tvTitle.setTextSize(28);
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_arrow_back);
+        toolbar.setNavigationIcon(R.mipmap.back_white);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -95,21 +101,21 @@ public class MainActivity extends AppCompatActivity {
     private void showSpringindor() {
         setContentView(R.layout.activity_sprintindicator);
 
-        View v1 = LayoutInflater.from(this).inflate(R.layout.fragment_room_room_item_topic, null);
-        View v2 = LayoutInflater.from(this).inflate(R.layout.fragment_room_room_item_topic, null);
-        View v3 = LayoutInflater.from(this).inflate(R.layout.fragment_room_room_item_topic, null);
-        View v4 = LayoutInflater.from(this).inflate(R.layout.fragment_room_room_item_topic, null);
-        View v5 = LayoutInflater.from(this).inflate(R.layout.fragment_room_room_item_topic, null);
-        View v6 = LayoutInflater.from(this).inflate(R.layout.fragment_room_room_item_topic, null);
+        View v1 = LayoutInflater.from(this).inflate(R.layout.list, null);
+        View v2 = LayoutInflater.from(this).inflate(R.layout.list, null);
+        View v3 = LayoutInflater.from(this).inflate(R.layout.list, null);
+        View v4 = LayoutInflater.from(this).inflate(R.layout.list, null);
+        View v5 = LayoutInflater.from(this).inflate(R.layout.list, null);
+        View v6 = LayoutInflater.from(this).inflate(R.layout.list, null);
 
-        fillDatas((RecyclerView) v1.findViewById(R.id.rv_room_toipc));
-        fillDatas((RecyclerView) v2.findViewById(R.id.rv_room_toipc));
-        fillDatas((RecyclerView) v3.findViewById(R.id.rv_room_toipc));
-        fillDatas((RecyclerView) v4.findViewById(R.id.rv_room_toipc));
-        fillDatas((RecyclerView) v5.findViewById(R.id.rv_room_toipc));
-        fillDatas((RecyclerView) v6.findViewById(R.id.rv_room_toipc));
+        fillDatas((RecyclerView) v1.findViewById(R.id.rv_list));
+        fillDatas((RecyclerView) v2.findViewById(R.id.rv_list));
+        fillDatas((RecyclerView) v3.findViewById(R.id.rv_list));
+        fillDatas((RecyclerView) v4.findViewById(R.id.rv_list));
+        fillDatas((RecyclerView) v5.findViewById(R.id.rv_list));
+        fillDatas((RecyclerView) v6.findViewById(R.id.rv_list));
 
-        MyPagerAdapter pagerAdapter = new MyPagerAdapter();
+        TitleViewPagerAdapter pagerAdapter = new TitleViewPagerAdapter();
         pagerAdapter.addView("1", v1);
         pagerAdapter.addView("2", v2);
         pagerAdapter.addView("3", v3);
@@ -126,16 +132,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showViewpager() {
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_viewpager);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.mipmap.back_white);
+        toolbar.setTitle("开大门");
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
-        View v1 = LayoutInflater.from(this).inflate(R.layout.fragment_room_room_item_topic, null);
-        View v2 = LayoutInflater.from(this).inflate(R.layout.fragment_room_room_item_topic, null);
+        View v1 = LayoutInflater.from(this).inflate(R.layout.list, null);
+        View v2 = LayoutInflater.from(this).inflate(R.layout.list, null);
 
-        fillDatas((RecyclerView) v1.findViewById(R.id.rv_room_toipc));
-        fillDatas((RecyclerView) v2.findViewById(R.id.rv_room_toipc));
+        fillDatas((RecyclerView) v1.findViewById(R.id.rv_list));
+        fillDatas((RecyclerView) v2.findViewById(R.id.rv_list));
 
-        MyPagerAdapter pagerAdapter = new MyPagerAdapter();
+        TitleViewPagerAdapter pagerAdapter = new TitleViewPagerAdapter();
         pagerAdapter.addView("话题", v1);
         pagerAdapter.addView("系列课", v2);
 

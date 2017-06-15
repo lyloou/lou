@@ -39,6 +39,6 @@
         app:siRadiusMin="6dp"
         app:siSelectedTextColor="@android:color/white"
         app:siTextColor="@color/colorPrimaryDark"
-        app:siTextSize="8sp"/>
+        app:siTextSize="10sp"/>
 
 </FrameLayout>

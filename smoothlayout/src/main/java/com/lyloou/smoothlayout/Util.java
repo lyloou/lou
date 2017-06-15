@@ -36,7 +36,7 @@ import me.drakeet.multitype.MultiTypeAdapter;
 class Util {
     static RecyclerView fillDatas(RecyclerView recyclerView) {
         recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setNestedScrollingEnabled(true);
 
         MultiTypeAdapter adapterTopic = new MultiTypeAdapter();
         adapterTopic.register(Topic.class, new TopicViewBinder(new TopicViewBinder.TopicItemListener() {

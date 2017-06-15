@@ -22,37 +22,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/vp_room"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content">
 
-    <me.henrytao.smoothappbarlayout.SmoothAppBarLayout
-        android:id="@+id/smoothlyt_room"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="56dp">
-
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar_layout"
+        <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="256dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlwaysCollapsed">
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
+            <include layout="@layout/list_header"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:actionBarSize"
                 android:background="@android:color/transparent"
-                app:layout_collapseMode="pin"
-                app:navigationIcon="@drawable/ic_menu_arrow_back"
-                style="@style/MdToolbar" />
-        </android.support.design.widget.CollapsingToolbarLayout>
+                app:layout_collapseMode="pin"/>
+        </android.support.design.widget.CoordinatorLayout>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tablyt_room"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_collapseMode="pin"/>
-    </me.henrytao.smoothappbarlayout.SmoothAppBarLayout>
+            android:background="#ffffff"
+            app:layout_collapseMode="pin"
+            app:tabSelectedTextColor="@color/colorAccent"
+            app:tabTextColor="#666666"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_room"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

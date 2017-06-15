@@ -44,10 +44,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile "me.henrytao:smooth-app-bar-layout:25.3.1.0"
     compile 'me.drakeet.multitype:multitype:3.0.1'
-    compile 'me.henrytao:mdcore:23.2.1'
     compile 'com.github.chenupt.android:springindicator:1.0.2@aar'
 }

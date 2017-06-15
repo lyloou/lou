@@ -23,11 +23,11 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyPagerAdapter extends PagerAdapter {
+public class TitleViewPagerAdapter extends PagerAdapter {
     private final List<View> mViews;
     private final List<String> mTitle;
 
-    public MyPagerAdapter() {
+    public TitleViewPagerAdapter() {
         mViews = new ArrayList<>();
         mTitle = new ArrayList<>();
     }

@@ -42,7 +42,7 @@ public class TopicViewBinder extends ItemViewBinder<Topic, TopicViewBinder.ViewH
     @Override
     protected ViewHolder onCreateViewHolder(
             @NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        View root = inflater.inflate(R.layout.fragment_room_list_item_topic, parent, false);
+        View root = inflater.inflate(R.layout.list_item, parent, false);
         return new ViewHolder(root);
     }
 
