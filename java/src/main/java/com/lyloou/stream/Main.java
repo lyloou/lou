@@ -41,7 +41,15 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String[] strs = {"a1", "b3", "C1", "d2", "C2", "b2", "e4", "E3", "E3", "e1", "a2"};
+        String[] strs = {"a1", "b3", "C1", "d2", "C2", "b2", "e4", "E3", "E3", "e1", "aa2"};
+        try{
+            Stream.of(strs)
+                    .mapToInt(str -> Integer.valueOf(str.substring(1)))
+                    .forEach(System.out::println);
+        } catch (Exception e){
+            System.out.println(e);
+        }
+
 
         Stream.of(strs)
                 .map(String::toUpperCase)
