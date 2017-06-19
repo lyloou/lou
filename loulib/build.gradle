@@ -3,8 +3,9 @@ apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'android-apt'
 
 ext {
-    supportLibVersion = '24.0.0'
-    libVersion = '1.0.4'
+    supportLibVersion = '25.3.1'
+    libVersion = '1.0.5'
+    buildversion = '25.0.2'
 }
 
 publish {
@@ -24,12 +25,12 @@ publish {
 
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "${supportLibVersion}"
+    compileSdkVersion 25
+    buildToolsVersion "${buildversion}"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 7
         versionName "${libVersion}"
     }

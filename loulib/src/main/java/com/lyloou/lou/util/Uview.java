@@ -29,6 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Uview {
+    public static View getRootView(Activity context) {
+        return ((ViewGroup) context.findViewById(android.R.id.content)).getChildAt(0);
+    }
+
     public static void post(final int visibility, View... v) {
         for (final View view : v) {
             if (view != null && view.getVisibility() != visibility) {
