@@ -19,13 +19,17 @@ package com.lyloou.smoothlayout;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.drakeet.multitype.Items;
 import me.drakeet.multitype.MultiTypeAdapter;
+
+import static com.lyloou.smoothlayout.R.id.toolbar;
 
 /**
  * Author:    Lou
@@ -60,6 +64,11 @@ class Util {
             topics.add(new Topic("我是话题：" + i));
         }
         return topics;
+    }
+
+    public static void setToolbarMarginTop(Activity activity, Toolbar toolbar){
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+        params.topMargin = getStatusBarHeight(activity);
     }
 
     public static int getStatusBarHeight(Activity activity){

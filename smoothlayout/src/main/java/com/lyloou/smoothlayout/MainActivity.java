@@ -17,17 +17,16 @@
 package com.lyloou.smoothlayout;
 
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.UUID;
@@ -49,15 +48,15 @@ public class MainActivity extends AppCompatActivity {
 //        showCoordinate();
     }
 
+
+    // http://blog.csdn.net/qq_16628781/article/details/51569220
     private void showAppbarlayout() {
 
         setContentView(R.layout.activity_appbarlayout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Util.setToolbarMarginTop(this, toolbar);
         toolbar.setTitle("开大门");
         setSupportActionBar(toolbar);
-
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
-        params.topMargin = Util.getStatusBarHeight(this);
 
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -66,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+        collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
+        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
     }
 
     private void showToolbar() {
