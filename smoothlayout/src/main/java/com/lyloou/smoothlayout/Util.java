@@ -16,6 +16,7 @@
 
 package com.lyloou.smoothlayout;
 
+import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -59,5 +60,11 @@ class Util {
             topics.add(new Topic("我是话题：" + i));
         }
         return topics;
+    }
+
+    public static int getStatusBarHeight(Activity activity){
+        int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int statusBarHeight = activity.getResources().getDimensionPixelSize(resourceId);
+        return statusBarHeight;
     }
 }

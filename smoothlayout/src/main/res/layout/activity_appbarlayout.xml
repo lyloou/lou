@@ -32,8 +32,7 @@
             android:layout_height="wrap_content"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="64dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:statusBarScrim="@android:color/transparent">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -41,12 +40,12 @@
                 android:background="@mipmap/bg"
                 app:layout_collapseMode="parallax"/>
 
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:actionBarSize"
-                app:layout_collapseMode="pin"
-                >
+                app:layout_collapseMode="pin">
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
 

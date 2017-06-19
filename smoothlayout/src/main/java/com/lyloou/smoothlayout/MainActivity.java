@@ -17,15 +17,17 @@
 package com.lyloou.smoothlayout;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.UUID;
@@ -40,20 +42,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        showAppbarlayout();
+        showAppbarlayout();
 //        showToolbar();
-        showViewpager();
+//        showViewpager();
 //        showSpringindor();
 //        showCoordinate();
     }
 
     private void showAppbarlayout() {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         setContentView(R.layout.activity_appbarlayout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("开大门");
         setSupportActionBar(toolbar);
+
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+        params.topMargin = Util.getStatusBarHeight(this);
 
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
