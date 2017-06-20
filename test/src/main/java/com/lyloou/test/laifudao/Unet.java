@@ -16,27 +16,15 @@
 
 package com.lyloou.test.laifudao;
 
-import android.graphics.Rect;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
-/**
- * Author:    Lou
- * Version:   V1.0
- * Date:      2017.06.08 17:49
- * <p>
- * Description:
- */
-class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
-    int offset;
-
-    public ItemOffsetDecoration(int offset) {
-        this.offset = offset;
-    }
-
-    @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        super.getItemOffsets(outRect, view, parent, state);
-        outRect.bottom = offset;
+public class Unet {
+    // 需要权限支持：<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    public static boolean isAvailable(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        return (ni != null && ni.isAvailable());
     }
 }

@@ -83,7 +83,9 @@ public class XiaoHuaActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mXiaoHuaAdapter = new XiaoHuaAdapter();
         mXiaoHuaAdapter.setOnItemClickListener(url -> {
-
+            Intent intent = new Intent(XiaoHuaActivity.this, WebActivity.class);
+            intent.putExtra(WebActivity.EXTRA_DATA_URL, url);
+            startActivity(intent);
         });
         recyclerView.setAdapter(mXiaoHuaAdapter);
         recyclerView.addItemDecoration(new ItemOffsetDecoration(20));
