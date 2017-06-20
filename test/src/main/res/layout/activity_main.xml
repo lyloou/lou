@@ -16,8 +16,23 @@
   -->
 
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:layout_width="match_parent"
-          android:id="@+id/tv"
-          android:text="hello, world"
-          android:layout_height="wrap_content"/>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ToggleButton
+        android:id="@+id/tbtn_record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textOn="Record On"
+        android:textOff="Record Off"/>
+
+    <ToggleButton
+        android:id="@+id/tbtn_play"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textOn="Play On"
+        android:textOff="Play Off"/>
+</LinearLayout>
