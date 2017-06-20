@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.douban;
+package com.lyloou.test.laifudao;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +37,11 @@ class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
-        outRect.top = offset;
+        if (parent.getChildAdapterPosition(view) == 0) {
+            outRect.top = offset * 5;
+//            outRect.right = offset;
+//            outRect.left = offset;
+        }
+        outRect.bottom = offset;
     }
 }

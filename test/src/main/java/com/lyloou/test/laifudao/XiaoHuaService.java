@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package com.lyloou.douban;
+package com.lyloou.test.laifudao;
 
-import android.graphics.Rect;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
+
+import java.util.List;
+
+import io.reactivex.Observable;
+import retrofit2.http.GET;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.06.08 17:49
+ * Date:      2017.06.20 17:43
  * <p>
  * Description:
  */
-class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
-    int offset;
+public interface XiaoHuaService {
 
-    public ItemOffsetDecoration(int offset) {
-        this.offset = offset;
-    }
 
-    @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        super.getItemOffsets(outRect, view, parent, state);
-        outRect.top = offset;
-    }
+    @GET("open/xiaohua.json")
+    Observable<List<XiaoHua>> getJson();
 }
