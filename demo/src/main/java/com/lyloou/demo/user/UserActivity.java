@@ -20,6 +20,7 @@ package com.lyloou.demo.user;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,14 +29,12 @@ import android.widget.ImageView;
 import com.lyloou.demo.R;
 import com.lyloou.demo.data.User;
 import com.lyloou.demo.setting.SettingActivity;
-import com.lyloou.lou.activity.LouActivity;
-import com.lyloou.lou.util.Uview;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class UserActivity extends LouActivity implements UserContract.View {
+public class UserActivity extends AppCompatActivity implements UserContract.View, View.OnClickListener {
 
     UserContract.Presenter mPresenter;
     @BindView(R.id.et_id)
@@ -64,26 +63,9 @@ public class UserActivity extends LouActivity implements UserContract.View {
     }
 
     private void initView() {
-        Uview.clickEffectByNoEffect(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String id = mEtId.getText().toString();
-                String firstName = mEtFirstName.getText().toString();
-                String lastName = mEtLastName.getText().toString();
-
-                switch (v.getId()) {
-                    case R.id.btn_load:
-                        mPresenter.load(id);
-                        break;
-                    case R.id.btn_save:
-                        mPresenter.save(new User(id, firstName, lastName));
-                        break;
-                    case R.id.btn_setting:
-                        mPresenter.setting();
-                        break;
-                }
-            }
-        }, mBtnLoad, mBtnSave, mBtnSetting);
+        mBtnLoad.setOnClickListener(this);
+        mBtnSave.setOnClickListener(this);
+        mBtnSetting.setOnClickListener(this);
 
         mIvVoice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,7 +109,7 @@ public class UserActivity extends LouActivity implements UserContract.View {
 
     @Override
     public void showSetting() {
-        Intent intent = new Intent(mContext, SettingActivity.class);
+        Intent intent = new Intent(this, SettingActivity.class);
         startActivity(intent);
     }
 
@@ -135,5 +117,24 @@ public class UserActivity extends LouActivity implements UserContract.View {
     public void onDestroy() {
         super.onDestroy();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onClick(View v) {
+        String id = mEtId.getText().toString();
+        String firstName = mEtFirstName.getText().toString();
+        String lastName = mEtLastName.getText().toString();
+
+        switch (v.getId()) {
+            case R.id.btn_load:
+                mPresenter.load(id);
+                break;
+            case R.id.btn_save:
+                mPresenter.save(new User(id, firstName, lastName));
+                break;
+            case R.id.btn_setting:
+                mPresenter.setting();
+                break;
+        }
     }
 }

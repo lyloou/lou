@@ -16,17 +16,17 @@
 
 package com.lyloou.demo.setting;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.lyloou.demo.R;
-import com.lyloou.lou.activity.LouActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,7 +42,6 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -52,7 +51,9 @@ import rx.schedulers.Schedulers;
  * <p>
  * Description:
  */
-public class SettingActivity extends LouActivity {
+public class SettingActivity extends AppCompatActivity {
+    Activity mContext;
+
     @BindView(R.id.tv_show_img)
     TextView mTvShowImg;
     @BindView(R.id.iv_img)
@@ -60,6 +61,7 @@ public class SettingActivity extends LouActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mContext = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         ButterKnife.bind(this);
@@ -137,31 +139,6 @@ public class SettingActivity extends LouActivity {
         });
     }
 
-    private void loadImgByGlideFromWeb() {
-        Observable
-                .just("https://avatars3.githubusercontent.com/u/66577?v=3&s=40")
-                .map(new Func1<String, Bitmap>() {
-                    @Override
-                    public Bitmap call(String s) {
-                        System.out.println("1:" + Thread.currentThread().getName());
-                        try {
-                            return Glide.with(mContext).load(s).asBitmap().centerCrop().into(200, 200).get();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<Bitmap>() {
-                    @Override
-                    public void call(Bitmap bitmap) {
-                        System.out.println("2:" + Thread.currentThread().getName());
-                        mIvImg.setImageBitmap(bitmap);
-                    }
-                });
-    }
 
     private void showImg() {
         Observable
