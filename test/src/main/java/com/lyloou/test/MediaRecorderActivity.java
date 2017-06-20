@@ -16,18 +16,26 @@
 
 package com.lyloou.test;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.io.IOException;
 
+// [MediaRecorder | Android Developers](https://developer.android.com/guide/topics/media/mediarecorder.html)
+
 public class MediaRecorderActivity extends Activity {
 
+    private String[] permission = {Manifest.permission.RECORD_AUDIO};
+    private static final int REQUEST_PERMISION_RECORD_AUDIO = 868;
     private String mFileName;
     private ToggleButton mTbtnRecord;
     private ToggleButton mTbtnPlay;
@@ -39,8 +47,28 @@ public class MediaRecorderActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initView();
+        requestPermission();
         initStorageEnv();
+        initView();
+    }
+
+    private void requestPermission() {
+        System.out.println("请求授权");
+        ActivityCompat.requestPermissions(this, permission, REQUEST_PERMISION_RECORD_AUDIO);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean permissionToRecordAccepted = false;
+        switch (requestCode){
+            case REQUEST_PERMISION_RECORD_AUDIO:
+                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if(!permissionToRecordAccepted){
+            finish();
+        }
     }
 
     private void initStorageEnv() {
@@ -55,7 +83,10 @@ public class MediaRecorderActivity extends Activity {
 
         mTbtnRecord.setOnCheckedChangeListener((buttonView, isOn) -> onRecord(isOn));
         mTbtnPlay.setOnCheckedChangeListener((buttonView, isOn) -> onPlay(isOn));
+
+        findViewById(R.id.btn_grant).setOnClickListener(view -> requestPermission());
     }
+
 
     private void onPlay(boolean isOn) {
         if (isOn) {
