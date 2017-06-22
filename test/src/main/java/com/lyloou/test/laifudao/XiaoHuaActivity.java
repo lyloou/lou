@@ -16,6 +16,8 @@
 
 package com.lyloou.test.laifudao;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -27,12 +29,15 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.lyloou.test.R;
+import com.lyloou.test.ipinfo.IpInject;
+import com.lyloou.test.util.Uscreen;
 
 import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -52,8 +57,11 @@ public class XiaoHuaActivity extends AppCompatActivity {
 
 
     private void loadData() {
+        OkHttpClient client = new OkHttpClient();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://api.laifudao.com/")
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
@@ -63,16 +71,15 @@ public class XiaoHuaActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(xiaoHuas -> {
-                    Toast.makeText(XiaoHuaActivity.this, "加载成功", Toast.LENGTH_SHORT).show();
-                    mXiaoHuaAdapter.addItems(xiaoHuas);
-                }, throwable -> {
-                    Toast.makeText(XiaoHuaActivity.this, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                            Toast.makeText(XiaoHuaActivity.this, "加载成功", Toast.LENGTH_SHORT).show();
+                            mXiaoHuaAdapter.addItems(xiaoHuas);
+                        }
+                        , throwable -> Toast.makeText(XiaoHuaActivity.this, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_xiaohua);
-        toolbar.setTitle("笑话");
+        toolbar.setTitle("来福岛上的笑话");
         setSupportActionBar(toolbar);
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.coolapsing_toolbar_layout_xiao_hua);
@@ -82,13 +89,23 @@ public class XiaoHuaActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_xiaohua);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mXiaoHuaAdapter = new XiaoHuaAdapter();
-        mXiaoHuaAdapter.setOnItemClickListener(url -> {
-            Intent intent = new Intent(XiaoHuaActivity.this, WebActivity.class);
-            intent.putExtra(WebActivity.EXTRA_DATA_URL, url);
-            startActivity(intent);
+        mXiaoHuaAdapter.setOnItemClickListener(new XiaoHuaAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(String url) {
+                Intent intent = new Intent(XiaoHuaActivity.this, WebActivity.class);
+                intent.putExtra(WebActivity.EXTRA_DATA_URL, url);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onLongClick(String content) {
+                ClipboardManager cmb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                cmb.setText(content);
+                Toast.makeText(XiaoHuaActivity.this, "“笑话”已经复制到剪切板", Toast.LENGTH_SHORT).show();
+            }
         });
         recyclerView.setAdapter(mXiaoHuaAdapter);
-        recyclerView.addItemDecoration(new ItemOffsetDecoration(20));
+        recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
 
     }
 }

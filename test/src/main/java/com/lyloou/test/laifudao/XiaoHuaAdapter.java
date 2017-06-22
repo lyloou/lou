@@ -71,6 +71,12 @@ class XiaoHuaAdapter extends RecyclerView.Adapter {
                     mOnItemClickListener.onClick(xiaoHua.getUrl());
                 }
             });
+            viewHolder.view.setOnLongClickListener(v -> {
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onLongClick(viewHolder.tvContent.getText().toString());
+                }
+                return true;
+            });
         }
     }
 
@@ -79,12 +85,15 @@ class XiaoHuaAdapter extends RecyclerView.Adapter {
         return mList.size();
     }
 
+
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         mOnItemClickListener = onItemClickListener;
     }
 
     interface OnItemClickListener {
         void onClick(String url);
+
+        void onLongClick(String content);
     }
 
     private class XiaoHuaViewHolder extends RecyclerView.ViewHolder {

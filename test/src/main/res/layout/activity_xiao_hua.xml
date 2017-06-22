@@ -32,7 +32,7 @@
             android:id="@+id/coolapsing_toolbar_layout_xiao_hua"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:collapsedTitleGravity="center"
+            app:collapsedTitleGravity="start"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <ImageView

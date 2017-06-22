@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.laifudao;
-
-
-import java.util.List;
+package com.lyloou.test.ipinfo;
 
 import io.reactivex.Observable;
+import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Headers;
+import retrofit2.http.Path;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.06.20 17:43
+ * Date:      2017.04.14 12:20
  * <p>
  * Description:
  */
-public interface XiaoHuaService {
+public interface IpService {
+    @GET("json/{ip}")
+    Call<IpDetail> getIpDetail(@Path("ip") String ip);
 
-
-    @GET("open/xiaohua.json")
-    Observable<List<XiaoHua>> getJson();
+    @GET("json/{ip}")
+    Observable<IpDetail> getIpDetail2(@Path("ip") String ip);
 }
