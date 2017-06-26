@@ -31,9 +31,12 @@ import retrofit2.http.Headers;
  * <p>
  * Description:
  */
-public interface XiaoHuaService {
+public interface LaiFuDaoApi {
 
 
     @GET("open/xiaohua.json")
-    Observable<List<XiaoHua>> getJson();
+    Observable<List<XiaoHua>> getXiaoHua();
+
+    @GET("open/tupian.json")
+    Observable<List<TuPian>> getTuPian();
 }

@@ -29,13 +29,14 @@
         android:layout_height="wrap_content">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/coolapsing_toolbar_layout_xiao_hua"
+            android:id="@+id/coolapsing_toolbar_layout_xiaohua"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:collapsedTitleGravity="start"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <ImageView
+                android:id="@+id/iv_header"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:background="@mipmap/bg"
@@ -43,7 +44,7 @@
                 app:layout_collapseParallaxMultiplier="0.7"/>
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar_xiaohua"
+                android:id="@+id/toolbar_laifudao"
                 android:layout_width="match_parent"
                 android:layout_height="?android:actionBarSize"
                 android:title="笑话"
@@ -54,11 +55,11 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview_xiaohua"
+        android:id="@+id/recyclerview_laifudao"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/item_xiao_hua">
+        tools:listitem="@layout/item_laifudao_xiaohua">
 
     </android.support.v7.widget.RecyclerView>
 </android.support.design.widget.CoordinatorLayout>

@@ -30,14 +30,14 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MediaRecorderActivity">
         </activity>
-        <activity android:name=".laifudao.XiaoHuaActivity">
+        <activity android:name=".laifudao.TuPianActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".laifudao.WebActivity">
+        <activity android:name=".common.WebActivity">
         </activity>
     </application>
 

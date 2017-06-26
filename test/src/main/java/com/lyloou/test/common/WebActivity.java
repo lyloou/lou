@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.laifudao;
+package com.lyloou.test.common;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -35,7 +35,8 @@ public class WebActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_web);
+        mWvContent = new WebView(this);
+        setContentView(mWvContent);
 
 
         mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
@@ -48,7 +49,7 @@ public class WebActivity extends AppCompatActivity {
 
     private void initView() {
 
-        mWvContent = (WebView) findViewById(R.id.wv_web);
+        mWvContent.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mWvContent.getSettings().setJavaScriptEnabled(true);
         // zoom is available?
         // mWvContent.getSettings().setBuiltInZoomControls(true);

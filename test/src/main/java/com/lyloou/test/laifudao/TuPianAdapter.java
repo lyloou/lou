@@ -17,12 +17,10 @@
 package com.lyloou.test.laifudao;
 
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
@@ -37,47 +35,49 @@ import java.util.List;
  * <p>
  * Description:
  */
-class XiaoHuaAdapter extends RecyclerView.Adapter {
-    private final List<XiaoHua> mList;
+class TuPianAdapter extends RecyclerView.Adapter {
+    private final List<TuPian> mList;
     private OnItemClickListener mOnItemClickListener;
 
-    public XiaoHuaAdapter() {
+    public TuPianAdapter() {
         mList = new ArrayList<>();
     }
 
-    public void addItem(XiaoHua xiaoHua) {
-        mList.add(xiaoHua);
+    public void addItem(TuPian tupian) {
+        mList.add(tupian);
     }
 
-    public void addItems(List<XiaoHua> xiaoHuas) {
-        mList.addAll(xiaoHuas);
+    public void addItems(List<TuPian> tupians) {
+        mList.addAll(tupians);
         notifyDataSetChanged();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_laifudao_xiaohua, null);
-        return new XiaoHuaViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_laifudao_tupian, null);
+
+        return new TuPianViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof XiaoHuaViewHolder) {
-            XiaoHuaViewHolder viewHolder = (XiaoHuaViewHolder) holder;
-            XiaoHua xiaoHua = mList.get(position);
+        if (holder instanceof TuPianViewHolder) {
+            TuPianViewHolder viewHolder = (TuPianViewHolder) holder;
+            TuPian tupian = mList.get(position);
 
-            viewHolder.tvTitle.setText(xiaoHua.getTitle());
-            viewHolder.tvContent.setText(Html.fromHtml(xiaoHua.getContent()));
-            ImageView ivPoster = viewHolder.ivPoster;
-            Glide.with(ivPoster.getContext()).load(xiaoHua.getPoster()).centerCrop().into(ivPoster);
+            ImageView ivPoster = viewHolder.ivTuPian;
+            Glide
+                    .with(ivPoster.getContext())
+                    .load(tupian.getThumburl())
+                    .centerCrop().into(ivPoster);
             viewHolder.view.setOnClickListener(v -> {
                 if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onClick(xiaoHua.getUrl());
+                    mOnItemClickListener.onClick(tupian);
                 }
             });
             viewHolder.view.setOnLongClickListener(v -> {
                 if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onLongClick(viewHolder.tvContent.getText().toString());
+                    mOnItemClickListener.onLongClick(tupian);
                 }
                 return true;
             });
@@ -95,23 +95,19 @@ class XiaoHuaAdapter extends RecyclerView.Adapter {
     }
 
     interface OnItemClickListener {
-        void onClick(String url);
+        void onClick(TuPian tuPian);
 
-        void onLongClick(String content);
+        void onLongClick(TuPian tuPian);
     }
 
-    private class XiaoHuaViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tvTitle;
-        private final TextView tvContent;
-        private final ImageView ivPoster;
+    private class TuPianViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView ivTuPian;
         private final View view;
 
-        public XiaoHuaViewHolder(View view) {
+        public TuPianViewHolder(View view) {
             super(view);
             this.view = view;
-            tvTitle = (TextView) view.findViewById(R.id.tv_title);
-            tvContent = (TextView) view.findViewById(R.id.tv_content);
-            ivPoster = (ImageView) view.findViewById(R.id.iv_poster);
+            ivTuPian = (ImageView) view.findViewById(R.id.iv_tupian);
         }
     }
 }

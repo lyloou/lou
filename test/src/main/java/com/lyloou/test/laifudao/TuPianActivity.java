@@ -16,20 +16,18 @@
 
 package com.lyloou.test.laifudao;
 
-import android.content.ClipboardManager;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.lyloou.test.R;
-import com.lyloou.test.common.ItemOffsetDecoration;
-import com.lyloou.test.common.WebActivity;
+import com.lyloou.test.common.DoubleItemOffsetDecoration;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.List;
@@ -42,8 +40,8 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class XiaoHuaActivity extends AppCompatActivity {
-    private XiaoHuaAdapter mXiaoHuaAdapter;
+public class TuPianActivity extends AppCompatActivity {
+    private TuPianAdapter mTuPianAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,46 +64,44 @@ public class XiaoHuaActivity extends AppCompatActivity {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
         LaiFuDaoApi laiFuDaoApi = retrofit.create(LaiFuDaoApi.class);
-        Observable<List<XiaoHua>> observable = laiFuDaoApi.getXiaoHua();
+        Observable<List<TuPian>> observable = laiFuDaoApi.getTuPian();
         observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(xiaoHuas -> {
-                            Toast.makeText(XiaoHuaActivity.this, "加载成功", Toast.LENGTH_SHORT).show();
-                            mXiaoHuaAdapter.addItems(xiaoHuas);
+                .subscribe(tupian -> {
+                            Toast.makeText(TuPianActivity.this, "加载成功", Toast.LENGTH_SHORT).show();
+                            // 减少一个元素，构成奇数个数的列表
+                            tupian.remove(tupian.size() - 1);
+                            mTuPianAdapter.addItems(tupian);
                         }
-                        , throwable -> Toast.makeText(XiaoHuaActivity.this, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                        , throwable -> Toast.makeText(TuPianActivity.this, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_laifudao);
-        toolbar.setTitle("来福岛上的笑话");
+        toolbar.setTitle("来福岛上的笑话图片");
         setSupportActionBar(toolbar);
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.coolapsing_toolbar_layout_xiaohua);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
+        ImageView ivHeader = (ImageView) findViewById(R.id.iv_header);
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_laifudao);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mXiaoHuaAdapter = new XiaoHuaAdapter();
-        mXiaoHuaAdapter.setOnItemClickListener(new XiaoHuaAdapter.OnItemClickListener() {
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        mTuPianAdapter = new TuPianAdapter();
+        mTuPianAdapter.setOnItemClickListener(new TuPianAdapter.OnItemClickListener() {
             @Override
-            public void onClick(String url) {
-                Intent intent = new Intent(XiaoHuaActivity.this, WebActivity.class);
-                intent.putExtra(WebActivity.EXTRA_DATA_URL, url);
-                startActivity(intent);
+            public void onClick(TuPian tuPian) {
             }
 
             @Override
-            public void onLongClick(String content) {
-                ClipboardManager cmb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                cmb.setText(content);
-                Toast.makeText(XiaoHuaActivity.this, "“笑话”已经复制到剪切板", Toast.LENGTH_SHORT).show();
+            public void onLongClick(TuPian tuPian) {
             }
         });
-        recyclerView.setAdapter(mXiaoHuaAdapter);
-        recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
+        recyclerView.setAdapter(mTuPianAdapter);
+        recyclerView.addItemDecoration(new DoubleItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
 
     }
 }

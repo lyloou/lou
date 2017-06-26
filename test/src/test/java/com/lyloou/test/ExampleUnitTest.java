@@ -16,7 +16,31 @@
 
 package com.lyloou.test;
 
+import com.lyloou.test.ipinfo.IpInject;
+
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableOnSubscribe;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Single;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.TestObserver;
 
 import static org.junit.Assert.*;
 
@@ -26,8 +50,54 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-    @Test
+//    @Test
     public void addition_isCorrect() throws Exception {
         assertEquals(4, 2 + 2);
+    }
+
+    @Test
+    public void testObserver(){
+        TestObserver<Integer> test = Observable.range(1, 5).test();
+        List<Integer> values = test.values();
+//        test.dispose();
+        assertEquals(values.size(), 6);
+    }
+    public void testTwoLists(){
+        User user1 = new User("U1-F", "U1-L");
+        User user2 = new User("U2-F", "U2-L");
+        List<User> users1 = new ArrayList<>();
+        users1.add(user1);
+        users1.add(user2);
+        System.out.println(Arrays.toString(users1.toArray()));
+
+        List<User> users2 = new ArrayList<>();
+        users2.addAll(users1);
+        System.out.println(Arrays.toString(users2.toArray()));
+        User user1Changed = users1.get(0);
+        user1Changed.firstName = "U1-FC";
+        user1Changed.lastName = "U1-LC";
+
+        System.out.println();
+        System.out.println(Arrays.toString(users1.toArray()));
+        System.out.println(Arrays.toString(users2.toArray()));
+    }
+
+
+
+
+}
+
+class User{
+    String firstName;
+    String lastName;
+
+    public User(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+        return firstName + " " + lastName;
     }
 }
