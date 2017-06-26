@@ -26,8 +26,10 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
+import com.lyloou.test.kingsoftware.NetWork;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.List;
@@ -87,6 +89,16 @@ public class TuPianActivity extends AppCompatActivity {
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
         ImageView ivHeader = (ImageView) findViewById(R.id.iv_header);
+        NetWork.getKingsoftwareApi()
+                .getDaily("")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(daily -> Glide
+                                .with(TuPianActivity.this)
+                                .load(daily.getPicture2())
+                                .centerCrop()
+                                .into(ivHeader)
+                        , Throwable::printStackTrace);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_laifudao);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
