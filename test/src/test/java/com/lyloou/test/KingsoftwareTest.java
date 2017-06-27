@@ -16,7 +16,7 @@
 
 package com.lyloou.test;
 
-import com.lyloou.test.kingsoftware.NetWork;
+import com.lyloou.test.common.NetWork;
 
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class KingsoftwareTest {
     public void test() {
         CountDownLatch latch = new CountDownLatch(1);
         NetWork.getKingsoftwareApi()
-                .getDaily("2017-06-26")
+                .getDaily("")
                 .subscribe(daily -> {
                     System.out.println(daily.getFenxiang_img());
                     latch.countDown();

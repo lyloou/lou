@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.kingsoftware;
+package com.lyloou.test.common;
 
+import com.lyloou.test.kingsoftware.KingsoftwareAPI;
+import com.lyloou.test.laifudao.LaiFuDaoApi;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -28,17 +32,32 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Description:
  */
 public class NetWork {
-    private static KingsoftwareAPI api;
+    private static KingsoftwareAPI sKingsoftwareAPI;
+    private static LaiFuDaoApi sLaiFuDaoApi;
 
     public static KingsoftwareAPI getKingsoftwareApi() {
-        if (api == null) {
+        if (sKingsoftwareAPI == null) {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://open.iciba.com")
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();
-            api = retrofit.create(KingsoftwareAPI.class);
+            sKingsoftwareAPI = retrofit.create(KingsoftwareAPI.class);
         }
-        return api;
+        return sKingsoftwareAPI;
+    }
+
+    public static LaiFuDaoApi getLaiFuDaoApi() {
+        if (sLaiFuDaoApi == null) {
+            OkHttpClient client = new OkHttpClient();
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://api.laifudao.com/")
+                    .client(client)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+            sLaiFuDaoApi = retrofit.create(LaiFuDaoApi.class);
+        }
+        return sLaiFuDaoApi;
     }
 }

@@ -29,7 +29,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
-import com.lyloou.test.kingsoftware.NetWork;
+import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.List;
@@ -37,10 +37,6 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TuPianActivity extends AppCompatActivity {
     private TuPianAdapter mTuPianAdapter;
@@ -57,16 +53,8 @@ public class TuPianActivity extends AppCompatActivity {
 
 
     private void loadData() {
-        OkHttpClient client = new OkHttpClient();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://api.laifudao.com/")
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
-        LaiFuDaoApi laiFuDaoApi = retrofit.create(LaiFuDaoApi.class);
-        Observable<List<TuPian>> observable = laiFuDaoApi.getTuPian();
+        Observable<List<TuPian>> observable = NetWork.getLaiFuDaoApi().getTuPian();
         observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
