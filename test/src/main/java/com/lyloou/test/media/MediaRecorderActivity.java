@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test;
+package com.lyloou.test.media;
 
 import android.Manifest;
 import android.app.Activity;
@@ -27,6 +27,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import com.lyloou.test.R;
 
 import java.io.IOException;
 
@@ -45,7 +47,7 @@ public class MediaRecorderActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_mediarecorder);
 
         requestPermission();
         initStorageEnv();

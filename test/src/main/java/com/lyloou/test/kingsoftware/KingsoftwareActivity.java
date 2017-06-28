@@ -32,9 +32,11 @@ import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uscreen;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -92,6 +94,7 @@ public class KingsoftwareActivity extends AppCompatActivity {
             } else {
                 setBackgroundToBitmap(mWallpaperBitmap);
                 Toast.makeText(mContext, "已设壁纸", Toast.LENGTH_SHORT).show();
+                System.out.println(Arrays.toString(Uactivity.getActivitiesFromManifest(this, "com.lyloou.test").toArray()));
             }
             return false;
         });

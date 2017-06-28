@@ -16,10 +16,29 @@
   -->
 
 
-<android.support.v7.widget.RecyclerView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:id="@+id/rv_main"
     android:layout_height="match_parent"
-    tools:listitem="@layout/item_main"/>
+    android:orientation="vertical">
+
+    <ToggleButton
+        android:id="@+id/tbtn_record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textOn="Record On"
+        android:textOff="Record Off"/>
+
+    <ToggleButton
+        android:id="@+id/tbtn_play"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textOn="Play On"
+        android:textOff="Play Off"/>
+
+    <Button
+        android:id="@+id/btn_grant"
+        android:text="Grant Permission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
