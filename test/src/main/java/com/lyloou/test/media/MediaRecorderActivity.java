@@ -36,8 +36,8 @@ import java.io.IOException;
 
 public class MediaRecorderActivity extends Activity {
 
-    private String[] permission = {Manifest.permission.RECORD_AUDIO};
     private static final int REQUEST_PERMISION_RECORD_AUDIO = 868;
+    private String[] permission = {Manifest.permission.RECORD_AUDIO};
     private String mFileName;
     private ToggleButton mTbtnRecord;
     private ToggleButton mTbtnPlay;
@@ -63,12 +63,12 @@ public class MediaRecorderActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         boolean permissionToRecordAccepted = false;
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_PERMISION_RECORD_AUDIO:
                 permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
         }
-        if(!permissionToRecordAccepted){
+        if (!permissionToRecordAccepted) {
             finish();
         }
     }
@@ -99,13 +99,20 @@ public class MediaRecorderActivity extends Activity {
     }
 
     private void stopPlaying() {
-        mPlayer.stop();
-        mPlayer.release();
-        mPlayer = null;
+        if (mPlayer != null) {
+            mPlayer.stop();
+            mPlayer.release();
+            mPlayer = null;
+        }
     }
 
     private void startPlaying() {
         mPlayer = new MediaPlayer();
+        mPlayer.setOnCompletionListener(mp -> {
+            stopPlaying();
+            mTbtnPlay.setChecked(false);
+        });
+
         try {
             mPlayer.setDataSource(mFileName);
             mPlayer.prepare();
@@ -131,10 +138,11 @@ public class MediaRecorderActivity extends Activity {
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         try {
             mRecorder.prepare();
+            mRecorder.start();
         } catch (IOException e) {
             Toast.makeText(this, "prepare() failed in recording", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
-        mRecorder.start();
     }
 
     private void stopRecording() {
