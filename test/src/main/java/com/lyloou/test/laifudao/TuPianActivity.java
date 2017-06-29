@@ -16,20 +16,25 @@
 
 package com.lyloou.test.laifudao;
 
+import android.app.Activity;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.util.LouDialog;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.List;
@@ -39,11 +44,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class TuPianActivity extends AppCompatActivity {
+    Activity mContext;
     private TuPianAdapter mTuPianAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
+
         setContentView(R.layout.activity_laifudao);
 
         initView();
@@ -94,6 +102,27 @@ public class TuPianActivity extends AppCompatActivity {
         mTuPianAdapter.setOnItemClickListener(new TuPianAdapter.OnItemClickListener() {
             @Override
             public void onClick(TuPian tuPian) {
+                LouDialog louDialog = LouDialog
+                        .newInstance(mContext, R.layout.dialog_tupian, R.style.Theme_AppCompat)
+                        .setCancelable(true)
+                        .setWindowAnimation(R.style.Animation_Alpha)
+                        .setWH(-1, -1);
+                PhotoView photoView = louDialog.getView(R.id.pv_tupian);
+                Glide.with(mContext)
+                        .load(tuPian.getThumburl())
+                        .into(photoView);
+                photoView.setMinimumScale(0.5f);
+                photoView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (photoView.getScale() <= 1) {
+                            louDialog.dismiss();
+                        }
+                    }
+                });
+                photoView.setMaximumScale(3);
+                photoView.setScale(0.8f);
+                louDialog.show();
             }
 
             @Override
