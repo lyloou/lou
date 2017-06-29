@@ -69,6 +69,8 @@ public class XiaoHuaActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_laifudao);
         toolbar.setTitle("来福岛上的笑话");
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.mipmap.back_white);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.coolapsing_toolbar_layout_xiaohua);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);

@@ -17,7 +17,11 @@
 package com.lyloou.test.util;
 
 import android.app.Activity;
+import android.app.WallpaperManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.util.DisplayMetrics;
@@ -26,6 +30,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+
+import java.io.IOException;
 
 public class Uscreen {
 
@@ -106,9 +112,39 @@ public class Uscreen {
         return statusView;
     }
 
-    public static int getStatusBarHeight(Activity activity){
+    public static int getStatusBarHeight(Context activity){
         int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
         int statusBarHeight = activity.getResources().getDimensionPixelSize(resourceId);
         return statusBarHeight;
     }
+
+
+    public static void setBackgroundViaBitmap(Context context, final Bitmap sourceBitmap) {
+
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
+        final int sourceWidth = sourceBitmap.getWidth();
+        final int sourceHeight = sourceBitmap.getHeight();
+        final int letterboxedWidth = Uscreen.getScreenWidth(context);
+        final int letterboxedHeight = Uscreen.getScreenHeight(context) - Uscreen.getStatusBarHeight(context);
+
+        final float resizeRatioX = (float) letterboxedWidth / sourceWidth;
+        final float resizeRatioY = (float) letterboxedHeight / sourceHeight;
+
+        final Bitmap letterboxedBitmap = Bitmap.createBitmap(letterboxedWidth, letterboxedHeight, Bitmap.Config.ARGB_8888);
+
+        final Canvas canvas = new Canvas(letterboxedBitmap);
+        canvas.drawRGB(0, 0, 0);
+
+        final Matrix transformations = new Matrix();
+        transformations.postScale(resizeRatioX, resizeRatioX);
+        transformations.postTranslate(0, Uscreen.getStatusBarHeight(context));
+        canvas.drawBitmap(sourceBitmap, transformations, null);
+
+        try {
+            wallpaperManager.setBitmap(letterboxedBitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

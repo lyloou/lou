@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright  (c) 2017 Lyloou
   ~
@@ -14,12 +15,12 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <string name="app_name">GetIt Now</string>
-    <string name="laifudao_tupian">来福岛 - 图片笑话</string>
-    <string name="laifudao_xiaohua">来福岛 - 文字笑话</string>
-    <string name="my_web">网站 - 我的</string>
-    <string name="kingsoftware_daily_sentence">金山词霸 - 每日一句</string>
-    <string name="media_audio">多媒体 - 录音与播放</string>
-    <string name="kingsoftware_daily_sentence_gallery">金山词霸 - 每日一句（画廊）</string>
-</resources>
+<android.support.v4.view.ViewPager
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vp_kingsoftwaregallery"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.lyloou.test.kingsoftware.KingsoftwareGalleryActivity"/>
+
+

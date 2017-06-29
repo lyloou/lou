@@ -48,6 +48,7 @@
         </activity>
         <activity android:name=".laifudao.TuPianActivity" android:label="@string/laifudao_tupian"/>
         <activity android:name=".laifudao.XiaoHuaActivity" android:label="@string/laifudao_xiaohua"/>
+        <activity android:name=".kingsoftware.KingsoftwareGalleryActivity" android:label="@string/kingsoftware_daily_sentence_gallery"/>
     </application>
 
 </manifest>

@@ -79,6 +79,8 @@ public class TuPianActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_laifudao);
         toolbar.setTitle("来福岛上的笑话图片");
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.mipmap.back_white);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.coolapsing_toolbar_layout_xiaohua);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
@@ -102,26 +104,27 @@ public class TuPianActivity extends AppCompatActivity {
         mTuPianAdapter.setOnItemClickListener(new TuPianAdapter.OnItemClickListener() {
             @Override
             public void onClick(TuPian tuPian) {
+                PhotoView view = new PhotoView(mContext);
                 LouDialog louDialog = LouDialog
-                        .newInstance(mContext, R.layout.dialog_tupian, R.style.Theme_AppCompat)
+                        .newInstance(mContext, view, R.style.Theme_AppCompat)
                         .setCancelable(true)
                         .setWindowAnimation(R.style.Animation_Alpha)
                         .setWH(-1, -1);
-                PhotoView photoView = louDialog.getView(R.id.pv_tupian);
                 Glide.with(mContext)
                         .load(tuPian.getThumburl())
-                        .into(photoView);
-                photoView.setMinimumScale(0.5f);
-                photoView.setOnClickListener(new View.OnClickListener() {
+                        .into(view);
+                view.setMinimumScale(0.5f);
+                view.setMaximumScale(3);
+                view.setScale(0.8f);
+                view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (photoView.getScale() <= 1) {
+                        if (view.getScale() <= 1) {
                             louDialog.dismiss();
                         }
                     }
                 });
-                photoView.setMaximumScale(3);
-                photoView.setScale(0.8f);
+
                 louDialog.show();
             }
 
