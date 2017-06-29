@@ -39,7 +39,7 @@ import java.util.List;
  */
 class XiaoHuaAdapter extends RecyclerView.Adapter {
     private final List<XiaoHua> mList;
-    private OnItemClickListener mOnItemClickListener;
+    private OnItemXiaoHuaClickListener mOnItemXiaoHuaClickListener;
 
     public XiaoHuaAdapter() {
         mList = new ArrayList<>();
@@ -71,13 +71,13 @@ class XiaoHuaAdapter extends RecyclerView.Adapter {
             ImageView ivPoster = viewHolder.ivPoster;
             Glide.with(ivPoster.getContext()).load(xiaoHua.getPoster()).centerCrop().into(ivPoster);
             viewHolder.view.setOnClickListener(v -> {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onClick(xiaoHua.getUrl());
+                if (mOnItemXiaoHuaClickListener != null) {
+                    mOnItemXiaoHuaClickListener.onClick(xiaoHua.getUrl());
                 }
             });
             viewHolder.view.setOnLongClickListener(v -> {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onLongClick(viewHolder.tvContent.getText().toString());
+                if (mOnItemXiaoHuaClickListener != null) {
+                    mOnItemXiaoHuaClickListener.onLongClick(viewHolder.tvContent.getText().toString());
                 }
                 return true;
             });
@@ -90,11 +90,11 @@ class XiaoHuaAdapter extends RecyclerView.Adapter {
     }
 
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        mOnItemClickListener = onItemClickListener;
+    public void setOnItemXiaoHuaClickListener(OnItemXiaoHuaClickListener onItemXiaoHuaClickListener) {
+        mOnItemXiaoHuaClickListener = onItemXiaoHuaClickListener;
     }
 
-    interface OnItemClickListener {
+    interface OnItemXiaoHuaClickListener {
         void onClick(String url);
 
         void onLongClick(String content);

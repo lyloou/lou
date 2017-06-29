@@ -37,7 +37,7 @@ import java.util.List;
  */
 class TuPianAdapter extends RecyclerView.Adapter {
     private final List<TuPian> mList;
-    private OnItemClickListener mOnItemClickListener;
+    private OnItemTuPianClickListener mOnItemTuPianClickListener;
 
     public TuPianAdapter() {
         mList = new ArrayList<>();
@@ -71,13 +71,13 @@ class TuPianAdapter extends RecyclerView.Adapter {
                     .load(tupian.getSourceurl())
                     .centerCrop().into(ivPoster);
             viewHolder.view.setOnClickListener(v -> {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onClick(tupian);
+                if (mOnItemTuPianClickListener != null) {
+                    mOnItemTuPianClickListener.onClick(tupian);
                 }
             });
             viewHolder.view.setOnLongClickListener(v -> {
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onLongClick(tupian);
+                if (mOnItemTuPianClickListener != null) {
+                    mOnItemTuPianClickListener.onLongClick(tupian);
                 }
                 return true;
             });
@@ -90,11 +90,11 @@ class TuPianAdapter extends RecyclerView.Adapter {
     }
 
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        mOnItemClickListener = onItemClickListener;
+    public void setOnItemTuPianClickListener(OnItemTuPianClickListener onItemTuPianClickListener) {
+        mOnItemTuPianClickListener = onItemTuPianClickListener;
     }
 
-    interface OnItemClickListener {
+    interface OnItemTuPianClickListener {
         void onClick(TuPian tuPian);
 
         void onLongClick(TuPian tuPian);

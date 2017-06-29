@@ -79,7 +79,7 @@ public class XiaoHuaActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_laifudao);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mXiaoHuaAdapter = new XiaoHuaAdapter();
-        mXiaoHuaAdapter.setOnItemClickListener(new XiaoHuaAdapter.OnItemClickListener() {
+        mXiaoHuaAdapter.setOnItemXiaoHuaClickListener(new XiaoHuaAdapter.OnItemXiaoHuaClickListener() {
             @Override
             public void onClick(String url) {
                 Intent intent = new Intent(XiaoHuaActivity.this, WebActivity.class);

@@ -23,42 +23,91 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
-    Activity mContext;
-    ViewPager mViewPager;
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+    private Activity mContext;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        setContentView(R.layout.activity_kingsoftwaregallery);
+        mViewPager = new ViewPager(mContext);
+        setContentView(mViewPager);
 
         initView();
     }
 
     private void initView() {
-        mViewPager = (ViewPager) findViewById(R.id.vp_kingsoftwaregallery);
+
 
         GalleryPagerAdapter adapter = new GalleryPagerAdapter();
         mViewPager.setAdapter(adapter);
+
+        String formatedToday = SDF.format(new Date());
+        String formatedYesterday = oneDayAgo(formatedToday);
+        String formatedTwodayAgo = oneDayAgo(formatedYesterday);
+        adapter.addItemAndNotify(formatedToday);
+        adapter.addItemAndNotify(formatedYesterday);
+        adapter.addItemAndNotify(formatedTwodayAgo);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position > adapter.getCount() - 2) {
+                    String day = oneDayAgo(adapter.getItem(position));
+                    if (!TextUtils.isEmpty(day)) {
+                        adapter.addItemAndNotify(day);
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
+    private String oneDayAgo(String currentDay) {
+        try {
+            Calendar calendar = Calendar.getInstance();
+            Date parse = SDF.parse(currentDay);
+            long oneDayAgoLong = parse.getTime() - 24 * 60 * 60 * 1000;
+            calendar.setTimeInMillis(oneDayAgoLong);
+            Date oneDayAgoDate = calendar.getTime();
+            String oneDayAgoString = SDF.format(oneDayAgoDate);
+            return oneDayAgoString;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void loadDataAndRenderView(String day, ImageView view) {
@@ -94,16 +143,18 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
         public GalleryPagerAdapter() {
             days = new ArrayList<>();
-            days.add("2017-06-29");
-            days.add("2017-06-28");
-            days.add("2017-06-27");
-            days.add("2017-06-26");
-            days.add("2017-06-25");
-            days.add("2017-06-24");
-            days.add("2017-06-23");
-            days.add("2017-06-22");
-            days.add("2017-06-21");
-            days.add("2017-06-20");
+        }
+
+        public void addItemAndNotify(String day) {
+            days.add(day);
+            notifyDataSetChanged();
+        }
+
+        public String getItem(int position) {
+            if (position >= days.size() || position < 0) {
+                throw new IndexOutOfBoundsException("越界了啦");
+            }
+            return days.get(position);
         }
 
         @Override

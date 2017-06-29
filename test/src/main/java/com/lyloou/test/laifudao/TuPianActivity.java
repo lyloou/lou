@@ -18,7 +18,6 @@ package com.lyloou.test.laifudao;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -101,7 +100,7 @@ public class TuPianActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_laifudao);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mTuPianAdapter = new TuPianAdapter();
-        mTuPianAdapter.setOnItemClickListener(new TuPianAdapter.OnItemClickListener() {
+        mTuPianAdapter.setOnItemTuPianClickListener(new TuPianAdapter.OnItemTuPianClickListener() {
             @Override
             public void onClick(TuPian tuPian) {
                 PhotoView view = new PhotoView(mContext);

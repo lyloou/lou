@@ -112,7 +112,7 @@ public class Uscreen {
         return statusView;
     }
 
-    public static int getStatusBarHeight(Context activity){
+    public static int getStatusBarHeight(Context activity) {
         int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
         int statusBarHeight = activity.getResources().getDimensionPixelSize(resourceId);
         return statusBarHeight;
@@ -129,6 +129,7 @@ public class Uscreen {
 
         final float resizeRatioX = (float) letterboxedWidth / sourceWidth;
         final float resizeRatioY = (float) letterboxedHeight / sourceHeight;
+        final float resizeRatio = resizeRatioX - resizeRatioY > 0 ? resizeRatioX : resizeRatioY;
 
         final Bitmap letterboxedBitmap = Bitmap.createBitmap(letterboxedWidth, letterboxedHeight, Bitmap.Config.ARGB_8888);
 
@@ -136,7 +137,7 @@ public class Uscreen {
         canvas.drawRGB(0, 0, 0);
 
         final Matrix transformations = new Matrix();
-        transformations.postScale(resizeRatioX, resizeRatioX);
+        transformations.postScale(resizeRatio, resizeRatio);
         transformations.postTranslate(0, Uscreen.getStatusBarHeight(context));
         canvas.drawBitmap(sourceBitmap, transformations, null);
 
