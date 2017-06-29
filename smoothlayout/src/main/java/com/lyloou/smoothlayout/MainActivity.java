@@ -19,8 +19,8 @@ package com.lyloou.smoothlayout;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -34,6 +34,7 @@ import java.util.UUID;
 import github.chenupt.springindicator.SpringIndicator;
 
 import static com.lyloou.smoothlayout.Util.fillDatas;
+import static com.lyloou.smoothlayout.Util.setToolbarMarginTop;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_appbarlayout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        Util.setToolbarMarginTop(this, toolbar);
+        setToolbarMarginTop(this, toolbar);
         toolbar.setTitle("开大门");
         setSupportActionBar(toolbar);
 
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_toobar);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
+        Util.setStatusBarColor(this, ContextCompat.getColor(this, R.color.colorPrimaryDark));
 
         TextView tvTitle = (TextView) toolbar.findViewById(R.id.tv_top_title);
         tvTitle.setText("开大门");
@@ -150,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        Util.setStatusBarColor(this, ContextCompat.getColor(this, R.color.colorPrimaryDark));
 
         View v1 = LayoutInflater.from(this).inflate(R.layout.list, null);
         View v2 = LayoutInflater.from(this).inflate(R.layout.list, null);

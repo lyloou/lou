@@ -29,9 +29,8 @@
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlways">
 
-            <include layout="@layout/list_header"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
