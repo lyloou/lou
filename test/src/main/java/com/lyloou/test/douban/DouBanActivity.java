@@ -36,7 +36,6 @@ import com.lyloou.test.util.Utoast;
 
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -53,8 +52,7 @@ public class DouBanActivity extends AppCompatActivity {
     private boolean mIsLoading = false;
     private SubjectAdapter mSubjectAdapter;
     private Disposable mDisposable;
-
-
+    private Activity mContext;
     private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -79,7 +77,7 @@ public class DouBanActivity extends AppCompatActivity {
                 }
 
             } else if (totalItemCount >= TOTAL_ITEM_SIZE) {
-                if (!mSubjectAdapter.isMaxed()){
+                if (!mSubjectAdapter.isMaxed()) {
                     mContext.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -95,7 +93,6 @@ public class DouBanActivity extends AppCompatActivity {
 
         }
     };
-    private Activity mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,8 +158,8 @@ public class DouBanActivity extends AppCompatActivity {
         unSubscribe();
 
         mIsLoading = true;
-        Observable<HttpResult<List<Subject>>> topMovie = NetWork.getSubjectService().getTopMovie(mSubjectAdapter.getListSize(), 20);
-        mDisposable = topMovie
+        mDisposable = NetWork.getDouBanApi()
+                .getTopMovie(mSubjectAdapter.getListSize(), 20)
                 .map(new Function<HttpResult<List<Subject>>, List<Subject>>() {
                     @Override
                     public List<Subject> apply(@NonNull HttpResult<List<Subject>> listHttpResult) throws Exception {
