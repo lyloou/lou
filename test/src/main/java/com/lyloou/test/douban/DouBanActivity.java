@@ -17,6 +17,7 @@
 package com.lyloou.test.douban;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +32,9 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.common.WebActivity;
+import com.lyloou.test.laifudao.XiaoHuaActivity;
+import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 
@@ -110,6 +114,14 @@ public class DouBanActivity extends AppCompatActivity {
         RelativeLayout rlytEmpty = (RelativeLayout) findViewById(R.id.rlyt_empty);
 
         mSubjectAdapter = new SubjectAdapter(this);
+        mSubjectAdapter.setOnItemClickListener(new SubjectAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(Subject subject) {
+                Intent intent = new Intent(mContext, WebActivity.class);
+                intent.putExtra(WebActivity.EXTRA_DATA_URL, subject.getAlt());
+                startActivity(intent);
+            }
+        });
         recyclerView.setAdapter(mSubjectAdapter);
         recyclerView.setItemTypeCount(mSubjectAdapter.getItemTypeCount());
         recyclerView.setEmptyView(rlytEmpty);
@@ -118,7 +130,7 @@ public class DouBanActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(mContext, 16)));
         recyclerView.addOnScrollListener(mListener);
 
-        Glide.with(this).load("http://cherylgood.cn/images/404.gif").asGif().placeholder(R.mipmap.empty).into(ivEmpty);
+        Glide.with(this).load(R.drawable.loading).asGif().placeholder(R.mipmap.empty).into(ivEmpty);
 
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -163,6 +175,7 @@ public class DouBanActivity extends AppCompatActivity {
                 .map(new Function<HttpResult<List<Subject>>, List<Subject>>() {
                     @Override
                     public List<Subject> apply(@NonNull HttpResult<List<Subject>> listHttpResult) throws Exception {
+                        mSubjectAdapter.setTitle(listHttpResult.getTitle());
                         return listHttpResult.getSubjects();
                     }
                 })

@@ -35,7 +35,7 @@ import java.util.List;
  * <p>
  * Description:
  */
-class TuPianAdapter extends RecyclerView.Adapter {
+class TuPianAdapter extends RecyclerView.Adapter<TuPianAdapter.TuPianViewHolder> {
     private final List<TuPian> mList;
     private OnItemTuPianClickListener mOnItemTuPianClickListener;
 
@@ -53,37 +53,34 @@ class TuPianAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TuPianViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_laifudao_tupian, null);
 
         return new TuPianViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof TuPianViewHolder) {
-            TuPianViewHolder viewHolder = (TuPianViewHolder) holder;
-            TuPian tupian = mList.get(position);
+    public void onBindViewHolder(TuPianViewHolder viewHolder, int position) {
+        TuPian tupian = mList.get(position);
 
-            ImageView ivPoster = viewHolder.ivTuPian;
-            Glide
-                    .with(ivPoster.getContext())
-                    .load(tupian.getSourceurl())
-                    .centerCrop()
-                    .thumbnail(0.1f)
-                    .into(ivPoster);
-            viewHolder.view.setOnClickListener(v -> {
-                if (mOnItemTuPianClickListener != null) {
-                    mOnItemTuPianClickListener.onClick(tupian);
-                }
-            });
-            viewHolder.view.setOnLongClickListener(v -> {
-                if (mOnItemTuPianClickListener != null) {
-                    mOnItemTuPianClickListener.onLongClick(tupian);
-                }
-                return true;
-            });
-        }
+        ImageView ivPoster = viewHolder.ivTuPian;
+        Glide
+                .with(ivPoster.getContext())
+                .load(tupian.getSourceurl())
+                .centerCrop()
+                .thumbnail(0.1f)
+                .into(ivPoster);
+        viewHolder.view.setOnClickListener(v -> {
+            if (mOnItemTuPianClickListener != null) {
+                mOnItemTuPianClickListener.onClick(tupian);
+            }
+        });
+        viewHolder.view.setOnLongClickListener(v -> {
+            if (mOnItemTuPianClickListener != null) {
+                mOnItemTuPianClickListener.onLongClick(tupian);
+            }
+            return true;
+        });
     }
 
     @Override
@@ -102,7 +99,7 @@ class TuPianAdapter extends RecyclerView.Adapter {
         void onLongClick(TuPian tuPian);
     }
 
-    private class TuPianViewHolder extends RecyclerView.ViewHolder {
+    class TuPianViewHolder extends RecyclerView.ViewHolder {
         private final ImageView ivTuPian;
         private final View view;
 

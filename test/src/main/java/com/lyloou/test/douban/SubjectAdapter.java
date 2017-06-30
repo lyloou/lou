@@ -38,10 +38,20 @@ class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Subject> mList;
     private boolean mMaxed;
     private Context mContext;
+    private OnItemClickListener mItemClickListener;
+    private String mTitle;
 
     SubjectAdapter(Context context) {
         mContext = context;
         mList = new ArrayList<>();
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
+        mItemClickListener = itemClickListener;
     }
 
     @Override
@@ -74,7 +84,19 @@ class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             SubjectHolder holder = (SubjectHolder) viewHolder;
             Subject subject = mList.get(position - 1); // 注意需要减去header的数量
             holder.tvTitle.setText(subject.getTitle());
-            holder.tvYear.setText(subject.getYear());
+            String content = subject.getYear();
+            List<Subject.CastsBean> casts = subject.getCasts();
+            if (casts.size() >= 1) {
+                content += "/" + casts.get(0).getName();
+            }
+            holder.tvSecond.setText(content);
+            holder.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mItemClickListener.onClick(subject);
+                }
+            });
+
             Subject.ImagesBean images = subject.getImages();
             if (images != null) {
                 String small = images.getSmall();
@@ -88,7 +110,10 @@ class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         } else if (viewHolder instanceof HeaderHolder) {
-
+            HeaderHolder holder = (HeaderHolder) viewHolder;
+            if (!TextUtils.isEmpty(mTitle)) {
+                holder.tvHeader.setText(mTitle);
+            }
         } else if (viewHolder instanceof FooterHolder) {
             FooterHolder holder = (FooterHolder) viewHolder;
             if (mMaxed) {
@@ -134,24 +159,31 @@ class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return 3;
     }
 
+    interface OnItemClickListener {
+        void onClick(Subject subject);
+    }
+
     private static class SubjectHolder extends RecyclerView.ViewHolder {
         View view;
         TextView tvTitle;
-        TextView tvYear;
+        TextView tvSecond;
         ImageView ivThumb;
 
         SubjectHolder(View itemView) {
             super(itemView);
             view = itemView;
             tvTitle = (TextView) view.findViewById(R.id.tv_title);
-            tvYear = (TextView) view.findViewById(R.id.tv_year);
+            tvSecond = (TextView) view.findViewById(R.id.tv_second);
             ivThumb = (ImageView) view.findViewById(R.id.iv_thumb);
         }
     }
 
     private static class HeaderHolder extends RecyclerView.ViewHolder {
+        TextView tvHeader;
+
         HeaderHolder(View view) {
             super(view);
+            tvHeader = view.findViewById(R.id.tv_header);
         }
     }
 
