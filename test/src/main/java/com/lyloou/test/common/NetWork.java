@@ -16,6 +16,7 @@
 
 package com.lyloou.test.common;
 
+import com.lyloou.test.douban.SubjectService;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.laifudao.LaiFuDaoApi;
 
@@ -34,6 +35,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetWork {
     private static KingsoftwareAPI sKingsoftwareAPI;
     private static LaiFuDaoApi sLaiFuDaoApi;
+    private static SubjectService sSubjectService;
 
     public static KingsoftwareAPI getKingsoftwareApi() {
         if (sKingsoftwareAPI == null) {
@@ -59,5 +61,17 @@ public class NetWork {
             sLaiFuDaoApi = retrofit.create(LaiFuDaoApi.class);
         }
         return sLaiFuDaoApi;
+    }
+
+    public static SubjectService getSubjectService() {
+        if (sSubjectService == null) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://api.douban.com/v2/movie/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+            sSubjectService = retrofit.create(SubjectService.class);
+        }
+        return sSubjectService;
     }
 }

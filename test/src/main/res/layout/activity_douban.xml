@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.lyloou.test.douban.EmptyRecyclerView
+        <com.lyloou.test.common.EmptyRecyclerView
             android:id="@+id/erv_douban"
             android:background="#f5f5f5"
             android:layout_width="match_parent"

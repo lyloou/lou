@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.douban;
+package com.lyloou.test.common;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

@@ -43,7 +43,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class TuPianActivity extends AppCompatActivity {
-    Activity mContext;
+    private Activity mContext;
     private TuPianAdapter mTuPianAdapter;
 
     @Override
@@ -104,17 +104,20 @@ public class TuPianActivity extends AppCompatActivity {
             @Override
             public void onClick(TuPian tuPian) {
                 PhotoView view = new PhotoView(mContext);
+                view.setMinimumScale(0.5f);
+                view.setMaximumScale(3);
+                view.setScale(0.8f);
+                Glide.with(mContext)
+                        .load(tuPian.getThumburl())
+                        .thumbnail(0.1f)
+                        .into(view);
+
                 LouDialog louDialog = LouDialog
                         .newInstance(mContext, view, R.style.Theme_AppCompat)
                         .setCancelable(true)
                         .setWindowAnimation(R.style.Animation_Alpha)
                         .setWH(-1, -1);
-                Glide.with(mContext)
-                        .load(tuPian.getThumburl())
-                        .into(view);
-                view.setMinimumScale(0.5f);
-                view.setMaximumScale(3);
-                view.setScale(0.8f);
+
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -123,7 +126,6 @@ public class TuPianActivity extends AppCompatActivity {
                         }
                     }
                 });
-
                 louDialog.show();
             }
 

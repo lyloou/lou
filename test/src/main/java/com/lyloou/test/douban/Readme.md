@@ -6,11 +6,10 @@
 - [x] 添加Footer
 
 ## 开源库
-- RxJava1.0
-- RxAndroid1.0
+- RxJava
+- RxAndroid
 - Retrofit2.0
 - Glide
-- butterknife
 - Gson
 
 

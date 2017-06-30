@@ -16,6 +16,7 @@
 
 package com.lyloou.test.douban;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,10 @@ import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
+import com.lyloou.test.common.EmptyRecyclerView;
+import com.lyloou.test.common.ItemOffsetDecoration;
+import com.lyloou.test.common.NetWork;
+import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 
 import java.util.List;
@@ -44,10 +49,7 @@ public class DouBanActivity extends AppCompatActivity {
 
     private static final String TAG = "DouBanActivity";
     private static final int TOTAL_ITEM_SIZE = 60;
-    EmptyRecyclerView mErv;
-    SwipeRefreshLayout mSrl;
-    ImageView mIvEmpty;
-    RelativeLayout mRlytEmpty;
+    private SwipeRefreshLayout mRefreshLayout;
     private boolean mIsLoading = false;
     private SubjectAdapter mSubjectAdapter;
     private Disposable mDisposable;
@@ -77,14 +79,15 @@ public class DouBanActivity extends AppCompatActivity {
                 }
 
             } else if (totalItemCount >= TOTAL_ITEM_SIZE) {
-                if (!mSubjectAdapter.isMaxed())
-                    mErv.post(new Runnable() {
+                if (!mSubjectAdapter.isMaxed()){
+                    mContext.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             // 控制footer的显示情况
                             mSubjectAdapter.setMaxed(true);
                         }
                     });
+                }
             }
 
             Log.d(TAG, "lastVisibleItem=" + lastVisibleItem);
@@ -92,35 +95,38 @@ public class DouBanActivity extends AppCompatActivity {
 
         }
     };
+    private Activity mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
+
         setContentView(R.layout.activity_douban);
         initView();
     }
 
     private void initView() {
-        mErv = (EmptyRecyclerView) findViewById(R.id.erv_douban);
-        mSrl = (SwipeRefreshLayout) findViewById(R.id.srl_douban);
-        mIvEmpty = (ImageView) findViewById(R.id.iv_empty);
-        mRlytEmpty = (RelativeLayout) findViewById(R.id.rlyt_empty);
+        EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.erv_douban);
+        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_douban);
+        ImageView ivEmpty = (ImageView) findViewById(R.id.iv_empty);
+        RelativeLayout rlytEmpty = (RelativeLayout) findViewById(R.id.rlyt_empty);
 
         mSubjectAdapter = new SubjectAdapter(this);
-        mErv.setAdapter(mSubjectAdapter);
-        mErv.setItemTypeCount(mSubjectAdapter.getItemTypeCount());
-        mErv.setEmptyView(mRlytEmpty);
-        mErv.setHasFixedSize(true);
-        mErv.setLayoutManager(new LinearLayoutManager(this));
-        mErv.addItemDecoration(new ItemOffsetDecoration(20));
-        mErv.addOnScrollListener(mListener);
+        recyclerView.setAdapter(mSubjectAdapter);
+        recyclerView.setItemTypeCount(mSubjectAdapter.getItemTypeCount());
+        recyclerView.setEmptyView(rlytEmpty);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(mContext, 16)));
+        recyclerView.addOnScrollListener(mListener);
 
-        Glide.with(this).load("http://cherylgood.cn/images/404.gif").asGif().placeholder(R.mipmap.empty).into(mIvEmpty);
+        Glide.with(this).load("http://cherylgood.cn/images/404.gif").asGif().placeholder(R.mipmap.empty).into(ivEmpty);
 
-        mSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mErv.post(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         mSubjectAdapter.setMaxed(false);
@@ -170,14 +176,14 @@ public class DouBanActivity extends AppCompatActivity {
                     @Override
                     public void accept(@NonNull List<Subject> subjects) throws Exception {
                         mSubjectAdapter.addAll(subjects);
-                        mSrl.setRefreshing(false);
+                        mRefreshLayout.setRefreshing(false);
                         mIsLoading = false;
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         Log.e(TAG, "call: error", throwable);
-                        mSrl.setRefreshing(false);
+                        mRefreshLayout.setRefreshing(false);
                         mIsLoading = false;
 
                         Utoast.show(DouBanActivity.this, "网络异常:" + throwable.getMessage());
