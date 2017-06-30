@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.douban;
+package com.lyloou.test.douban;
 
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -26,34 +26,33 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
+import com.lyloou.test.R;
+import com.lyloou.test.util.Utoast;
 
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity {
+public class DouBanActivity extends AppCompatActivity {
 
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "DouBanActivity";
     private static final int TOTAL_ITEM_SIZE = 60;
-    @Bind(R.id.erv)
     EmptyRecyclerView mErv;
-    @Bind(R.id.srl)
     SwipeRefreshLayout mSrl;
-    boolean mIsLoading = false;
-    SubjectAdapter mSubjectAdapter;
-    @Bind(R.id.iv_empty)
     ImageView mIvEmpty;
-    @Bind(R.id.rlyt_empty)
     RelativeLayout mRlytEmpty;
-    Subscription mSubscription;
+    private boolean mIsLoading = false;
+    private SubjectAdapter mSubjectAdapter;
+    private Disposable mDisposable;
+
+
     private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -98,11 +97,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_douban);
-        ButterKnife.bind(this);
         initView();
     }
 
     private void initView() {
+        mErv = (EmptyRecyclerView) findViewById(R.id.erv_douban);
+        mSrl = (SwipeRefreshLayout) findViewById(R.id.srl_douban);
+        mIvEmpty = (ImageView) findViewById(R.id.iv_empty);
+        mRlytEmpty = (RelativeLayout) findViewById(R.id.rlyt_empty);
+
         mSubjectAdapter = new SubjectAdapter(this);
         mErv.setAdapter(mSubjectAdapter);
         mErv.setItemTypeCount(mSubjectAdapter.getItemTypeCount());
@@ -153,38 +156,38 @@ public class MainActivity extends AppCompatActivity {
 
         mIsLoading = true;
         Observable<HttpResult<List<Subject>>> topMovie = NetWork.getSubjectService().getTopMovie(mSubjectAdapter.getListSize(), 20);
-        mSubscription = topMovie
-                .map(new Func1<HttpResult<List<Subject>>, List<Subject>>() {
+        mDisposable = topMovie
+                .map(new Function<HttpResult<List<Subject>>, List<Subject>>() {
                     @Override
-                    public List<Subject> call(HttpResult<List<Subject>> listHttpResult) {
+                    public List<Subject> apply(@NonNull HttpResult<List<Subject>> listHttpResult) throws Exception {
                         return listHttpResult.getSubjects();
                     }
                 })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Subject>>() {
+                .subscribe(new Consumer<List<Subject>>() {
                     @Override
-                    public void call(List<Subject> subjects) {
+                    public void accept(@NonNull List<Subject> subjects) throws Exception {
                         mSubjectAdapter.addAll(subjects);
                         mSrl.setRefreshing(false);
                         mIsLoading = false;
                     }
-                }, new Action1<Throwable>() {
+                }, new Consumer<Throwable>() {
                     @Override
-                    public void call(Throwable throwable) {
+                    public void accept(@NonNull Throwable throwable) throws Exception {
                         Log.e(TAG, "call: error", throwable);
                         mSrl.setRefreshing(false);
                         mIsLoading = false;
 
-                        Utoast.show(MainActivity.this, "网络异常:" + throwable.getMessage());
+                        Utoast.show(DouBanActivity.this, "网络异常:" + throwable.getMessage());
                     }
                 });
     }
 
     private void unSubscribe() {
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
         }
     }
 

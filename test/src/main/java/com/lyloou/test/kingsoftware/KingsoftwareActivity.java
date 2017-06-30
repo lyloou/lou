@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
@@ -72,10 +73,15 @@ public class KingsoftwareActivity extends AppCompatActivity {
         NetWork.getKingsoftwareApi()
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
+                .map(daily -> {
+                    DrawableTypeRequest<String> load = Glide
+                            .with(mContext)
+                            .load(daily.getFenxiang_img());
+                    mWallpaperBitmap = load.asBitmap().into(mImageView.getWidth(), mImageView.getHeight()).get();
+                    return mWallpaperBitmap;
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(daily -> Glide
-                                .with(KingsoftwareActivity.this)
-                                .load(daily.getFenxiang_img()).into(mImageView),
+                .subscribe(bitmap -> mImageView.setImageBitmap(bitmap),
                         Throwable::printStackTrace);
 
     }

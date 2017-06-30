@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.douban;
+package com.lyloou.test.douban;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.lyloou.test.R;
 
 import java.util.ArrayList;
 import java.util.List;

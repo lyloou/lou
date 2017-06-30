@@ -49,6 +49,7 @@
         <activity android:name=".laifudao.TuPianActivity" android:label="@string/laifudao_tupian"/>
         <activity android:name=".laifudao.XiaoHuaActivity" android:label="@string/laifudao_xiaohua"/>
         <activity android:name=".kingsoftware.KingsoftwareGalleryActivity" android:label="@string/kingsoftware_daily_sentence_gallery"/>
+        <activity android:name=".douban.DouBanActivity" android:label="@string/douban_top250"/>
     </application>
 
 </manifest>
