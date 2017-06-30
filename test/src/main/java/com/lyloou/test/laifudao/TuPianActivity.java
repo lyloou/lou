@@ -18,6 +18,7 @@ package com.lyloou.test.laifudao;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -117,6 +119,21 @@ public class TuPianActivity extends AppCompatActivity {
                         .setCancelable(true)
                         .setWindowAnimation(R.style.Animation_Alpha)
                         .setWH(-1, -1);
+
+                if (Build.VERSION.SDK_INT >= 19) {
+                    Window window = louDialog.getDialog().getWindow();
+                    if (window != null) {
+                        View decorView = window.getDecorView();
+                        decorView.setSystemUiVisibility(
+                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                    }
+
+                }
 
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
