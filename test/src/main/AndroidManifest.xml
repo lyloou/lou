@@ -67,6 +67,9 @@
         <activity
             android:name=".onearticle.OneArticleActivity"
             android:label="@string/meiriyiwen"/>
+        <activity
+            android:name=".onearticle.OneArticleRandomActivity"
+            android:label="@string/meiriyiwen_random"/>
     </application>
 
 </manifest>

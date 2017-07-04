@@ -37,5 +37,5 @@ public interface OneArticleApi {
     Observable<OneArticle> getOneArticle(@Query("dev") int dev);
 
     @GET("random")
-    Call<RequestBody> getArticle(@Query("dev") int dev);
+    Observable<OneArticle> getRandomArticle(@Query("dev") int dev);
 }

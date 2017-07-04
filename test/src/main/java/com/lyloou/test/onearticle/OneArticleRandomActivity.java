@@ -31,19 +31,13 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
 
-import java.io.IOException;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class OneArticleActivity extends AppCompatActivity {
+public class OneArticleRandomActivity extends AppCompatActivity {
 
     Activity mContext;
 
@@ -60,7 +54,7 @@ public class OneArticleActivity extends AppCompatActivity {
 
 
     private void loadData() {
-        Observable<OneArticle> observable = NetWork.getOneArticleApi().getOneArticle(1);
+        Observable<OneArticle> observable = NetWork.getOneArticleApi().getRandomArticle(1);
         observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -71,7 +65,7 @@ public class OneArticleActivity extends AppCompatActivity {
                                    TextView tvAuthorDate = findViewById(R.id.tv_author_date);
                                    TextView tvContent = findViewById(R.id.tv_content);
                                    tvTitle.setText(oneArticle.getData().getTitle());
-                                   tvAuthorDate.setText(oneArticle.getData().getAuthor());
+                                   tvAuthorDate.setText(oneArticle.getData().getAuthor() + "（" + oneArticle.getData().getDate().getCurr() + "）");
                                    tvContent.setText(Html.fromHtml(oneArticle.getData().getContent()));
                                }
                            }
