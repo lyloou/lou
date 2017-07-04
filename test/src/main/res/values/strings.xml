@@ -23,4 +23,5 @@
     <string name="media_audio">多媒体 - 录音与播放</string>
     <string name="kingsoftware_daily_sentence_gallery">金山词霸 - 每日一句（画廊）</string>
     <string name="douban_top250">豆瓣 - Top250（加载更多）</string>
+    <string name="meiriyiwen">每日一文</string>
 </resources>

@@ -19,6 +19,7 @@ package com.lyloou.test.common;
 import com.lyloou.test.douban.DouBanApi;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.laifudao.LaiFuDaoApi;
+import com.lyloou.test.onearticle.OneArticleApi;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -36,6 +37,7 @@ public class NetWork {
     private static KingsoftwareAPI sKingsoftwareAPI;
     private static LaiFuDaoApi sLaiFuDaoApi;
     private static DouBanApi sDouBanApi;
+    private static OneArticleApi sOneArticleApi;
 
     public static KingsoftwareAPI getKingsoftwareApi() {
         if (sKingsoftwareAPI == null) {
@@ -73,5 +75,17 @@ public class NetWork {
             sDouBanApi = retrofit.create(DouBanApi.class);
         }
         return sDouBanApi;
+    }
+
+    public static OneArticleApi getOneArticleApi() {
+        if (sOneArticleApi == null) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://interface.meiriyiwen.com/article/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+            sOneArticleApi = retrofit.create(OneArticleApi.class);
+        }
+        return sOneArticleApi;
     }
 }

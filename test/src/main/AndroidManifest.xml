@@ -23,8 +23,8 @@
     <uses-permission android:name="android.permission.SET_WALLPAPER"/>
     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS"/>
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -33,23 +33,40 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".media.MediaRecorderActivity" android:label="@string/media_audio">
-        </activity>
-        <activity android:name=".kingsoftware.KingsoftwareActivity" android:label="@string/kingsoftware_daily_sentence">
-        </activity>
-        <activity android:name=".common.WebActivity" android:label="@string/my_web">
-        </activity>
-        <activity android:name=".MainActivity" android:launchMode="singleTask">
+
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".laifudao.TuPianActivity" android:label="@string/laifudao_tupian"/>
-        <activity android:name=".laifudao.XiaoHuaActivity" android:label="@string/laifudao_xiaohua"/>
-        <activity android:name=".kingsoftware.KingsoftwareGalleryActivity" android:label="@string/kingsoftware_daily_sentence_gallery"/>
-        <activity android:name=".douban.DouBanActivity" android:label="@string/douban_top250"/>
+        <activity
+            android:name=".media.MediaRecorderActivity"
+            android:label="@string/media_audio"/>
+        <activity
+            android:name=".kingsoftware.KingsoftwareActivity"
+            android:label="@string/kingsoftware_daily_sentence"/>
+        <activity
+            android:name=".common.WebActivity"
+            android:label="@string/my_web"/>
+        <activity
+            android:name=".laifudao.TuPianActivity"
+            android:label="@string/laifudao_tupian"/>
+        <activity
+            android:name=".laifudao.XiaoHuaActivity"
+            android:label="@string/laifudao_xiaohua"/>
+        <activity
+            android:name=".kingsoftware.KingsoftwareGalleryActivity"
+            android:label="@string/kingsoftware_daily_sentence_gallery"/>
+        <activity
+            android:name=".douban.DouBanActivity"
+            android:label="@string/douban_top250"/>
+        <activity
+            android:name=".onearticle.OneArticleActivity"
+            android:label="@string/meiriyiwen"/>
     </application>
 
 </manifest>

@@ -20,6 +20,7 @@ import com.lyloou.test.common.NetWork;
 import com.lyloou.test.douban.HttpResult;
 import com.lyloou.test.douban.MovieDetail;
 import com.lyloou.test.douban.Subject;
+import com.lyloou.test.onearticle.OneArticle;
 
 import org.junit.Test;
 
@@ -106,6 +107,35 @@ public class NetWorkTest {
                                @Override
                                public void accept(@NonNull MovieDetail movie) throws Exception {
                                    System.out.println(movie.getTitle());
+                                   latch.countDown();
+                               }
+                           }
+                        , new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                throwable.printStackTrace();
+                                latch.countDown();
+                            }
+                        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    public void oneArticle() {
+        CountDownLatch latch = new CountDownLatch(1);
+        NetWork.getOneArticleApi()
+                .getOneArticle(1)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .subscribe(new Consumer<OneArticle>() {
+                               @Override
+                               public void accept(@NonNull OneArticle article) throws Exception {
+                                   System.out.println(article.getData().getTitle());
                                    latch.countDown();
                                }
                            }
