@@ -16,11 +16,16 @@
 
 package com.lyloou.test.laifudao;
 
+import android.app.Activity;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,11 +45,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class XiaoHuaActivity extends AppCompatActivity {
+    private Activity mContext;
     private XiaoHuaAdapter mXiaoHuaAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         setContentView(R.layout.activity_laifudao);
 
         initView();
@@ -82,9 +89,15 @@ public class XiaoHuaActivity extends AppCompatActivity {
         mXiaoHuaAdapter.setOnItemXiaoHuaClickListener(new XiaoHuaAdapter.OnItemXiaoHuaClickListener() {
             @Override
             public void onClick(String url) {
-                Intent intent = new Intent(XiaoHuaActivity.this, WebActivity.class);
-                intent.putExtra(WebActivity.EXTRA_DATA_URL, url);
-                startActivity(intent);
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                builder.setToolbarColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
+                builder.setStartAnimations(mContext, R.anim.slide_in_right, R.anim.slide_out_left);
+                builder.setExitAnimations(mContext, R.anim.slide_in_left, R.anim.slide_out_right);
+                builder.setCloseButtonIcon(BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.back_white));
+                builder.setShowTitle(false);
+
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(mContext, Uri.parse(url));
             }
 
             @Override

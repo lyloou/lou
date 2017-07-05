@@ -20,10 +20,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import com.lyloou.test.R;
 
 public class WebActivity extends AppCompatActivity {
 
@@ -41,18 +40,21 @@ public class WebActivity extends AppCompatActivity {
 
         mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
         if (mUrl == null) {
-            mUrl = "http://www.lyloou.com";
+            mUrl = "http://www.baidu.com";
         }
 
         initView();
     }
 
     private void initView() {
-
-        mWvContent.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        mWvContent.setScrollbarFadingEnabled(true);
         mWvContent.getSettings().setJavaScriptEnabled(true);
-        // zoom is available?
-        // mWvContent.getSettings().setBuiltInZoomControls(true);
+        mWvContent.getSettings().setBuiltInZoomControls(false);
+        mWvContent.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        mWvContent.getSettings().setDomStorageEnabled(true);
+        mWvContent.getSettings().setAppCacheEnabled(false);
+        mWvContent.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        mWvContent.getSettings().setBlockNetworkImage(false);
 
         mWvContent.setWebViewClient(new WebViewClient() {
             @Override

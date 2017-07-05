@@ -49,4 +49,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'me.drakeet.multitype:multitype:3.0.1'
     compile 'com.github.chenupt.android:springindicator:1.0.2@aar'
+
+    compile 'com.android.support:customtabs:26.0.0-beta2'
 }
