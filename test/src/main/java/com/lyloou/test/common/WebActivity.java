@@ -16,6 +16,7 @@
 
 package com.lyloou.test.common;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,6 +32,13 @@ public class WebActivity extends AppCompatActivity {
 
     private WebView mWvContent;
 
+    public static void newInstance(Context context, String url) {
+        Intent intent = new Intent(context, WebActivity.class);
+        intent.putExtra(EXTRA_DATA_URL, url);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +48,7 @@ public class WebActivity extends AppCompatActivity {
 
         mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
         if (mUrl == null) {
-            mUrl = "http://www.baidu.com";
+            mUrl = "http://www.lyloou.com";
         }
 
         initView();
