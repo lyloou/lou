@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             app:collapsedTitleGravity="start"
             app:contentScrim="@color/colorPrimaryDark"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed|enterAlways">
 
             <ImageView
                 android:id="@+id/iv_header"
