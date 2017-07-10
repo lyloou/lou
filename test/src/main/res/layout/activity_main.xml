@@ -34,7 +34,7 @@
             app:contentScrim="@color/colorAccent"
             android:layout_height="wrap_content"
             app:expandedTitleGravity="center"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed|enterAlways">
 
             <ImageView
                 android:id="@+id/iv_header"
@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="32dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:textColor="@color/colorAccent"
