@@ -40,7 +40,7 @@ public class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
 
         int position = parent.getChildLayoutPosition(view);
         if (position == 0) {
-            outRect.top = offset;
+            outRect.top = offset*2;
         }
 
         outRect.bottom = offset;

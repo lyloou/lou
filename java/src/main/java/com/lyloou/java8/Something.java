@@ -19,27 +19,20 @@ package com.lyloou.java8;
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.06.12 10:22
+ * Date:      2017.07.10 11:21
  * <p>
  * Description:
  */
-@FunctionalInterface
-public interface Formula {
-    double calculate(int a);
+public class Something {
+    public static void main(String[] args) {
+        Something something = new Something();
+        Converter<String, String> converter = something::startWith;
 
-    default double sqrt(int a) {
-        return Math.sqrt(a);
+        String converted = converter.convert("Java");
+        System.out.println(converted);
     }
-}
 
-class Clazz{
-    private void method(){
-        Formula formula = new Formula() {
-            @Override
-            public double calculate(int a) {
-                return sqrt(a);
-            }
-        };
-
+    String startWith(String s) {
+        return String.valueOf(s.charAt(0));
     }
 }

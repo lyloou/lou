@@ -24,6 +24,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
@@ -89,6 +90,16 @@ public class Uscreen {
             rootView.setFitsSystemWindows(true);
             rootView.setClipToPadding(true);
         }
+    }
+    public static void setToolbarMarginTop(Activity activity, Toolbar toolbar){
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
+        params.topMargin = getStatusBarHeight(activity);
+    }
+
+    public static int getStatusBarHeight(Activity activity){
+        int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int statusBarHeight = activity.getResources().getDimensionPixelSize(resourceId);
+        return statusBarHeight;
     }
 
     /**

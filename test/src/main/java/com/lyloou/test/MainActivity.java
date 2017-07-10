@@ -17,22 +17,35 @@
 package com.lyloou.test;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.lyloou.test.common.ItemOffsetDecoration;
+import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.Map;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Author:    Lou
@@ -42,6 +55,21 @@ import java.util.Map;
  * Description:
  */
 public class MainActivity extends AppCompatActivity {
+    public static Animation getRotateAnimation(int duration) {
+        AnimationSet set = new AnimationSet(true);
+
+        Animation anim = new RotateAnimation(0, 360, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        anim.setDuration(duration);
+        anim.setRepeatMode(Animation.RESTART);
+        anim.setRepeatCount(Animation.INFINITE);
+
+        set.setInterpolator(new LinearInterpolator());
+        set.setRepeatMode(Animation.RESTART);
+        set.setRepeatCount(Animation.INFINITE);
+        set.addAnimation(anim);
+        return set;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +78,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        Uscreen.setToolbarMarginTop(this, toolbar);
+
+        toolbar.setNavigationIcon(R.mipmap.back_white);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        ImageView ivHeader = (ImageView) findViewById(R.id.iv_header);
+        TextView tvHeader = findViewById(R.id.tv_header);
+        NetWork.getKingsoftwareApi()
+                .getDaily("")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(daily -> {
+                            Glide
+                                    .with(ivHeader.getContext().getApplicationContext())
+                                    .load(daily.getPicture2())
+                                    .centerCrop()
+                                    .into(ivHeader);
+                            tvHeader.setText(daily.getContent());
+                            tvHeader.setTag(daily.getNote());
+                        }
+                        , Throwable::printStackTrace);
+
+        View fab = findViewById(R.id.fab);
+        fab.startAnimation(getRotateAnimation(3600));
+        fab.setOnClickListener(view -> {
+            Object tag = tvHeader.getTag();
+            if(tag!=null && tag instanceof String){
+                String newStr = (String) tag;
+                String oldStr = tvHeader.getText().toString();
+                tvHeader.setText(newStr);
+                tvHeader.setTag(oldStr);
+            }
+        });
+
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
+        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_main);
         Map<String, Class> stringClassMap = Uactivity.getActivitiesMapFromManifest(this, this.getPackageName());
 
