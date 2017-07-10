@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.util.Uscreen;
 
 import java.io.IOException;
 
@@ -90,6 +91,7 @@ public class OneArticleActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        Uscreen.setToolbarMarginTop(mContext, toolbar);
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.coolapsing_toolbar_layout_onearticle);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);

@@ -91,6 +91,11 @@ public class Uscreen {
             rootView.setClipToPadding(true);
         }
     }
+    public static void setViewMarginTop(Activity activity, View view){
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        params.topMargin = getStatusBarHeight(activity);
+    }
+
     public static void setToolbarMarginTop(Activity activity, Toolbar toolbar){
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
         params.topMargin = getStatusBarHeight(activity);

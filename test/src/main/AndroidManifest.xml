@@ -36,6 +36,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:theme="@style/AppTheme.TranslucentStatus"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -47,27 +48,33 @@
             android:name=".media.MediaRecorderActivity"
             android:label="@string/media_audio"/>
         <activity
+            android:theme="@style/AppTheme.TranslucentStatus"
             android:name=".kingsoftware.KingsoftwareActivity"
             android:label="@string/kingsoftware_daily_sentence"/>
         <activity
             android:name=".common.WebActivity"
             android:label="@string/my_web"/>
         <activity
+            android:theme="@style/AppTheme.TranslucentStatus"
             android:name=".laifudao.TuPianActivity"
             android:label="@string/laifudao_tupian"/>
         <activity
+            android:theme="@style/AppTheme.TranslucentStatus"
             android:name=".laifudao.XiaoHuaActivity"
             android:label="@string/laifudao_xiaohua"/>
         <activity
+            android:theme="@style/AppTheme.TranslucentStatus"
             android:name=".kingsoftware.KingsoftwareGalleryActivity"
             android:label="@string/kingsoftware_daily_sentence_gallery"/>
         <activity
             android:name=".douban.DouBanActivity"
             android:label="@string/douban_top250"/>
         <activity
+            android:theme="@style/AppTheme.TranslucentStatus"
             android:name=".onearticle.OneArticleActivity"
             android:label="@string/meiriyiwen"/>
         <activity
+            android:theme="@style/AppTheme.TranslucentStatus"
             android:name=".onearticle.OneArticleRandomActivity"
             android:label="@string/meiriyiwen_random"/>
     </application>
