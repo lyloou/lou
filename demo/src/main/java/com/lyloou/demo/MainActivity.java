@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lyloou.demo.util.ItemOffsetDecoration;
+import com.lyloou.demo.common.ItemOffsetDecoration;
 import com.lyloou.demo.util.Uactivity;
 import com.lyloou.demo.util.Uscreen;
 

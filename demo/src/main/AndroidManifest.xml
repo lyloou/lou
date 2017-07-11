@@ -28,7 +28,13 @@
         <activity
             android:name="me.iwf.photopicker.PhotoPagerActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
+            android:name=".banner.BannerActivity"
+            android:label="@string/banner"/>
 
     </application>
+
+
+    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>

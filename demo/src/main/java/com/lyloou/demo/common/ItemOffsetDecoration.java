@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo.util;
+package com.lyloou.demo.common;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
