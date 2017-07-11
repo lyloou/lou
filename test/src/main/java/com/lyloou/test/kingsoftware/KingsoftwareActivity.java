@@ -28,10 +28,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
-import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uscreen;
-
-import java.util.Arrays;
+import com.lyloou.test.util.Uview;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -57,8 +55,7 @@ public class KingsoftwareActivity extends AppCompatActivity {
         mImageView = (ImageView) findViewById(R.id.iv_kingsoftware);
         mImageView.setOnLongClickListener(v -> {
 
-            mImageView.buildDrawingCache();
-            Bitmap bitmap = mImageView.getDrawingCache();
+            Bitmap bitmap = Uview.getBitmapFromImageView(mImageView);
 
             if (bitmap == null) {
                 Toast.makeText(mContext, "无法设壁纸", Toast.LENGTH_SHORT).show();
@@ -77,7 +74,9 @@ public class KingsoftwareActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> Glide
                                 .with(mContext)
-                                .load(daily.getFenxiang_img()).into(mImageView),
+                                .load(daily.getFenxiang_img())
+                                .into(mImageView),
+
                         Throwable::printStackTrace);
 
     }

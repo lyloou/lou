@@ -48,6 +48,11 @@ import static org.junit.Assert.assertTrue;
 public class RxjavaTest {
     String result = "";
 
+    @Test
+    public void testNull() {
+        System.out.println(null instanceof Object);
+    }
+
     // Simple subscription to a fix value
     @Test
     public void returnAValue() {
