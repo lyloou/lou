@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Demo</string>
+    <string name="mvp_user">MVP - User</string>
+    <string name="photopicker">PhotoPicker - Image Picker like Wechat</string>
 </resources>

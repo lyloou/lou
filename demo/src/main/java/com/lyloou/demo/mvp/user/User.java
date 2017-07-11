@@ -14,15 +14,35 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo;
+package com.lyloou.demo.mvp.user;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.04.13 10:35
+ * Date:      2017.04.13 10:20
  * <p>
  * Description:
  */
-public interface BasePresenter {
-    void start();
+public class User {
+    private final String mId;
+    private final String mFirstName;
+    private final String mLastName;
+
+    public User(String id, String firstName, String lastName) {
+        mId = id;
+        mFirstName = firstName;
+        mLastName = lastName;
+    }
+
+    public String getId() {
+        return mId;
+    }
+
+    public String getFirstName() {
+        return mFirstName;
+    }
+
+    public String getLastName() {
+        return mLastName;
+    }
 }

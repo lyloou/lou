@@ -83,18 +83,12 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/btn_setting"
+            android:id="@+id/btn_enter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="enter setting"/>
+            android:text="enter Lou"/>
 
-        <ImageView
-            android:id="@+id/iv_voice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/topic_voice"
-            android:padding="8dp"/>
 
     </TableRow>
 

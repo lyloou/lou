@@ -14,15 +14,30 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo;
+package com.lyloou.demo.mvp.user;
+
+import com.lyloou.demo.mvp.BasePresenter;
+import com.lyloou.demo.mvp.BaseView;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.04.13 10:35
+ * Date:      2017.04.13 10:36
  * <p>
  * Description:
  */
-public interface BaseView<T> {
-    void setPresenter(T presenter);
+public interface UserContract {
+    interface View extends BaseView<Presenter>{
+        void showId(String id);
+        void showFirstName(String firstName);
+        void showLastName(String lastName);
+
+        void showSetting();
+    }
+
+    interface Presenter extends BasePresenter{
+        void save(User user);
+        User load(String id);
+        void setting();
+    }
 }

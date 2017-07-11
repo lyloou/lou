@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo.user;
-
-import com.lyloou.demo.data.User;
+package com.lyloou.demo.mvp.user;
 
 import java.util.HashMap;
 

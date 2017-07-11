@@ -14,35 +14,15 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo.data;
+package com.lyloou.demo.mvp;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.04.13 10:20
+ * Date:      2017.04.13 10:35
  * <p>
  * Description:
  */
-public class User {
-    public User(String id, String firstName, String lastName) {
-        mId = id;
-        mFirstName = firstName;
-        mLastName = lastName;
-    }
-
-    private final String mId;
-    private String mFirstName;
-    private String mLastName;
-
-    public String getId() {
-        return mId;
-    }
-
-    public String getFirstName() {
-        return mFirstName;
-    }
-
-    public String getLastName() {
-        return mLastName;
-    }
+public interface BaseView<T> {
+    void setPresenter(T presenter);
 }

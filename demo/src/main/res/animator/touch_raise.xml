@@ -15,19 +15,19 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/tv_show_img"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Show Img"/>
-
-    <ImageView
-        android:id="@+id/iv_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="true" android:state_pressed="true">
+        <objectAnimator
+            android:duration="@android:integer/config_shortAnimTime"
+            android:propertyName="translationZ"
+            android:valueTo="10dp"
+            android:valueType="floatType" />
+    </item>
+    <item>
+        <objectAnimator
+            android:duration="@android:integer/config_shortAnimTime"
+            android:propertyName="translationZ"
+            android:valueTo="0dp"
+            android:valueType="floatType" />
+    </item>
+</selector>

@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo.user;
+package com.lyloou.demo.mvp.user;
 
 
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.lyloou.demo.R;
-import com.lyloou.demo.data.User;
-import com.lyloou.demo.setting.SettingActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
+import butterknife.OnClick;
 
-public class UserActivity extends AppCompatActivity implements UserContract.View, View.OnClickListener {
+public class UserActivity extends AppCompatActivity implements UserContract.View {
 
     UserContract.Presenter mPresenter;
     @BindView(R.id.et_id)
@@ -43,43 +39,16 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     EditText mEtFirstName;
     @BindView(R.id.et_last_name)
     EditText mEtLastName;
-    @BindView(R.id.btn_save)
-    Button mBtnSave;
-    @BindView(R.id.btn_load)
-    Button mBtnLoad;
-    Unbinder unbinder;
-    @BindView(R.id.btn_setting)
-    Button mBtnSetting;
-    @BindView(R.id.iv_voice)
-    ImageView mIvVoice;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_user);
-        unbinder = ButterKnife.bind(this);
+        setContentView(R.layout.activity_user);
+        ButterKnife.bind(this);
         new UserPresenter(this);
-        initView();
     }
 
-    private void initView() {
-        mBtnLoad.setOnClickListener(this);
-        mBtnSave.setOnClickListener(this);
-        mBtnSetting.setOnClickListener(this);
-
-        mIvVoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AnimationDrawable animationDrawable = (AnimationDrawable) mIvVoice.getBackground();
-                if (animationDrawable.isRunning()) {
-                    animationDrawable.stop();
-                    animationDrawable.selectDrawable(0);
-                } else {
-                    animationDrawable.start();
-                }
-            }
-        });
-    }
 
     @Override
     public void onStart() {
@@ -109,21 +78,15 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
 
     @Override
     public void showSetting() {
-        Intent intent = new Intent(this, SettingActivity.class);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://lyloou.com"));
         startActivity(intent);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unbinder.unbind();
-    }
-
-    @Override
+    @OnClick({R.id.btn_save, R.id.btn_load, R.id.btn_enter})
     public void onClick(View v) {
-        String id = mEtId.getText().toString();
         String firstName = mEtFirstName.getText().toString();
         String lastName = mEtLastName.getText().toString();
+        String id = mEtId.getText().toString();
 
         switch (v.getId()) {
             case R.id.btn_load:
@@ -132,7 +95,7 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
             case R.id.btn_save:
                 mPresenter.save(new User(id, firstName, lastName));
                 break;
-            case R.id.btn_setting:
+            case R.id.btn_enter:
                 mPresenter.setting();
                 break;
         }

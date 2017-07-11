@@ -14,35 +14,25 @@
  * limitations under the License.
  */
 
-package com.lyloou.test;
+package com.lyloou.demo;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.lyloou.test.common.ItemOffsetDecoration;
-import com.lyloou.test.common.NetWork;
-import com.lyloou.test.util.Uactivity;
-import com.lyloou.test.util.Uanimation;
-import com.lyloou.test.util.Uscreen;
+import com.lyloou.demo.util.ItemOffsetDecoration;
+import com.lyloou.demo.util.Uactivity;
+import com.lyloou.demo.util.Uscreen;
 
 import java.util.Map;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Author:    Lou
@@ -61,49 +51,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        Uscreen.setToolbarMarginTop(this, toolbar);
 
-        toolbar.setNavigationIcon(R.mipmap.back_white);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        ImageView ivHeader = (ImageView) findViewById(R.id.iv_header);
-        TextView tvHeader = findViewById(R.id.tv_header);
-        NetWork.getKingsoftwareApi()
-                .getDaily("")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(daily -> {
-                            Glide
-                                    .with(ivHeader.getContext().getApplicationContext())
-                                    .load(daily.getPicture2())
-                                    .centerCrop()
-                                    .into(ivHeader);
-                            tvHeader.setText(daily.getContent());
-                            tvHeader.setTag(daily.getNote());
-                        }
-                        , Throwable::printStackTrace);
-
-        View fab = findViewById(R.id.fab);
-        fab.startAnimation(Uanimation.getRotateAnimation(3600));
-        fab.setOnClickListener(view -> {
-            Object tag = tvHeader.getTag();
-            if (tag != null && tag instanceof String) {
-                String newStr = (String) tag;
-                String oldStr = tvHeader.getText().toString();
-                tvHeader.setText(newStr);
-                tvHeader.setTag(oldStr);
-            }
-        });
-
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
-        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
-        collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_main);
         Map<String, Class> stringClassMap = Uactivity.getActivitiesMapFromManifest(this, this.getPackageName());
@@ -136,10 +84,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            String label = (String) labels[position];
+            final String label = (String) labels[position];
             holder.tvTitle.setText(label);
-            holder.view.setOnClickListener(v ->
-                    Uactivity.start(v.getContext(), stringClassMap.get(label)));
+            holder.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Uactivity.start(v.getContext(), stringClassMap.get(label));
+                }
+            });
         }
 
         @Override

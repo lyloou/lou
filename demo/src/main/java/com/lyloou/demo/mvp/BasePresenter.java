@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo.setting;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
-import rx.Observable;
+package com.lyloou.demo.mvp;
 
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.04.11 11:56
+ * Date:      2017.04.13 10:35
  * <p>
  * Description:
  */
-public interface IpService {
-    @GET("json/{ip}")
-    Call<ResponseBody> getIp(@Path("ip") String ip);
-
-    @GET("json/{ip}")
-    Observable<IpDetail> getIp2(@Path("ip") String ip);
+public interface BasePresenter {
+    void start();
 }
