@@ -25,7 +25,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
@@ -41,7 +40,6 @@ public class KingsoftwareActivity extends AppCompatActivity {
 
     ImageView mImageView;
     Activity mContext;
-    private Bitmap mWallpaperBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +56,15 @@ public class KingsoftwareActivity extends AppCompatActivity {
     private void initView() {
         mImageView = (ImageView) findViewById(R.id.iv_kingsoftware);
         mImageView.setOnLongClickListener(v -> {
-            if (mWallpaperBitmap == null) {
+
+            mImageView.buildDrawingCache();
+            Bitmap bitmap = mImageView.getDrawingCache();
+
+            if (bitmap == null) {
                 Toast.makeText(mContext, "无法设壁纸", Toast.LENGTH_SHORT).show();
             } else {
-                Uscreen.setBackgroundViaBitmap(mContext, mWallpaperBitmap);
+                Uscreen.setBackgroundViaBitmap(mContext, bitmap);
                 Toast.makeText(mContext, "已设壁纸", Toast.LENGTH_SHORT).show();
-                System.out.println(Arrays.toString(Uactivity.getActivitiesFromManifest(this, "com.lyloou.test").toArray()));
             }
             return false;
         });
@@ -73,15 +74,10 @@ public class KingsoftwareActivity extends AppCompatActivity {
         NetWork.getKingsoftwareApi()
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
-                .map(daily -> {
-                    DrawableTypeRequest<String> load = Glide
-                            .with(mContext)
-                            .load(daily.getFenxiang_img());
-                    mWallpaperBitmap = load.asBitmap().into(mImageView.getWidth(), mImageView.getHeight()).get();
-                    return mWallpaperBitmap;
-                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmap -> mImageView.setImageBitmap(bitmap),
+                .subscribe(daily -> Glide
+                                .with(mContext)
+                                .load(daily.getFenxiang_img()).into(mImageView),
                         Throwable::printStackTrace);
 
     }
