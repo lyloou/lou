@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.Parcel;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.SystemClock;
@@ -55,6 +56,19 @@ public class BookManagerService extends Service {
         }
 
         @Override
+        public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+            if (isPermissionDenied()) return false;
+            String[] packagesForUid = getPackageManager().getPackagesForUid(getCallingUid());
+            if(packagesForUid != null && packagesForUid.length>0){
+                String packagesName = packagesForUid[0];
+                if (!packagesName.startsWith("com.lyloou")) {
+                    return false;
+                }
+            }
+            return super.onTransact(code, data, reply, flags);
+        }
+
+        @Override
         public void unrigisterListener(IOnNewBookArrivedListener listener) throws RemoteException {
             mListeners.unregister(listener);
             System.out.println("剩余监听个数" + mListeners.getRegisteredCallbackCount());
@@ -81,12 +95,14 @@ public class BookManagerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        int check = checkCallingOrSelfPermission("com.lyloou.demo.permisssion.ACCESS_BOOK_SERVICE");
-        if (PackageManager.PERMISSION_DENIED == check) {
-            return null;
-        }
+        if (isPermissionDenied()) return null;
 
         return mBinder;
+    }
+
+    private boolean isPermissionDenied() {
+        int check = checkCallingOrSelfPermission("com.lyloou.demo.permisssion.ACCESS_BOOK_SERVICE");
+        return PackageManager.PERMISSION_DENIED == check;
     }
 
     private void onNewBookArrived(Book book) throws RemoteException {
