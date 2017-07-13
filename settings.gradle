@@ -1,1 +1,1 @@
-include ':demo', ':test', ':java', ':smoothlayout'
+include ':demo', ':test', ':java', ':smoothlayout', ':loudemo', ':loulib'

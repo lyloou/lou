@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ===============activity=============== -->
+    <style name="lou_activity_transparent" parent="Theme.AppCompat.Light">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
+    <!-- 用于欢迎界面的Activity主题 -->
+    <style name="lou_activity_first" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@null</item>
+        <item name="@android:windowTranslucentNavigation">true</item>
+        <item name="@android:windowTranslucentStatus">true</item>
+    </style>
+
+</resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===============common=============== -->
+    <style name="lou_common">
+
+        <!-- ===============common=============== -->
+        <item name="android:visibility">gone</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+
+        <!-- ===============padding=============== -->
+        <item name="android:padding">16dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingStart">16dp</item>
+
+        <!-- ===============layout_margin=============== -->
+        <item name="android:layout_margin">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+
+        <!-- ===============shadow=============== -->
+        <item name="android:shadowColor">#998800</item>
+        <item name="android:shadowRadius">15</item>
+        <item name="android:shadowDx">5</item>
+        <item name="android:shadowDy">5</item>
+
+        <!-- ===============img=============== -->
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:src">@null</item>
+
+        <!-- ===============window=============== -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+
+        <!-- ===============focus=============== -->
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+
+        <!-- ===============edittext=============== -->
+        <item name="android:editTextColor">@android:color/holo_red_dark</item>
+    </style>
+</resources>
