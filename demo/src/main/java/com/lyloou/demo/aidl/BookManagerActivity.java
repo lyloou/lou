@@ -59,6 +59,10 @@ public class BookManagerActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mIBookManager = IBookManager.Stub.asInterface(iBinder);
+            if (mIBookManager == null) {
+                return;
+            }
+
             try {
                 mIBookManager.rigisterListener(mIOnNewBookArrivedListener);
             } catch (RemoteException e) {

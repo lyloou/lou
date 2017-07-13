@@ -3,6 +3,7 @@
           package="com.lyloou.demo">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.lyloou.demo.permisssion.ACCESS_BOOK_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -40,8 +41,11 @@
             android:process=":remote">
         </service>
 
-        <activity android:name=".aidl.BookManagerActivity" android:label="@string/aidl_bookmanager">
+        <activity
+            android:name=".aidl.BookManagerActivity"
+            android:label="@string/aidl_bookmanager">
         </activity>
     </application>
 
+    <permission android:name="com.lyloou.demo.permisssion.ACCESS_BOOK_SERVICE"/>
 </manifest>
