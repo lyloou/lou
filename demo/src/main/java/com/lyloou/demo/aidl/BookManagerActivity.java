@@ -23,6 +23,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.widget.TextView;
 
 import com.lyloou.demo.R;
 
@@ -30,14 +32,40 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BookManagerActivity extends AppCompatActivity {
+    TextView mTextView;
+    IBookManager mIBookManager;
+    IOnNewBookArrivedListener mIOnNewBookArrivedListener = new IOnNewBookArrivedListener.Stub() {
 
+        @Override
+        public void onNewBookArrived(final Book book) throws RemoteException {
+            mTextView.post(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("新书来了：" + book);
+                    String s = mTextView.getText().toString();
+                    mTextView.setText(s + "\n\n" + book);
+                }
+            });
+        }
+    };
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            IBookManager iBookManager = IBookManager.Stub.asInterface(iBinder);
+            mIBookManager = IBookManager.Stub.asInterface(iBinder);
             try {
-                List<Book> bookList = iBookManager.getBookList();
+                List<Book> bookList = mIBookManager.getBookList();
                 System.out.println(Arrays.toString(bookList.toArray()));
+
+                mIBookManager.addBook(new Book(3, "《新书》"));
+                bookList = mIBookManager.getBookList();
+                System.out.println(Arrays.toString(bookList.toArray()));
+
+                String s = mTextView.getText().toString()+"\n\n";
+                String join = TextUtils.join("\n\n", bookList);
+                String result = s + join;
+                mTextView.setText(result);
+
+                mIBookManager.rigisterListener(mIOnNewBookArrivedListener);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -45,7 +73,8 @@ public class BookManagerActivity extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-
+            mIBookManager = null;
+            System.out.println("disconnected!!!!!!!!!!!!!");
         }
     };
 
@@ -53,7 +82,7 @@ public class BookManagerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bookmanager);
-
+        mTextView = findViewById(R.id.tv_book);
         bindService(new Intent(this, BookManagerService.class), mServiceConnection, BIND_AUTO_CREATE);
 
     }
@@ -61,6 +90,16 @@ public class BookManagerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // 如果在 onServiceDisconnected中解绑，那么就观察不到现象
+        if (mIBookManager != null && mIBookManager.asBinder().isBinderAlive()) {
+            try {
+                mIBookManager.unrigisterListener(mIOnNewBookArrivedListener);
+                System.out.println("unregister listener:" + mIOnNewBookArrivedListener);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
         unbindService(mServiceConnection);
     }
+
 }
