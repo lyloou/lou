@@ -49,4 +49,7 @@ ext {
     constraintVersion = '1.0.2'
     PhotoViewVersion = '2.0.0'
     espressoVersion = '2.2.2'
+
+    butterknifeVersion = '8.7.0'
+    nineoldandroidsVersion = '2.4.0'
 }
