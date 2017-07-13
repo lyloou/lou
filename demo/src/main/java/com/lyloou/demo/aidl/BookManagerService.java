@@ -98,10 +98,10 @@ public class BookManagerService extends Service {
         @Override
         public void run() {
             while (!mIsDestroy.get()) {
-                SystemClock.sleep(5000);
+                SystemClock.sleep(3600);
                 int bookId = mBooks.size() + 1;
                 try {
-                    onNewBookArrived(new Book(bookId, "《新书》：" + bookId));
+                    onNewBookArrived(new Book(bookId, "《新书" + bookId + "》"));
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }

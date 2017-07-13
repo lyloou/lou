@@ -30,6 +30,13 @@ import com.lyloou.demo.R;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class BookManagerActivity extends AppCompatActivity {
     TextView mTextView;
@@ -53,28 +60,36 @@ public class BookManagerActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mIBookManager = IBookManager.Stub.asInterface(iBinder);
             try {
-                List<Book> bookList = mIBookManager.getBookList();
-                System.out.println(Arrays.toString(bookList.toArray()));
-
-                mIBookManager.addBook(new Book(3, "《新书》"));
-                bookList = mIBookManager.getBookList();
-                System.out.println(Arrays.toString(bookList.toArray()));
-
-                String s = mTextView.getText().toString()+"\n\n";
-                String join = TextUtils.join("\n\n", bookList);
-                String result = s + join;
-                mTextView.setText(result);
-
                 mIBookManager.rigisterListener(mIOnNewBookArrivedListener);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+
+            Flowable
+                    .fromCallable(new Callable<List<Book>>() {
+                        @Override
+                        public List<Book> call() throws Exception {
+                            return mIBookManager.getBookList();
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<List<Book>>() {
+                        @Override
+                        public void accept(@NonNull List<Book> books) throws Exception {
+                            System.out.println(Arrays.toString(books.toArray()));
+
+                            String oldText = mTextView.getText().toString() + "\n\n";
+                            String newText = TextUtils.join("\n\n", books);
+                            String result = oldText + newText;
+                            mTextView.setText(result);
+                        }
+                    });
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mIBookManager = null;
-            System.out.println("disconnected!!!!!!!!!!!!!");
         }
     };
 
@@ -90,7 +105,7 @@ public class BookManagerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // 如果在 onServiceDisconnected中解绑，那么就观察不到现象
+        // 如果在 onServiceDisconnected 中添加下面代码，那么就来不及注销
         if (mIBookManager != null && mIBookManager.asBinder().isBinderAlive()) {
             try {
                 mIBookManager.unrigisterListener(mIOnNewBookArrivedListener);
