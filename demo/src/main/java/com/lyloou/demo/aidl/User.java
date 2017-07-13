@@ -14,41 +14,48 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo.adils;
+package com.lyloou.demo.aidl;
+
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+
 /**
  * Author:    Lou
  * Version:   V1.0
- * Date:      2017.07.13 09:53
+ * Date:      2017.07.13 09:52
  * <p>
  * Description:
  */
-class Book implements Parcelable {
-    public static final Creator<Book> CREATOR = new Creator<Book>() {
+public class User implements Parcelable {
+    public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
-        public Book createFromParcel(Parcel in) {
-            return new Book(in);
+        public User createFromParcel(Parcel in) {
+            return new User(in);
         }
 
         @Override
-        public Book[] newArray(int size) {
-            return new Book[size];
+        public User[] newArray(int size) {
+            return new User[size];
         }
     };
-    public int bookId;
-    public String bookName;
+    public int userId;
+    public String userName;
+    public boolean isMail;
+    public Book book;
 
-    protected Book(Parcel in) {
-        bookId = in.readInt();
-        bookName = in.readString();
+    public User(int userId, String userName, boolean isMail) {
+        this.userId = userId;
+        this.userName = userName;
+        this.isMail = isMail;
     }
 
-    public Book(int bookId, String bookName) {
-        this.bookId = bookId;
-        this.bookName = bookName;
+    protected User(Parcel in) {
+        userId = in.readInt();
+        userName = in.readString();
+        isMail = in.readInt() == 1;
+        book = in.readParcelable(Thread.currentThread().getContextClassLoader());
     }
 
     @Override
@@ -58,7 +65,9 @@ class Book implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(bookId);
-        dest.writeString(bookName);
+        dest.writeInt(userId);
+        dest.writeString(userName);
+        dest.writeInt(isMail ? 1 : 0);
+        dest.writeParcelable(book, 0);
     }
 }

@@ -4,14 +4,22 @@ import com.lyloou.lou.util.Udata;
 
 import junit.framework.Assert;
 
-import org.junit.Test;
-
 import java.io.File;
 import java.io.IOException;
 
 public class LouTest {
 
-    @Test
+    private static boolean isValidPath(String path) {
+        File f = new File(path);
+        try {
+            String cc = f.getCanonicalPath();
+            System.out.println("path = [" + cc + "]");
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     public void testUdata() throws Exception {
         int sum = 3;
         byte[] datas = new byte[]{0x2f, 0x23, 0x44};
@@ -34,23 +42,11 @@ public class LouTest {
         Assert.assertEquals(3, sum);
     }
 
-    @Test
     public void path() throws Exception {
         String path = "/lou/slk";
         System.out.println("isValidFilePath===>" + isValidPath(path));
 
         path = "//dkj/ sdf aa< \f : > \0 ~/ |";
         System.out.println("isValidFilePath===>" + isValidPath(path));
-    }
-
-    private static boolean isValidPath(String path) {
-        File f = new File(path);
-        try {
-            String cc = f.getCanonicalPath();
-            System.out.println("path = [" + cc + "]");
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
     }
 }  

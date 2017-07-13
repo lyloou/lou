@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.lyloou.demo">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,7 +23,6 @@
         <activity
             android:name=".photopicker.PhotoPickerActivity"
             android:label="@string/photopicker"/>
-
         <activity
             android:name="me.iwf.photopicker.PhotoPickerActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
@@ -32,9 +33,15 @@
             android:name=".banner.BannerActivity"
             android:label="@string/banner"/>
 
+        <service
+            android:name=".aidl.BookManagerService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":remote">
+        </service>
+
+        <activity android:name=".aidl.BookManagerActivity" android:label="@string/aidl_bookmanager">
+        </activity>
     </application>
-
-
-    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>

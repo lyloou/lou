@@ -3,4 +3,5 @@
     <string name="mvp_user">MVP - User</string>
     <string name="photopicker">PhotoPicker - Image Picker like Wechat</string>
     <string name="banner">Banner - Gallery</string>
+    <string name="aidl_bookmanager">AIDL - Book Manager</string>
 </resources>
