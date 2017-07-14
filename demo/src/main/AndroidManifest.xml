@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="com.lyloou.demo.permisssion.ACCESS_BOOK_SERVICE"/>
 
+    <permission android:name="com.lyloou.demo.permisssion.ACCESS_BOOK_SERVICE"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -40,12 +42,20 @@
             android:exported="true"
             android:process=":remote">
         </service>
+        <service
+            android:name=".binderpool.BinderPoolService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":remote"/>
 
         <activity
             android:name=".aidl.BookManagerActivity"
             android:label="@string/aidl_bookmanager">
         </activity>
+        <activity
+            android:name=".binderpool.BinderPoolActivity"
+            android:label="@string/aidl_binderpool">
+        </activity>
     </application>
 
-    <permission android:name="com.lyloou.demo.permisssion.ACCESS_BOOK_SERVICE"/>
 </manifest>

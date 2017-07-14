@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -36,6 +38,20 @@ public class Ustring {
             e.printStackTrace();
         }
         return jsonStr;
+    }
+
+    // 这个只是一层的，更多层的请参考：https://stackoverflow.com/questions/21720759/convert-a-json-string-to-a-hashmap
+    public static Map<String, String> jsonToMap(JSONObject json) throws JSONException {
+
+        Map<String, String> map = new HashMap<>();
+
+        Iterator<String> keysItr = json.keys();
+        while (keysItr.hasNext()) {
+            String key = keysItr.next();
+            String value = String.valueOf(json.get(key));
+            map.put(key, value);
+        }
+        return map;
     }
 
     public static boolean isMobilePhoneNumber(String number) {
