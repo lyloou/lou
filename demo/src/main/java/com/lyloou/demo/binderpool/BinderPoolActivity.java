@@ -52,8 +52,10 @@ public class BinderPoolActivity extends AppCompatActivity {
 
         try {
             System.out.println(compute.add(3, 4));
-            System.out.println(securityCenter.encrypt("abc"));
-            System.out.println(securityCenter.decrypt("abc"));
+            String encrypt = securityCenter.encrypt("你好啊");
+            System.out.println("加密后："+encrypt);
+            String decrypt = securityCenter.decrypt(encrypt);
+            System.out.println("解密后："+decrypt);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -41,7 +41,7 @@ public class Ustring {
     }
 
     // 这个只是一层的，更多层的请参考：https://stackoverflow.com/questions/21720759/convert-a-json-string-to-a-hashmap
-    public static Map<String, String> jsonToMap(JSONObject json) throws JSONException {
+    public static Map<String, String> getMapByJson(JSONObject json) throws JSONException {
 
         Map<String, String> map = new HashMap<>();
 

@@ -100,7 +100,7 @@ public class BinderPool {
         return binder;
     }
 
-    public void connectBinderPoolService() {
+    public synchronized void connectBinderPoolService() {
         Intent intent = new Intent(mContext, BinderPoolService.class);
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
         mCountDownLatch = new CountDownLatch(1);
