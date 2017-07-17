@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo.persistence;
+package com.lyloou.demo.persistence.sqlite;
 
 import java.util.UUID;
 

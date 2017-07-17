@@ -57,7 +57,7 @@
             android:label="@string/aidl_binderpool">
         </activity>
         <activity
-            android:name=".persistence.LouSqliteActivity"
+            android:name=".persistence.sqlite.LouSqliteActivity"
             android:label="@string/sqlite_lousqlite">
         </activity>
     </application>

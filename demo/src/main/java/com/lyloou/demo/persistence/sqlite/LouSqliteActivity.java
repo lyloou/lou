@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.demo.persistence;
+package com.lyloou.demo.persistence.sqlite;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
