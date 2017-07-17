@@ -52,4 +52,5 @@ ext {
 
     butterknifeVersion = '8.7.0'
     nineoldandroidsVersion = '2.4.0'
+    roomVersion = '1.0.0-alpha1'
 }

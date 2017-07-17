@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.lou.db;
+package com.lyloou.demo.persistence;
 
 import android.content.ContentValues;
 import android.content.Context;

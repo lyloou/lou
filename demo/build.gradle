@@ -45,6 +45,12 @@ dependencies {
     compile "com.nineoldandroids:library:$rootProject.nineoldandroidsVersion"
     compile "com.github.bumptech.glide:glide:$rootProject.glideVersion"
 
+    //room
+    compile "android.arch.lifecycle:extensions:$rootProject.roomVersion"
+    compile "android.arch.persistence.room:runtime:$rootProject.roomVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$rootProject.roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+
     // PhotoPicker
     compile "me.iwf.photopicker:PhotoPicker:0.9.5@aar"
 
