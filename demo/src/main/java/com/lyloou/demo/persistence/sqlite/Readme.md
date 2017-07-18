@@ -1,6 +1,6 @@
 
 ## LouSQLite用法
-
+```java
 // 初始化
 LouSQLite.init(mContext, new MyCallBack());
 
@@ -37,11 +37,13 @@ LouSQLite.delete(MyCallBack.TABLE_NAME_PHRASE, MyCallBack.COLEUM_NAME_ID + "=?",
 LouSQLite.execSQL("UPDATE " + MyCallBack.TABLE_NAME_PHRASE
                 + " SET " + PhraseEntry.COLEUM_NAME_FAVORITE + "=1 "
                 + "WHERE " + PhraseEntry.COLEUM_NAME_FAVORITE + "=0");
-
+```
 ## 常用SQL操作语句
+```
 - insert into tableName (id, name, age) values (?, ?, ?)
 - delete from tableName
 - delete from tableName where age > ?
 - delete from tableName where mac in ('24:71:89:0A:DD:82', '24:71:89:0A:DD:83','24:71:89:0A:DD:84')
 - update tableName set name = ? where id = ?
 - select * from tableName where age > ?
+```
