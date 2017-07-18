@@ -26,6 +26,8 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.SystemClock;
 
+import com.lyloou.demo.Manifest;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -101,7 +103,7 @@ public class BookManagerService extends Service {
     }
 
     private boolean isPermissionDenied() {
-        int check = checkCallingOrSelfPermission("com.lyloou.demo.permisssion.ACCESS_BOOK_SERVICE");
+        int check = checkCallingOrSelfPermission(Manifest.permission.ACCESS_BOOK_SERVICE);
         return PackageManager.PERMISSION_DENIED == check;
     }
 

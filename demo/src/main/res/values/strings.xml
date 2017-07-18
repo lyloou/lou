@@ -6,4 +6,5 @@
     <string name="aidl_bookmanager">AIDL - Book Manager</string>
     <string name="aidl_binderpool">AIDL - BinderPool</string>
     <string name="sqlite_lousqlite">SQLite - LouSqLite</string>
+    <string name="sqlite_room_task">SQLite - Room task</string>
 </resources>

@@ -60,6 +60,9 @@
             android:name=".persistence.sqlite.LouSqliteActivity"
             android:label="@string/sqlite_lousqlite">
         </activity>
+        <activity
+            android:name=".persistence.room.TaskActivity"
+            android:label="@string/sqlite_room_task"/>
     </application>
 
 </manifest>

@@ -99,10 +99,10 @@ public final class LouSQLite extends SQLiteOpenHelper {
 
 
     public static <T> List<T> query(String tableName, @NonNull String queryStr, @Nullable String[] whereArgs) {
-        List<T> lists = new ArrayList<>();
         SQLiteDatabase db = INSTANCE.getReadableDatabase();
+        Cursor cursor = db.rawQuery(queryStr, whereArgs);
         try {
-            Cursor cursor = db.rawQuery(queryStr, whereArgs);
+            List<T> lists = new ArrayList<>(cursor.getCount());
             if (cursor.moveToFirst()) {
                 do {
                     T entity = INSTANCE.callBack.newEntityByCursor(tableName, cursor);
@@ -111,12 +111,12 @@ public final class LouSQLite extends SQLiteOpenHelper {
                     }
                 } while (cursor.moveToNext());
             }
-            cursor.close();
+            return lists;
         } finally {
+            cursor.close();
             db.close();
         }
 
-        return lists;
     }
 
     public static void deleteFrom(String tableName) {
