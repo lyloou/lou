@@ -18,7 +18,6 @@ package com.lyloou.test.laifudao;
 
 import android.app.Activity;
 import android.content.ClipboardManager;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
@@ -37,16 +36,18 @@ import android.widget.Toast;
 import com.lyloou.test.R;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
-import com.lyloou.test.common.WebActivity;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class XiaoHuaActivity extends AppCompatActivity {
+    CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private Activity mContext;
     private XiaoHuaAdapter mXiaoHuaAdapter;
 
@@ -61,17 +62,27 @@ public class XiaoHuaActivity extends AppCompatActivity {
         loadData();
     }
 
+    @Override
+    protected void onDestroy() {
+        if (!mCompositeDisposable.isDisposed()) {
+            mCompositeDisposable.dispose();
+        }
+
+        super.onDestroy();
+    }
 
     private void loadData() {
         Observable<List<XiaoHua>> observable = NetWork.getLaiFuDaoApi().getXiaoHua();
-        observable
+        Disposable disposable = observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(xiaoHuas -> {
                             Toast.makeText(XiaoHuaActivity.this, "加载成功", Toast.LENGTH_SHORT).show();
                             mXiaoHuaAdapter.addItems(xiaoHuas);
                         }
-                        , throwable -> Toast.makeText(XiaoHuaActivity.this, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                        , throwable ->
+                                Toast.makeText(XiaoHuaActivity.this, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
+        mCompositeDisposable.add(disposable);
     }
 
     private void initView() {

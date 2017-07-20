@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -42,9 +43,14 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class TuPianActivity extends AppCompatActivity {
+    CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private Activity mContext;
     private TuPianAdapter mTuPianAdapter;
 
@@ -60,12 +66,26 @@ public class TuPianActivity extends AppCompatActivity {
         loadData();
     }
 
+    @Override
+    protected void onDestroy() {
+        if (!mCompositeDisposable.isDisposed()) {
+            mCompositeDisposable.dispose();
+        }
+        super.onDestroy();
+    }
 
     private void loadData() {
 
         Observable<List<TuPian>> observable = NetWork.getLaiFuDaoApi().getTuPian();
-        observable
+        Disposable disposable = observable
                 .subscribeOn(Schedulers.io())
+                .doOnNext(new Consumer<List<TuPian>>() {
+                    @Override
+                    public void accept(@NonNull List<TuPian> tuPien) throws Exception {
+                        // 模拟网络延迟
+                        SystemClock.sleep(3000);
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tupian -> {
                             Toast.makeText(TuPianActivity.this, "加载成功", Toast.LENGTH_SHORT).show();
@@ -74,6 +94,7 @@ public class TuPianActivity extends AppCompatActivity {
                             mTuPianAdapter.addItems(tupian);
                         }
                         , throwable -> Toast.makeText(TuPianActivity.this, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
+        mCompositeDisposable.add(disposable);
     }
 
     private void initView() {
