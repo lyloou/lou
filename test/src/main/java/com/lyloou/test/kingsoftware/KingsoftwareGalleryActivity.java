@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +31,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
 
 import java.text.ParseException;
@@ -49,6 +47,8 @@ import io.reactivex.schedulers.Schedulers;
 public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+    private static final int COLOR_BLUE = Color.parseColor("#009edc");
+    private static final int COLOR_BLACK = Color.parseColor("#000000");
     private Activity mContext;
     private HackyViewPager mViewPager;
 
@@ -57,7 +57,8 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mContext = this;
         mViewPager = new HackyViewPager(mContext);
-        mViewPager.setBackgroundColor(Color.parseColor("#009edc"));
+        mViewPager.setTag(true);
+        mViewPager.setBackgroundColor(COLOR_BLUE);
         setContentView(mViewPager);
 
         initView();
@@ -68,6 +69,12 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
         GalleryPagerAdapter adapter = new GalleryPagerAdapter();
         mViewPager.setAdapter(adapter);
+        adapter.setClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleScreenStatus();
+            }
+        });
 
         String formatedToday = SDF.format(new Date());
         String formatedYesterday = oneDayAgo(formatedToday);
@@ -129,24 +136,43 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus && Build.VERSION.SDK_INT >= 19) {
-            View decorView = getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        if (hasFocus) {
+            mViewPager.setTag(true);
+            toggleScreenStatus();
         }
+    }
+
+    // http://blog.csdn.net/guolin_blog/article/details/51763825
+    private void toggleScreenStatus() {
+        boolean hideStatus = (boolean) mViewPager.getTag();
+        if (Build.VERSION.SDK_INT >= 19) {
+            int visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            int invisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(hideStatus ? visibility : invisibility);
+        }
+        mViewPager.setBackgroundColor(hideStatus ? COLOR_BLUE : COLOR_BLACK);
+        mViewPager.setTag(!hideStatus);
     }
 
     // https://github.com/chrisbanes/PhotoView/blob/master/sample/src/main/java/com/github/chrisbanes/photoview/sample/ViewPagerActivity.java
     private class GalleryPagerAdapter extends PagerAdapter {
         final List<String> days;
+        private View.OnClickListener clickListener;
 
         public GalleryPagerAdapter() {
             days = new ArrayList<>();
+        }
+
+        public void setClickListener(View.OnClickListener clickListener) {
+            this.clickListener = clickListener;
         }
 
         public void addItemAndNotify(String day) {
@@ -167,6 +193,7 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
             PhotoView photoView = new PhotoView(context);
             container.addView(photoView, ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT);
             loadDataAndRenderView(days.get(position), photoView);
+            photoView.setOnClickListener(clickListener);
             return photoView;
         }
 
