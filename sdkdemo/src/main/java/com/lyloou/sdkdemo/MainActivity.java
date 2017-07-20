@@ -27,11 +27,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.FutureTarget;
 import com.bumptech.glide.request.target.Target;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,27 +37,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String IMG_URL = "http://avatar.csdn.net/A/E/9/1_w372426096.jpg";
-
-    public static void sharePicToWechatMoments(Context context, String description, String PicPath) {
-
-        Intent intent = new Intent();
-
-        intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
-
-//        intent.setAction("android.intent.action.SEND_MULTIPLE");
-
-        intent.setAction("android.intent.action.SEND");
-
-        intent.setType("image/*");
-
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(PicPath))); //图片数据（支持本地图片的Uri形式）
-
-        intent.putExtra("Kdescription", description); //微信分享页面，图片上边的描述
-
-        context.startActivity(intent);
-
-    }
 
     public static String getDiskCacheDir(Context context) {
         String cachePath = null;
@@ -96,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     .get();
 
             // 保存图片
-            File imgDir = new File(getDiskCacheDir(context), "image_cache_pool");
+            File imgDir = new File(getDiskCacheDir(context), "image_caches");
             if (!imgDir.exists()) {
                 imgDir.mkdirs();
             }
@@ -105,18 +82,14 @@ public class MainActivity extends AppCompatActivity {
             Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.JPEG;
             if (postfix.equalsIgnoreCase("png")) {
                 compressFormat = Bitmap.CompressFormat.PNG;
+            } else if (postfix.equalsIgnoreCase("jpg")) {
+                compressFormat = Bitmap.CompressFormat.JPEG;
             }
             bitmap.compress(compressFormat, 100, fileOutputStream);
             fileOutputStream.flush();
             return imgFile.getAbsolutePath();
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException | ExecutionException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -133,7 +106,10 @@ public class MainActivity extends AppCompatActivity {
     public static void sharePicsToWechatMoments(Context context, String description, List<String> paths) {
 
         Intent intent = new Intent();
-        intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.tools.ShareToTimeLineUI"));
+        String SHARE_TYPE_TIMELINE = "com.tencent.mm.ui.tools.ShareToTimeLineUI"; // 发送多张图片到朋友圈
+        String SHARE_TYPE_FRIEND = "com.tencent.mm.ui.tools.ShareImgUI"; // 发送多张图片给朋友
+
+        intent.setComponent(new ComponentName("com.tencent.mm", SHARE_TYPE_TIMELINE));
         intent.setAction("android.intent.action.SEND_MULTIPLE");
         ArrayList<Uri> imageList = new ArrayList();
         for (String picPath : paths) {
@@ -164,34 +140,13 @@ public class MainActivity extends AppCompatActivity {
                 String imageFilePathFromImageUrl2 = getImageFilePathFromImageUrl(MainActivity.this, "http://cdn2.jianshu.io/assets/default_avatar/1-04bbeead395d74921af6a4e8214b4f61.jpg");
                 String imageFilePathFromImageUrl3 = getImageFilePathFromImageUrl(MainActivity.this, "http://upload-images.jianshu.io/upload_images/1835526-496467cd0d0847a2.jpg");
                 String imageFilePathFromImageUrl4 = getImageFilePathFromImageUrl(MainActivity.this, "http://upload-images.jianshu.io/upload_images/1835526-f3764c1a4b8af50d.jpg");
-                System.out.println("ddddddddddddddddddddd=========>" + imageFilePathFromImageUrl);
                 List<String> paths = new ArrayList<String>();
                 paths.add(imageFilePathFromImageUrl);
                 paths.add(imageFilePathFromImageUrl2);
                 paths.add(imageFilePathFromImageUrl3);
                 paths.add(imageFilePathFromImageUrl4);
-//                sharePicToWechatMoments(MainActivity.this, "你瞅瞅，你瞅瞅", imageFilePathFromImageUrl);
-                sharePicsToWechatMoments(MainActivity.this, "hahah 喔喔喔", paths);
+                sharePicsToWechatMoments(MainActivity.this, "你是我的玛尼玛尼哄", paths);
             }
         }).start();
-    }
-
-    void testGlideDownloadFile() {
-        System.out.println("he==========>");
-        FutureTarget<File> fileFutureTarget = Glide.with(this.getApplicationContext())
-                .load("http://avatar.csdn.net/A/B/2/1_qq_30740239.jpg")
-                .downloadOnly(500, 500);
-        try {
-            File file = fileFutureTarget.get();
-            System.out.println(file.getAbsolutePath());
-            System.out.println(file.getName());
-            System.out.println("he==========>2");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            System.out.println("he==========>23");
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            System.out.println("he==========>24");
-        }
     }
 }
