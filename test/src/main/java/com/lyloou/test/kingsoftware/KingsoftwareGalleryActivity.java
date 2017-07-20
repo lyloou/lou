@@ -18,8 +18,10 @@ package com.lyloou.test.kingsoftware;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +32,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
 
 import java.text.ParseException;
@@ -47,13 +50,14 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
     private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
     private Activity mContext;
-    private ViewPager mViewPager;
+    private HackyViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        mViewPager = new ViewPager(mContext);
+        mViewPager = new HackyViewPager(mContext);
+        mViewPager.setBackgroundColor(Color.parseColor("#009edc"));
         setContentView(mViewPager);
 
         initView();
