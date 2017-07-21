@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +48,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_FOOTER = 2;
-    private List<String> mList;
+    private List<ActiveDay> mList;
     private boolean mMaxed;
     private Context mContext;
     private OnItemClickListener mItemClickListener;
@@ -94,57 +95,19 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder instanceof ActiveDayHolder) {
             ActiveDayHolder holder = (ActiveDayHolder) viewHolder;
-            String activeDay = mList.get(position - 1); // 注意需要减去header的数量
+            ActiveDay activeDay = mList.get(position - 1); // 注意需要减去header的数量
 
-            holder.tvItem.setText(activeDay);
+            holder.cbItem.setChecked(activeDay.isChecked());
+            holder.tvItem.setText(activeDay.getDay());
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mItemClickListener.onClick(view , activeDay);
+                    mItemClickListener.onClick(position, activeDay);
                 }
             });
 
-
-            String[] split = activeDay.split("-");
-            if (split.length == 3) {
-                String year = split[0];
-                String month = split[1];
-                String day = split[2];
-
-                Call<ResponseBody> gankData = NetWork.getGankApi().getGankData(year, month, day);
-                gankData.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.isSuccessful()) {
-                            try {
-                                ResponseBody body = response.body();
-                                if(body==null){
-                                    return;
-                                }
-                                String string = body.string();
-                                JSONObject jsonObject = new JSONObject(string);
-                                JSONObject results = jsonObject.getJSONObject("results");
-                                JSONArray welfares = results.getJSONArray("福利");
-                                JSONObject welfare = welfares.getJSONObject(0);
-                                System.out.println(welfare);
-                                String welfareUrl = welfare.getString("url");
-                                Glide.with(mContext.getApplicationContext()).load(welfareUrl).asBitmap().centerCrop().into(holder.ivPic);
-                            } catch (IOException | JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        t.printStackTrace();
-                    }
-                });
-
-
-            } else {
-                Toast.makeText(mContext, "格式不对：" + activeDay, Toast.LENGTH_SHORT).show();
-            }
+            ImageView ivPic = holder.ivItem;
+            // loadWelfareToImageView(activeDay, ivItem);
 
         } else if (viewHolder instanceof HeaderHolder) {
             HeaderHolder holder = (HeaderHolder) viewHolder;
@@ -160,6 +123,50 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         }
 
+    }
+
+    private void loadWelfareToImageView(String activeDay, final ImageView ivPic) {
+        String[] split = activeDay.split("-");
+        if (split.length == 3) {
+            String year = split[0];
+            String month = split[1];
+            String day = split[2];
+
+            Call<ResponseBody> gankData = NetWork.getGankApi().getGankData(year, month, day);
+            gankData.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        try {
+                            ResponseBody body = response.body();
+                            if(body==null){
+                                return;
+                            }
+                            String string = body.string();
+                            JSONObject jsonObject = new JSONObject(string);
+                            JSONObject results = jsonObject.getJSONObject("results");
+                            JSONArray welfares = results.getJSONArray("福利");
+                            JSONObject welfare = welfares.getJSONObject(0);
+                            System.out.println(welfare);
+                            String welfareUrl = welfare.getString("url");
+
+                            Glide.with(mContext.getApplicationContext()).load(welfareUrl).asBitmap().centerCrop().into(ivPic);
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+
+
+        } else {
+            Toast.makeText(mContext, "格式不对：" + activeDay, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -183,7 +190,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void addAll(List<String> activeDays) {
+    public void addAll(List<ActiveDay> activeDays) {
         mList.addAll(activeDays);
         notifyDataSetChanged();
     }
@@ -197,19 +204,22 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     interface OnItemClickListener {
-        void onClick(View view, String activeDay);
+        void onClick(int realPosition, ActiveDay activeDay);
     }
 
     private static class ActiveDayHolder extends RecyclerView.ViewHolder {
         View view;
         TextView tvItem;
-        ImageView ivPic;
+        ImageView ivItem;
+        CheckBox cbItem;
 
         ActiveDayHolder(View itemView) {
             super(itemView);
             view = itemView;
             tvItem = (TextView) view.findViewById(R.id.tv_item);
-            ivPic = view.findViewById(R.id.iv_tupian);
+            ivItem = view.findViewById(R.id.iv_item);
+            cbItem = view.findViewById(R.id.cb_item);
+            cbItem.setClickable(false);
         }
     }
 

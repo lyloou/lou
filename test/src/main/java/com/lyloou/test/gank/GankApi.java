@@ -19,7 +19,6 @@ package com.lyloou.test.gank;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
@@ -32,7 +31,7 @@ import retrofit2.http.Path;
  */
 public interface GankApi {
     @GET("day/history")
-    Observable<ActiveDay> getActiveDays();
+    Observable<ActiveDayResult> getActiveDays();
 
     @GET("day/{year}/{month}/{day}")
     Call<ResponseBody> getGankData(@Path("year")String year, @Path("month") String month, @Path("day") String day);

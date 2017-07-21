@@ -16,28 +16,31 @@
 
 package com.lyloou.test.gank;
 
-public class ActiveDay {
+import java.util.List;
 
-    private String day;
-    private boolean checked;
+public class ActiveDayResult {
 
-    public ActiveDay(String day) {
-        this.day = day;
+    /**
+     * error : false
+     * results : ["2017-07-20","2017-07-19"]
+     */
+
+    private boolean error;
+    private List<String> results;
+
+    public boolean isError() {
+        return error;
     }
 
-    public String getDay() {
-        return day;
+    public void setError(boolean error) {
+        this.error = error;
     }
 
-    public void setDay(String day) {
-        this.day = day;
+    public List<String> getResults() {
+        return results;
     }
 
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
+    public void setResults(List<String> results) {
+        this.results = results;
     }
 }

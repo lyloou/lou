@@ -22,10 +22,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
@@ -35,11 +34,7 @@ import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -48,23 +43,36 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class GankWelfareActivity extends AppCompatActivity {
+    private static final String TAG = "GankWelfareActivity";
+    private final List<ActiveDay> mActiveDays = new ArrayList<>();
     private SwipeRefreshLayout mRefreshLayout;
     private ActiveDayAdapter mActiveDayAdapter;
     private Activity mContext;
+    private boolean mIsLoading = false;
     private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
+
+            GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+            int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+            int totalItemCount = layoutManager.getItemCount();
+
+            int max_size = mActiveDays.size();
+            if (totalItemCount < max_size && lastVisibleItem >= totalItemCount / 2 - 4) {
+                if (mIsLoading) {
+                    Log.i(TAG, "onScrolled: 加载中...");
+                } else {
+                    Log.i(TAG, "onScrolled: 加载更多了.");
+                    loadMore();
+                }
+
+            }
         }
     };
-    private boolean mIsLoading = false;
     private Disposable mDisposable;
 
     @Override
@@ -84,10 +92,14 @@ public class GankWelfareActivity extends AppCompatActivity {
         RelativeLayout rlytEmpty = (RelativeLayout) findViewById(R.id.rlyt_empty);
 
         mActiveDayAdapter = new ActiveDayAdapter(this);
+        mActiveDayAdapter.setTitle("福利岛");
+//        mActiveDayAdapter.setTitle("一大波福利来袭");
         mActiveDayAdapter.setOnItemClickListener(new ActiveDayAdapter.OnItemClickListener() {
             @Override
-            public void onClick(View view, String activeDay) {
+            public void onClick(int realPosition, ActiveDay activeDay) {
+                activeDay.setChecked(!activeDay.isChecked());
 
+                mActiveDayAdapter.notifyItemChanged(realPosition);
             }
         });
         recyclerView.setAdapter(mActiveDayAdapter);
@@ -119,6 +131,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                     }
                 });
                 mActiveDayAdapter.clearAll();
+                mActiveDays.clear();
                 loadDatas();
             }
         });
@@ -146,35 +159,74 @@ public class GankWelfareActivity extends AppCompatActivity {
         // 通过取消上次加载，来防止出现加载数据混淆的问题（）
         unSubscribe();
 
-        mIsLoading = true;
         mDisposable = NetWork.getGankApi().getActiveDays()
 
-                .map(new Function<ActiveDay, List<String>>() {
+                .map(new Function<ActiveDayResult, List<String>>() {
                     @Override
-                    public List<String> apply(@NonNull ActiveDay activeDay) throws Exception {
-                        return activeDay.getResults();
+                    public List<String> apply(@NonNull ActiveDayResult activeDayResult) throws Exception {
+                        if (activeDayResult.isError()) {
+                            return new ArrayList<>();
+                        }
+                        return activeDayResult.getResults();
+                    }
+                })
+                .map(new Function<List<String>, List<ActiveDay>>() {
+                    @Override
+                    public List<ActiveDay> apply(@NonNull List<String> list) throws Exception {
+                        List<ActiveDay> activeDays = new ArrayList<ActiveDay>();
+                        for (String day : list) {
+                            activeDays.add(new ActiveDay(day));
+                        }
+                        return activeDays;
                     }
                 })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<String>>() {
+                .subscribe(new Consumer<List<ActiveDay>>() {
                     @Override
-                    public void accept(@NonNull List<String> activeDays) throws Exception {
-                        mActiveDayAdapter.addAll(activeDays);
+                    public void accept(@NonNull List<ActiveDay> activeDays) throws Exception {
+                        mActiveDays.addAll(activeDays);
+                        loadMore();
+
                         mRefreshLayout.setRefreshing(false);
-                        mIsLoading = false;
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         throwable.printStackTrace();
                         mRefreshLayout.setRefreshing(false);
-                        mIsLoading = false;
 
                         Utoast.show(mContext, "网络异常:" + throwable.getMessage());
                     }
                 });
+    }
+
+    private void loadMore() {
+        int maxSize = mActiveDays.size();
+        int listSize = mActiveDayAdapter.getListSize();
+        if (maxSize == listSize) {
+            return;
+        }
+
+        mIsLoading = true;
+        mRefreshLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int loadedSize = Math.min(maxSize, listSize + 20);
+                mActiveDayAdapter.clearAll();
+                mActiveDayAdapter.addAll(mActiveDays.subList(0, loadedSize));
+                if(maxSize == loadedSize){
+                    if (!mActiveDayAdapter.isMaxed()) {
+                        mActiveDayAdapter.setMaxed(true);
+                        mActiveDayAdapter.notifyDataSetChanged();
+                    }
+                }
+                System.out.println("=============>" + loadedSize);
+                mIsLoading = false;
+            }
+        }, 1600);
+
     }
 
     private void unSubscribe() {
