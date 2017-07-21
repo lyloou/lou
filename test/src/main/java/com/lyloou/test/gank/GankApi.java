@@ -35,4 +35,7 @@ public interface GankApi {
 
     @GET("day/{year}/{month}/{day}")
     Call<ResponseBody> getGankData(@Path("year")String year, @Path("month") String month, @Path("day") String day);
+
+    @GET("history/content/day/{year}/{month}/{day}")
+    Call<ResponseBody> getGankContent(@Path("year")String year, @Path("month") String month, @Path("day") String day);
 }

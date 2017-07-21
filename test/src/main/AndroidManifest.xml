@@ -80,6 +80,7 @@
         <activity
             android:name=".gank.GankWelfareActivity"
             android:label="@string/gank_welfare"/>
+        <activity android:name=".common.WebContentActivity"/>
     </application>
 
 </manifest>

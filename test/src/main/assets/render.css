@@ -1,0 +1,35 @@
+html,
+body {
+    margin: 10;
+    padding: 0
+}
+
+body {
+    background: #fff;
+    color: #000;
+    overflow: auto;
+    overflow-x: hidden
+}
+
+a {
+    color: #0f9c89;
+    text-decoration: none
+}
+
+a:active {
+    background: #ccc
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    margin: 1em auto;
+    display: block
+}
+
+
+ul {
+    padding: 0;
+    margin: .2em .2em .2em;
+    list-style: none
+}

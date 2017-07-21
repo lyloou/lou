@@ -23,17 +23,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.common.WebContentActivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +52,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class GankWelfareActivity extends AppCompatActivity {
@@ -85,11 +98,68 @@ public class GankWelfareActivity extends AppCompatActivity {
         initView();
     }
 
+    private List<ActiveDay> getCheckedActiveDays() {
+        List<ActiveDay> activeDays = new ArrayList<>();
+        if (mActiveDayAdapter != null) {
+            for (ActiveDay activeDay : mActiveDayAdapter.getList()) {
+                if (activeDay.isChecked()) {
+                    activeDays.add(activeDay);
+                }
+            }
+
+        }
+        return activeDays;
+    }
+
+    private void loadWelfareToImageView(String activeDay) {
+        String[] split = activeDay.split("-");
+        if (split.length == 3) {
+            String year = split[0];
+            String month = split[1];
+            String day = split[2];
+
+            Call<ResponseBody> gankData = NetWork.getGankApi().getGankContent(year, month, day);
+            gankData.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        try {
+                            ResponseBody body = response.body();
+                            if (body == null) {
+                                return;
+                            }
+                            String string = body.string();
+                            JSONObject jsonObject = new JSONObject(string);
+                            JSONArray results = jsonObject.getJSONArray("results");
+
+                            JSONObject contentObject = results.getJSONObject(0);
+                            String content = contentObject.getString("content");
+
+                            WebContentActivity.newInstance(mContext, content);
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+
+
+        } else {
+            Toast.makeText(mContext, "格式不对：" + activeDay, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void initView() {
         EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.erv_gank_welfare);
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_gank_welfare);
         ImageView ivEmpty = (ImageView) findViewById(R.id.iv_empty);
         RelativeLayout rlytEmpty = (RelativeLayout) findViewById(R.id.rlyt_empty);
+        LinearLayout llytBottom = (LinearLayout) findViewById(R.id.llyt_bottom);
 
         mActiveDayAdapter = new ActiveDayAdapter(this);
         mActiveDayAdapter.setTitle("福利岛");
@@ -97,9 +167,24 @@ public class GankWelfareActivity extends AppCompatActivity {
         mActiveDayAdapter.setOnItemClickListener(new ActiveDayAdapter.OnItemClickListener() {
             @Override
             public void onClick(int realPosition, ActiveDay activeDay) {
+
+                loadWelfareToImageView(activeDay.getDay());
+
+                if(true){
+                    return;
+                }
+
                 activeDay.setChecked(!activeDay.isChecked());
 
                 mActiveDayAdapter.notifyItemChanged(realPosition);
+
+                List<ActiveDay> checkedActiveDays = getCheckedActiveDays();
+                int size = checkedActiveDays.size();
+                if (size > 0) {
+                    llytBottom.setVisibility(View.VISIBLE);
+                } else {
+                    llytBottom.setVisibility(View.GONE);
+                }
             }
         });
         recyclerView.setAdapter(mActiveDayAdapter);
@@ -216,7 +301,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                 int loadedSize = Math.min(maxSize, listSize + 20);
                 mActiveDayAdapter.clearAll();
                 mActiveDayAdapter.addAll(mActiveDays.subList(0, loadedSize));
-                if(maxSize == loadedSize){
+                if (maxSize == loadedSize) {
                     if (!mActiveDayAdapter.isMaxed()) {
                         mActiveDayAdapter.setMaxed(true);
                         mActiveDayAdapter.notifyDataSetChanged();

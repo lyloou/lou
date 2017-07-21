@@ -29,10 +29,6 @@ public class ActiveDay {
         return day;
     }
 
-    public void setDay(String day) {
-        this.day = day;
-    }
-
     public boolean isChecked() {
         return checked;
     }

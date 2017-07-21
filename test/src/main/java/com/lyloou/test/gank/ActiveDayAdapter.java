@@ -59,6 +59,10 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mList = new ArrayList<>();
     }
 
+    public List<ActiveDay> getList() {
+        return mList;
+    }
+
     public void setTitle(String title) {
         mTitle = title;
     }
@@ -106,8 +110,8 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
 
-            ImageView ivPic = holder.ivItem;
-            // loadWelfareToImageView(activeDay, ivItem);
+            ImageView ivItem = holder.ivItem;
+            loadWelfareToImageView(activeDay.getDay(), ivItem);
 
         } else if (viewHolder instanceof HeaderHolder) {
             HeaderHolder holder = (HeaderHolder) viewHolder;
@@ -139,7 +143,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (response.isSuccessful()) {
                         try {
                             ResponseBody body = response.body();
-                            if(body==null){
+                            if (body == null) {
                                 return;
                             }
                             String string = body.string();
