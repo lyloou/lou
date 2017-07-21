@@ -17,6 +17,7 @@
 package com.lyloou.test.common;
 
 import com.lyloou.test.douban.DouBanApi;
+import com.lyloou.test.gank.GankApi;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.laifudao.LaiFuDaoApi;
 import com.lyloou.test.onearticle.OneArticleApi;
@@ -38,6 +39,7 @@ public class NetWork {
     private static LaiFuDaoApi sLaiFuDaoApi;
     private static DouBanApi sDouBanApi;
     private static OneArticleApi sOneArticleApi;
+    private static GankApi sGankApi;
 
     public static KingsoftwareAPI getKingsoftwareApi() {
         if (sKingsoftwareAPI == null) {
@@ -87,5 +89,17 @@ public class NetWork {
             sOneArticleApi = retrofit.create(OneArticleApi.class);
         }
         return sOneArticleApi;
+    }
+
+    public static GankApi getGankApi() {
+        if (sGankApi == null) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://gank.io/api/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+            sGankApi = retrofit.create(GankApi.class);
+        }
+        return sGankApi;
     }
 }
