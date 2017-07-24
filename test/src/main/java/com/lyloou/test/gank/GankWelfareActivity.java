@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -163,16 +164,9 @@ public class GankWelfareActivity extends AppCompatActivity {
 
         mActiveDayAdapter = new ActiveDayAdapter(this);
         mActiveDayAdapter.setTitle("福利岛");
-//        mActiveDayAdapter.setTitle("一大波福利来袭");
         mActiveDayAdapter.setOnItemClickListener(new ActiveDayAdapter.OnItemClickListener() {
             @Override
             public void onClick(int realPosition, ActiveDay activeDay) {
-
-                loadWelfareToImageView(activeDay.getDay());
-
-                if(true){
-                    return;
-                }
 
                 activeDay.setChecked(!activeDay.isChecked());
 
@@ -181,10 +175,59 @@ public class GankWelfareActivity extends AppCompatActivity {
                 List<ActiveDay> checkedActiveDays = getCheckedActiveDays();
                 int size = checkedActiveDays.size();
                 if (size > 0) {
+                    TextView tvCount = llytBottom.findViewById(R.id.tv_gank_bottom_count);
+                    TextView tvFriend = llytBottom.findViewById(R.id.tv_gank_bottom_friend);
+                    TextView tvTimeline = llytBottom.findViewById(R.id.tv_gank_bottom_timeline);
+
+                    tvCount.setText("" + size);
+
                     llytBottom.setVisibility(View.VISIBLE);
+                    tvTimeline.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    List<String> paths = new ArrayList<String>();
+                                    for (ActiveDay day : checkedActiveDays) {
+                                        String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
+                                        String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
+                                        paths.add(imageFilePathFromImageUrl);
+                                    }
+                                    Ushare.sharePicsToWechatMoments(mContext, "你好啊", paths, Ushare.SHARE_TYPE_TIMELINE);
+                                }
+                            }).start();
+
+                        }
+                    });
+                    tvFriend.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    List<String> paths = new ArrayList<String>();
+                                    for (ActiveDay day : checkedActiveDays) {
+                                        String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
+                                        String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
+                                        paths.add(imageFilePathFromImageUrl);
+                                    }
+                                    Ushare.sharePicsToWechatMoments(mContext, "你好啊", paths, Ushare.SHARE_TYPE_FRIEND);
+                                }
+                            }).start();
+
+                        }
+                    });
                 } else {
                     llytBottom.setVisibility(View.GONE);
                 }
+            }
+
+            @Override
+            public void onLongClick(int position, ActiveDay activeDay) {
+                loadWelfareToImageView(activeDay.getDay());
             }
         });
         recyclerView.setAdapter(mActiveDayAdapter);

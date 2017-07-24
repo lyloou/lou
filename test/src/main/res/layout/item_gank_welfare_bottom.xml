@@ -19,9 +19,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#44444444"
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/tv_gank_bottom_count"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:gravity="center"
@@ -38,16 +40,25 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/tv_gank_bottom_friend"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
+            android:background="?android:selectableItemBackground"
             android:gravity="center"
             android:text="朋友"/>
 
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark"/>
+
         <TextView
+            android:id="@+id/tv_gank_bottom_timeline"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
+            android:background="?android:selectableItemBackground"
             android:gravity="center"
             android:text="朋友圈"/>
     </LinearLayout>

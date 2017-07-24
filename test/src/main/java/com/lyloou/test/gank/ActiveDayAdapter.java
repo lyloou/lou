@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -109,9 +110,15 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     mItemClickListener.onClick(position, activeDay);
                 }
             });
-
+            holder.view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    mItemClickListener.onLongClick(position, activeDay);
+                    return true;
+                }
+            });
             ImageView ivItem = holder.ivItem;
-            loadWelfareToImageView(activeDay.getDay(), ivItem);
+            // loadWelfareToImageView(activeDay.getDay(), ivItem);
 
         } else if (viewHolder instanceof HeaderHolder) {
             HeaderHolder holder = (HeaderHolder) viewHolder;
@@ -209,6 +216,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     interface OnItemClickListener {
         void onClick(int realPosition, ActiveDay activeDay);
+        void onLongClick(int position, ActiveDay activeDay);
     }
 
     private static class ActiveDayHolder extends RecyclerView.ViewHolder {
