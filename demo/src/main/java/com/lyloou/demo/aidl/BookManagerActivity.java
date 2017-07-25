@@ -64,7 +64,7 @@ public class BookManagerActivity extends AppCompatActivity {
             }
 
             try {
-                mIBookManager.rigisterListener(mIOnNewBookArrivedListener);
+                mIBookManager.registerListener(mIOnNewBookArrivedListener);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -112,7 +112,7 @@ public class BookManagerActivity extends AppCompatActivity {
         // 如果在 onServiceDisconnected 中添加下面代码，那么就来不及注销
         if (mIBookManager != null && mIBookManager.asBinder().isBinderAlive()) {
             try {
-                mIBookManager.unrigisterListener(mIOnNewBookArrivedListener);
+                mIBookManager.unregisterListener(mIOnNewBookArrivedListener);
                 System.out.println("unregister listener:" + mIOnNewBookArrivedListener);
             } catch (RemoteException e) {
                 e.printStackTrace();

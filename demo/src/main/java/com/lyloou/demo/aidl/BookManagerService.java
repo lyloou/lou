@@ -52,7 +52,7 @@ public class BookManagerService extends Service {
         }
 
         @Override
-        public void rigisterListener(IOnNewBookArrivedListener listener) throws RemoteException {
+        public void registerListener(IOnNewBookArrivedListener listener) throws RemoteException {
             mListeners.register(listener);
             System.out.println("监听个数增加到了" + mListeners.getRegisteredCallbackCount());
         }
@@ -71,7 +71,7 @@ public class BookManagerService extends Service {
         }
 
         @Override
-        public void unrigisterListener(IOnNewBookArrivedListener listener) throws RemoteException {
+        public void unregisterListener(IOnNewBookArrivedListener listener) throws RemoteException {
             mListeners.unregister(listener);
             System.out.println("剩余监听个数" + mListeners.getRegisteredCallbackCount());
         }

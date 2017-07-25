@@ -8,6 +8,6 @@ interface IBookManager {
     List<Book> getBookList();
     void addBook(in Book book);
 
-    void rigisterListener(IOnNewBookArrivedListener listener);
-    void unrigisterListener(IOnNewBookArrivedListener listener);
+    void registerListener(IOnNewBookArrivedListener listener);
+    void unregisterListener(IOnNewBookArrivedListener listener);
 }
