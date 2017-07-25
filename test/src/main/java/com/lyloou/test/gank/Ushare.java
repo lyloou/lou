@@ -44,6 +44,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class Ushare {
+
     public static final String SHARE_TYPE_TIMELINE = "com.tencent.mm.ui.tools.ShareToTimeLineUI"; // 发送多张图片到朋友圈
     public static final String SHARE_TYPE_FRIEND = "com.tencent.mm.ui.tools.ShareImgUI"; // 发送多张图片给朋友
 
@@ -89,6 +90,20 @@ public class Ushare {
             cachePath = context.getCacheDir().getPath();
         }
         return cachePath;
+    }
+
+    public static void deleteDirContent(Context context, String dirPath) {
+        File dir = new File(dirPath);
+        if (dir == null || !dir.exists() || !dir.isDirectory())
+            return;
+
+        for (File file : dir.listFiles()) {
+            if (file.isFile())
+                file.delete(); // 删除所有文件
+            else if (file.isDirectory())
+                deleteDirContent(context, dirPath); // 递规的方式删除文件夹
+        }
+        // dir.delete();// 删除目录本身
     }
 
     public static String getImageFilePathFromImageUrl(Context context, String imageUrl) {
@@ -146,11 +161,28 @@ public class Ushare {
         return null;
     }
 
-    public static void sharePicsToWechatMoments(Context context, String description, List<String> paths, String shareTypeTimeline) {
+    private static File getImageCacheDir(Context context) {
+        // 保存图片
+        File imgDir = new File(getDiskCacheDir(context.getApplicationContext()), "image_caches");
+        if (!imgDir.exists()) {
+            imgDir.mkdirs();
+        }
+        return imgDir;
+    }
+
+    public static void clearImageDir(Context context) {
+        // 保存图片
+        File imgDir = new File(getDiskCacheDir(context.getApplicationContext()), "image_caches");
+        if (imgDir.exists()) {
+            deleteDirContent(context, imgDir.getAbsolutePath());
+        }
+    }
+
+    public static void sharePicsToWechat(Context context, String description, List<String> paths, String shareType) {
 
         Intent intent = new Intent();
 
-        intent.setComponent(new ComponentName("com.tencent.mm", shareTypeTimeline));
+        intent.setComponent(new ComponentName("com.tencent.mm", shareType));
         intent.setAction("android.intent.action.SEND_MULTIPLE");
         ArrayList<Uri> imageList = new ArrayList();
         for (String picPath : paths) {

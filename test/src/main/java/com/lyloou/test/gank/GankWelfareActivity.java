@@ -175,51 +175,8 @@ public class GankWelfareActivity extends AppCompatActivity {
                 List<ActiveDay> checkedActiveDays = getCheckedActiveDays();
                 int size = checkedActiveDays.size();
                 if (size > 0) {
-                    TextView tvCount = llytBottom.findViewById(R.id.tv_gank_bottom_count);
-                    TextView tvFriend = llytBottom.findViewById(R.id.tv_gank_bottom_friend);
-                    TextView tvTimeline = llytBottom.findViewById(R.id.tv_gank_bottom_timeline);
-
-                    tvCount.setText("" + size);
-
+                    initBootomViewWithData(llytBottom, checkedActiveDays);
                     llytBottom.setVisibility(View.VISIBLE);
-                    tvTimeline.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    List<String> paths = new ArrayList<String>();
-                                    for (ActiveDay day : checkedActiveDays) {
-                                        String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
-                                        String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
-                                        paths.add(imageFilePathFromImageUrl);
-                                    }
-                                    Ushare.sharePicsToWechatMoments(mContext, "你好啊", paths, Ushare.SHARE_TYPE_TIMELINE);
-                                }
-                            }).start();
-
-                        }
-                    });
-                    tvFriend.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    List<String> paths = new ArrayList<String>();
-                                    for (ActiveDay day : checkedActiveDays) {
-                                        String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
-                                        String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
-                                        paths.add(imageFilePathFromImageUrl);
-                                    }
-                                    Ushare.sharePicsToWechatMoments(mContext, "你好啊", paths, Ushare.SHARE_TYPE_FRIEND);
-                                }
-                            }).start();
-
-                        }
-                    });
                 } else {
                     llytBottom.setVisibility(View.GONE);
                 }
@@ -266,6 +223,57 @@ public class GankWelfareActivity extends AppCompatActivity {
 
         // 开始加载数据
         loadDatas();
+    }
+
+    private void initBootomViewWithData(LinearLayout view, final List<ActiveDay> checkedActiveDays) {
+        TextView tvCount = view.findViewById(R.id.tv_gank_bottom_count);
+        TextView tvFriend = view.findViewById(R.id.tv_gank_bottom_friend);
+        TextView tvTimeline = view.findViewById(R.id.tv_gank_bottom_timeline);
+
+        String caption = String.valueOf(checkedActiveDays.size());
+        tvCount.setText(caption);
+
+        LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
+        tvTimeline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressTips.show("福利准备中");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<String> paths = new ArrayList<String>();
+                        for (ActiveDay day : checkedActiveDays) {
+                            String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
+                            String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
+                            paths.add(imageFilePathFromImageUrl);
+                        }
+                        Ushare.sharePicsToWechat(mContext, "这些天的福利了", paths, Ushare.SHARE_TYPE_TIMELINE);
+                        progressTips.hide();
+                    }
+                }).start();
+
+            }
+        });
+        tvFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                progressTips.show("福利准备中");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<String> paths = new ArrayList<String>();
+                        for (ActiveDay day : checkedActiveDays) {
+                            String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
+                            String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
+                            paths.add(imageFilePathFromImageUrl);
+                        }
+                        Ushare.sharePicsToWechat(mContext, "", paths, Ushare.SHARE_TYPE_FRIEND);
+                        progressTips.hide();
+                    }
+                }).start();
+
+            }
+        });
     }
 
     @Override
