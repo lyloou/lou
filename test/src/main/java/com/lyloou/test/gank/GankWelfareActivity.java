@@ -22,6 +22,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -46,6 +47,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -76,11 +78,12 @@ public class GankWelfareActivity extends AppCompatActivity {
             int totalItemCount = layoutManager.getItemCount();
 
             int max_size = mActiveDays.size();
-            if (totalItemCount < max_size && lastVisibleItem >= totalItemCount / 2 - 4) {
+            // 快到底部了，数据不多了
+            int nearBottom = totalItemCount - 8;
+            if (totalItemCount < max_size && lastVisibleItem >= nearBottom) {
                 if (mIsLoading) {
-                    Log.i(TAG, "onScrolled: 加载中...");
+                    Log.i(TAG, "加载中...");
                 } else {
-                    Log.i(TAG, "onScrolled: 加载更多了.");
                     loadMore();
                 }
 
@@ -102,12 +105,7 @@ public class GankWelfareActivity extends AppCompatActivity {
     private List<ActiveDay> getCheckedActiveDays() {
         List<ActiveDay> activeDays = new ArrayList<>();
         if (mActiveDayAdapter != null) {
-            for (ActiveDay activeDay : mActiveDayAdapter.getList()) {
-                if (activeDay.isChecked()) {
-                    activeDays.add(activeDay);
-                }
-            }
-
+            activeDays.addAll(mActiveDayAdapter.getList().stream().filter(ActiveDay::isChecked).collect(Collectors.toList()));
         }
         return activeDays;
     }
@@ -215,6 +213,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                         mActiveDayAdapter.setMaxed(false);
                     }
                 });
+                llytBottom.setVisibility(View.GONE);
                 mActiveDayAdapter.clearAll();
                 mActiveDays.clear();
                 loadDatas();
@@ -244,10 +243,13 @@ public class GankWelfareActivity extends AppCompatActivity {
                         List<String> paths = new ArrayList<String>();
                         for (ActiveDay day : checkedActiveDays) {
                             String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
+                            if (TextUtils.isEmpty(welfareUrl)) {
+                                continue;
+                            }
                             String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
                             paths.add(imageFilePathFromImageUrl);
                         }
-                        Ushare.sharePicsToWechat(mContext, "这些天的福利了", paths, Ushare.SHARE_TYPE_TIMELINE);
+                        Ushare.sharePicsToWechat(mContext, "这些天的福利了", paths, Ushare.SHARE_TYPE_TIMELINE, getTipsRunnable(view));
                         progressTips.hide();
                     }
                 }).start();
@@ -264,16 +266,34 @@ public class GankWelfareActivity extends AppCompatActivity {
                         List<String> paths = new ArrayList<String>();
                         for (ActiveDay day : checkedActiveDays) {
                             String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
+                            if (TextUtils.isEmpty(welfareUrl)) {
+                                continue;
+                            }
                             String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
                             paths.add(imageFilePathFromImageUrl);
                         }
-                        Ushare.sharePicsToWechat(mContext, "", paths, Ushare.SHARE_TYPE_FRIEND);
+                        Ushare.sharePicsToWechat(mContext, "", paths, Ushare.SHARE_TYPE_FRIEND, getTipsRunnable(view));
                         progressTips.hide();
                     }
                 }).start();
 
             }
         });
+    }
+
+    @android.support.annotation.NonNull
+    private Runnable getTipsRunnable(final View view) {
+        return new Runnable() {
+            @Override
+            public void run() {
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(view.getContext(), "没有安装微信", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        };
     }
 
     @Override
@@ -350,8 +370,7 @@ public class GankWelfareActivity extends AppCompatActivity {
             @Override
             public void run() {
                 int loadedSize = Math.min(maxSize, listSize + 20);
-                mActiveDayAdapter.clearAll();
-                mActiveDayAdapter.addAll(mActiveDays.subList(0, loadedSize));
+                mActiveDayAdapter.addAll(mActiveDays.subList(listSize, loadedSize));
                 if (maxSize == loadedSize) {
                     if (!mActiveDayAdapter.isMaxed()) {
                         mActiveDayAdapter.setMaxed(true);

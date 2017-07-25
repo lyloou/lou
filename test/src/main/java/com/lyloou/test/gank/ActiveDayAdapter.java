@@ -118,7 +118,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
             ImageView ivItem = holder.ivItem;
-            // loadWelfareToImageView(activeDay.getDay(), ivItem);
+            loadWelfareToImageView(activeDay.getDay(), ivItem);
 
         } else if (viewHolder instanceof HeaderHolder) {
             HeaderHolder holder = (HeaderHolder) viewHolder;
@@ -161,7 +161,12 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             System.out.println(welfare);
                             String welfareUrl = welfare.getString("url");
 
-                            Glide.with(mContext.getApplicationContext()).load(welfareUrl).asBitmap().centerCrop().into(ivPic);
+                            Glide.with(mContext.getApplicationContext())
+                                    .load(welfareUrl)
+                                    .asBitmap()
+                                    .placeholder(R.mipmap.bg)
+                                    .centerCrop()
+                                    .into(ivPic);
                         } catch (IOException | JSONException e) {
                             e.printStackTrace();
                         }

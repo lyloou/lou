@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
@@ -178,11 +179,12 @@ public class Ushare {
         }
     }
 
-    public static void sharePicsToWechat(Context context, String description, List<String> paths, String shareType) {
+    public static void sharePicsToWechat(Context context, String description, List<String> paths, String shareType, Runnable runnable) {
 
         Intent intent = new Intent();
 
-        intent.setComponent(new ComponentName("com.tencent.mm", shareType));
+        String packageName = "com.tencent.mm";
+        intent.setComponent(new ComponentName(packageName, shareType));
         intent.setAction("android.intent.action.SEND_MULTIPLE");
         ArrayList<Uri> imageList = new ArrayList();
         for (String picPath : paths) {
@@ -201,6 +203,11 @@ public class Ushare {
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_STREAM, imageList); //图片数据（支持本地图片的Uri形式）
         intent.putExtra("Kdescription", description); //微信分享页面，图片上边的描述
-        context.startActivity(intent);
+        Intent launchIntentForPackage = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        if (launchIntentForPackage != null) {
+            context.startActivity(intent);
+        } else {
+            runnable.run();
+        }
     }
 }
