@@ -105,7 +105,13 @@ public class GankWelfareActivity extends AppCompatActivity {
     private List<ActiveDay> getCheckedActiveDays() {
         List<ActiveDay> activeDays = new ArrayList<>();
         if (mActiveDayAdapter != null) {
-            activeDays.addAll(mActiveDayAdapter.getList().stream().filter(ActiveDay::isChecked).collect(Collectors.toList()));
+            List<ActiveDay> activeDayList = mActiveDayAdapter.getList();
+            for (ActiveDay activeDay : activeDayList) {
+                if (activeDay.isChecked()) {
+                    activeDays.add(activeDay);
+                }
+            }
+
         }
         return activeDays;
     }
