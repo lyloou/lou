@@ -33,8 +33,6 @@ import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.WebActivity;
-import com.lyloou.test.laifudao.XiaoHuaActivity;
-import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 

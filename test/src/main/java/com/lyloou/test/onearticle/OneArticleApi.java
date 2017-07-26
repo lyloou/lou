@@ -18,8 +18,6 @@ package com.lyloou.test.onearticle;
 
 
 import io.reactivex.Observable;
-import okhttp3.RequestBody;
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 

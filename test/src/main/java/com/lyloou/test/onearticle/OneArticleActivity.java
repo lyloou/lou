@@ -32,17 +32,11 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
 
-import java.io.IOException;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class OneArticleActivity extends AppCompatActivity {
 

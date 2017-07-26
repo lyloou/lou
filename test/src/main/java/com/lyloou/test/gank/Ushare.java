@@ -23,7 +23,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
@@ -186,7 +185,7 @@ public class Ushare {
         String packageName = "com.tencent.mm";
         intent.setComponent(new ComponentName(packageName, shareType));
         intent.setAction("android.intent.action.SEND_MULTIPLE");
-        ArrayList<Uri> imageList = new ArrayList();
+        ArrayList<Uri> imageList = new ArrayList<>();
         for (String picPath : paths) {
             if (TextUtils.isEmpty(picPath)) {
                 continue;
