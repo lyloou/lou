@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
+import com.lyloou.test.common.DoubleItemWithOneHeaderOffsetDecoration;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.LouDialogProgressTips;
@@ -205,7 +206,7 @@ public class GankWelfareActivity extends AppCompatActivity {
             }
         });
         recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(mContext, 16)));
+        recyclerView.addItemDecoration(new DoubleItemWithOneHeaderOffsetDecoration(Uscreen.dp2Px(mContext, 16)));
         recyclerView.addOnScrollListener(mListener);
 
         Glide.with(this).load(R.drawable.loading).asGif().placeholder(R.mipmap.empty).into(ivEmpty);
