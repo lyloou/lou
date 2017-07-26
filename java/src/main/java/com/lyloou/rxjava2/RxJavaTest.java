@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.rxjava2;
+package com.lyloou.rxjava2;
 
 
 import java.util.ArrayList;
@@ -51,7 +51,24 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class RxJavaTest {
     public static void main(String[] args) throws InterruptedException {
-        Observable.just("hello, world").subscribe(s -> System.out.println(s));
+//        Observable.just("hello, world").subscribe(s -> System.out.println(s));
+        final CountDownLatch latch = new CountDownLatch(1);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("hello, world");
+                try {
+                    Thread.sleep(1000);
+                    latch.countDown();
+                    System.out.println("hello, world2");
+                    Thread.sleep(3000);
+                    latch.countDown();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        latch.await();
     }
 
     private static void sampleB() {

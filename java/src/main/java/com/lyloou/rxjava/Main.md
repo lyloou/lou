@@ -16,6 +16,9 @@
 
 package com.lyloou.rxjava;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
@@ -540,9 +543,11 @@ public class Main {
     }
 
     private static void justrestrofit3() {
+        Gson gson = new GsonBuilder().setLenient().create();
+
         Retrofit retrofit = new Retrofit
                 .Builder()
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl("http://ip-api.com")
                 .build();
