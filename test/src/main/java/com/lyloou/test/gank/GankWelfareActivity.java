@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
+import com.lyloou.test.common.LouDialogProgressTips;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.WebContentActivity;
 import com.lyloou.test.util.Uscreen;
@@ -47,7 +48,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;

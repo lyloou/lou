@@ -208,7 +208,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void addAll(List<ActiveDay> activeDays) {
         mList.addAll(activeDays);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(getListSize(), activeDays.size());
     }
 
     public int getListSize() {

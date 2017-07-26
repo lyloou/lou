@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.gank;
+package com.lyloou.test.common;
 
 import android.app.Dialog;
 import android.content.Context;

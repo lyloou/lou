@@ -19,7 +19,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#88444444"
+    android:background="#aa444444"
     android:orientation="vertical">
 
     <TextView
@@ -27,12 +27,13 @@
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:gravity="center"
-        android:text="6/9"/>
+        android:text="6/9"
+        android:textColor="@color/white"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorPrimaryDark"/>
+        android:background="@color/white"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,12 +47,13 @@
             android:layout_weight="1"
             android:background="?android:selectableItemBackground"
             android:gravity="center"
-            android:text="朋友"/>
+            android:text="朋友"
+            android:textColor="@color/white"/>
 
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryDark"/>
+            android:background="@color/white"/>
 
         <TextView
             android:id="@+id/tv_gank_bottom_timeline"
@@ -60,6 +62,7 @@
             android:layout_weight="1"
             android:background="?android:selectableItemBackground"
             android:gravity="center"
-            android:text="朋友圈"/>
+            android:text="朋友圈"
+            android:textColor="@color/white"/>
     </LinearLayout>
 </LinearLayout>
