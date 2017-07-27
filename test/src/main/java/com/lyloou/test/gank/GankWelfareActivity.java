@@ -108,7 +108,7 @@ public class GankWelfareActivity extends AppCompatActivity {
         if (mActiveDayAdapter != null) {
             List<ActiveDay> activeDayList = mActiveDayAdapter.getList();
             for (ActiveDay activeDay : activeDayList) {
-                if (activeDay.isChecked()) {
+                if (activeDay.isSelected()) {
                     activeDays.add(activeDay);
                 }
             }
@@ -173,7 +173,7 @@ public class GankWelfareActivity extends AppCompatActivity {
             @Override
             public void onClick(int realPosition, ActiveDay activeDay) {
 
-                activeDay.setChecked(!activeDay.isChecked());
+                activeDay.setSelected(!activeDay.isSelected());
 
                 mActiveDayAdapter.notifyItemChanged(realPosition);
 

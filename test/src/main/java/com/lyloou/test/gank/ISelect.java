@@ -16,6 +16,7 @@
 
 package com.lyloou.test.gank;
 
-public class GankData {
-
+public interface ISelect {
+    boolean isSelected();
+    void setSelected(boolean selected);
 }

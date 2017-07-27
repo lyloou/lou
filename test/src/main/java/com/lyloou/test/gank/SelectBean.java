@@ -16,18 +16,17 @@
 
 package com.lyloou.test.gank;
 
-public class ActiveDay extends SelectBean {
+public class SelectBean implements ISelect {
 
-    public static int mode; // 0:表示正常模式；1：表示多选模式；
-    private String day;
+    private boolean selected;
 
-    public ActiveDay(String day) {
-        this.day = day;
+    @Override
+    public boolean isSelected() {
+        return selected;
     }
 
-    public String getDay() {
-        return day;
+    @Override
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
-
-
 }

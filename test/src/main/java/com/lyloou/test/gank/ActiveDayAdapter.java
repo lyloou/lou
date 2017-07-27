@@ -99,20 +99,20 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder instanceof ActiveDayHolder) {
             ActiveDayHolder holder = (ActiveDayHolder) viewHolder;
-            ActiveDay activeDay = mList.get(position - 1); // 注意需要减去header的数量
 
-            holder.cbItem.setChecked(activeDay.isChecked());
+            ActiveDay activeDay = mList.get(position - 1); // 注意需要减去header的数量
+            holder.cbItem.setChecked(activeDay.isSelected());
             holder.tvItem.setText(activeDay.getDay());
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mItemClickListener.onClick(position, activeDay);
+                    mItemClickListener.onClick(holder.getAdapterPosition(), activeDay);
                 }
             });
             holder.view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    mItemClickListener.onLongClick(position, activeDay);
+                    mItemClickListener.onLongClick(holder.getAdapterPosition(), activeDay);
                     return true;
                 }
             });
