@@ -247,6 +247,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        Ushare.clearImageDir(mContext);
                         List<String> paths = new ArrayList<String>();
                         for (ActiveDay day : checkedActiveDays) {
                             String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
@@ -270,6 +271,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        Ushare.clearImageDir(mContext);
                         List<String> paths = new ArrayList<String>();
                         for (ActiveDay day : checkedActiveDays) {
                             String welfareUrl = Ushare.loadWelfareUrl(day.getDay());

@@ -136,6 +136,8 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private void loadWelfareToImageView(String activeDay, final ImageView ivPic) {
+
+
         String[] split = activeDay.split("-");
         if (split.length == 3) {
             String year = split[0];
@@ -160,7 +162,8 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             System.out.println(welfare);
                             String welfareUrl = welfare.getString("url");
 
-                            Glide.with(mContext.getApplicationContext())
+                            Context applicationContext = mContext.getApplicationContext();
+                            Glide.with(applicationContext)
                                     .load(welfareUrl)
                                     .asBitmap()
                                     .placeholder(R.mipmap.bg)
@@ -220,6 +223,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     interface OnItemClickListener {
         void onClick(int realPosition, ActiveDay activeDay);
+
         void onLongClick(int position, ActiveDay activeDay);
     }
 

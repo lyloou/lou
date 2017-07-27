@@ -35,10 +35,13 @@ import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
+import com.lyloou.test.common.LouDialogProgressTips;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.gank.Ushare;
 import com.lyloou.test.util.LouDialog;
 import com.lyloou.test.util.Uscreen;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -169,11 +172,38 @@ public class TuPianActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(TuPian tuPian) {
+                LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
+                progressTips.show("图片准备中");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Ushare.clearImageDir(mContext);
+                        List<String> paths = new ArrayList<String>();
+                        String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, tuPian.getThumburl());
+                        paths.add(imageFilePathFromImageUrl);
+                        Ushare.sharePicsToWechat(mContext, "", paths, Ushare.SHARE_TYPE_FRIEND, getTipsRunnable());
+                        progressTips.hide();
+                    }
+                }).start();
             }
         });
         recyclerView.setAdapter(mTuPianAdapter);
         recyclerView.addItemDecoration(new DoubleItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
 
+    }
+    @android.support.annotation.NonNull
+    private Runnable getTipsRunnable() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, "没有安装微信", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        };
     }
 
     @Override

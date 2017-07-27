@@ -16,6 +16,7 @@
 
 package com.lyloou.gson;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -41,5 +42,7 @@ public class MainJson {
         jsonObject.addProperty("d", "D");
         System.out.println(jsonObject.toString());
 
+        JsonArray jsonArray = new JsonParser().parse("[\"a\", \"b\", \"c\", \"d\"]").getAsJsonArray();
+        System.out.println(jsonArray.toString());
     }
 }

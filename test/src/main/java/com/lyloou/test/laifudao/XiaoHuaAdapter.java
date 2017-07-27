@@ -77,7 +77,10 @@ class XiaoHuaAdapter extends RecyclerView.Adapter {
             });
             viewHolder.view.setOnLongClickListener(v -> {
                 if (mOnItemXiaoHuaClickListener != null) {
-                    mOnItemXiaoHuaClickListener.onLongClick(viewHolder.tvContent.getText().toString());
+                    String title = String.valueOf(viewHolder.tvTitle.getText());
+                    String content = String.valueOf(viewHolder.tvContent.getText());
+                    String s = "#" + title + "#\n\n" + content;
+                    mOnItemXiaoHuaClickListener.onLongClick(s);
                 }
                 return true;
             });

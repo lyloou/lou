@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                                     .into(ivHeader);
                             tvHeader.setText(daily.getContent());
                             tvHeader.setTag(daily.getNote());
+                            tvHeader.setVisibility(View.VISIBLE);
                         }
                         , Throwable::printStackTrace);
 

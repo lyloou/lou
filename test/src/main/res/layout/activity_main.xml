@@ -46,6 +46,9 @@
 
             <TextView
                 android:id="@+id/tv_header"
+                android:background="#66ffffff"
+                android:padding="8dp"
+                android:visibility="invisible"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
