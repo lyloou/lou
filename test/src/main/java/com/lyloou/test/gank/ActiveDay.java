@@ -18,7 +18,6 @@ package com.lyloou.test.gank;
 
 public class ActiveDay extends SelectBean {
 
-    public static int mode; // 0:表示正常模式；1：表示多选模式；
     private String day;
 
     public ActiveDay(String day) {

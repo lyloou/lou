@@ -53,10 +53,19 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
     private OnItemClickListener mItemClickListener;
     private String mTitle;
+    private int mMode; // 0:表示正常模式；1：表示多选模式；
 
     ActiveDayAdapter(Context context) {
         mContext = context;
         mList = new ArrayList<>();
+    }
+
+    public int getMode() {
+        return mMode;
+    }
+
+    public void setMode(int mode) {
+        mMode = mode;
     }
 
     public List<ActiveDay> getList() {
@@ -65,6 +74,15 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setTitle(String title) {
         mTitle = title;
+    }
+
+    public void clearSelected() {
+        if (mList != null) {
+            for (ActiveDay activeDay : mList) {
+                if (!activeDay.isSelected())
+                    activeDay.setSelected(false);
+            }
+        }
     }
 
     public void setOnItemClickListener(OnItemClickListener itemClickListener) {
@@ -101,7 +119,12 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ActiveDayHolder holder = (ActiveDayHolder) viewHolder;
 
             ActiveDay activeDay = mList.get(position - 1); // 注意需要减去header的数量
-            holder.cbItem.setChecked(activeDay.isSelected());
+            if (mMode == 0) {
+                holder.cbItem.setVisibility(View.GONE);
+            } else if (mMode == 1) {
+                holder.cbItem.setVisibility(View.VISIBLE);
+                holder.cbItem.setChecked(activeDay.isSelected());
+            }
             holder.tvItem.setText(activeDay.getDay());
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -159,7 +182,6 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             JSONObject results = jsonObject.getJSONObject("results");
                             JSONArray welfares = results.getJSONArray("福利");
                             JSONObject welfare = welfares.getJSONObject(0);
-                            System.out.println(welfare);
                             String welfareUrl = welfare.getString("url");
 
                             Context applicationContext = mContext.getApplicationContext();

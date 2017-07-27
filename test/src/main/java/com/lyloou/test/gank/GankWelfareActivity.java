@@ -24,6 +24,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,7 +37,6 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemWithOneHeaderOffsetDecoration;
 import com.lyloou.test.common.EmptyRecyclerView;
-import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.LouDialogProgressTips;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.WebContentActivity;
@@ -65,6 +66,7 @@ import retrofit2.Response;
 public class GankWelfareActivity extends AppCompatActivity {
     private static final String TAG = "GankWelfareActivity";
     private final List<ActiveDay> mActiveDays = new ArrayList<>();
+    LinearLayout mLlytBottom;
     private SwipeRefreshLayout mRefreshLayout;
     private ActiveDayAdapter mActiveDayAdapter;
     private Activity mContext;
@@ -165,7 +167,7 @@ public class GankWelfareActivity extends AppCompatActivity {
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_gank_welfare);
         ImageView ivEmpty = (ImageView) findViewById(R.id.iv_empty);
         RelativeLayout rlytEmpty = (RelativeLayout) findViewById(R.id.rlyt_empty);
-        LinearLayout llytBottom = (LinearLayout) findViewById(R.id.llyt_bottom);
+        mLlytBottom = (LinearLayout) findViewById(R.id.llyt_bottom);
 
         mActiveDayAdapter = new ActiveDayAdapter(this);
         mActiveDayAdapter.setTitle("福利岛");
@@ -173,17 +175,22 @@ public class GankWelfareActivity extends AppCompatActivity {
             @Override
             public void onClick(int realPosition, ActiveDay activeDay) {
 
-                activeDay.setSelected(!activeDay.isSelected());
+                int mode = mActiveDayAdapter.getMode();
+                if (mode == 1) {
+                    activeDay.setSelected(!activeDay.isSelected());
+                    mActiveDayAdapter.notifyItemChanged(realPosition);
 
-                mActiveDayAdapter.notifyItemChanged(realPosition);
+                    List<ActiveDay> checkedActiveDays = getCheckedActiveDays();
+                    int size = checkedActiveDays.size();
+                    if (size > 0) {
+                        initBootomViewWithData(mLlytBottom, checkedActiveDays);
+                        mLlytBottom.setVisibility(View.VISIBLE);
+                    } else {
+                        mLlytBottom.setVisibility(View.GONE);
+                    }
 
-                List<ActiveDay> checkedActiveDays = getCheckedActiveDays();
-                int size = checkedActiveDays.size();
-                if (size > 0) {
-                    initBootomViewWithData(llytBottom, checkedActiveDays);
-                    llytBottom.setVisibility(View.VISIBLE);
-                } else {
-                    llytBottom.setVisibility(View.GONE);
+                } else if(mode == 0){
+                    loadWelfareToImageView(activeDay.getDay());
                 }
             }
 
@@ -220,7 +227,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                         mActiveDayAdapter.setMaxed(false);
                     }
                 });
-                llytBottom.setVisibility(View.GONE);
+                mLlytBottom.setVisibility(View.GONE);
                 mActiveDayAdapter.clearAll();
                 mActiveDays.clear();
                 loadDatas();
@@ -386,7 +393,6 @@ public class GankWelfareActivity extends AppCompatActivity {
                         mActiveDayAdapter.notifyDataSetChanged();
                     }
                 }
-                System.out.println("=============>" + loadedSize);
                 mIsLoading = false;
             }
         }, 1600);
@@ -397,5 +403,29 @@ public class GankWelfareActivity extends AppCompatActivity {
         if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_gank, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_normal:
+                mActiveDayAdapter.clearSelected();
+                mActiveDayAdapter.setMode(0);
+                mActiveDayAdapter.notifyDataSetChanged();
+
+                break;
+            case R.id.menu_multiple:
+                mActiveDayAdapter.setMode(1);
+                mActiveDayAdapter.notifyDataSetChanged();
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

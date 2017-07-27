@@ -78,6 +78,7 @@
             android:label="@string/meiriyiwen_random"
             android:theme="@style/AppTheme.TranslucentStatus"/>
         <activity
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:name=".gank.GankWelfareActivity"
             android:label="@string/gank_welfare"/>
         <activity android:name=".common.WebContentActivity"/>
