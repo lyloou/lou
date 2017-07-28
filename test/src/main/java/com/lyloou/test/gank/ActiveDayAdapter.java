@@ -77,11 +77,9 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void clearSelected() {
-        if (mList != null) {
-            for (ActiveDay activeDay : mList) {
-                if (!activeDay.isSelected())
-                    activeDay.setSelected(false);
-            }
+        for (ActiveDay activeDay : mList) {
+            if (activeDay.isSelected())
+                activeDay.setSelected(false);
         }
     }
 

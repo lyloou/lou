@@ -181,15 +181,9 @@ public class GankWelfareActivity extends AppCompatActivity {
                     mActiveDayAdapter.notifyItemChanged(realPosition);
 
                     List<ActiveDay> checkedActiveDays = getCheckedActiveDays();
-                    int size = checkedActiveDays.size();
-                    if (size > 0) {
-                        initBootomViewWithData(mLlytBottom, checkedActiveDays);
-                        mLlytBottom.setVisibility(View.VISIBLE);
-                    } else {
-                        mLlytBottom.setVisibility(View.GONE);
-                    }
+                    initBootomViewWithData(mLlytBottom, checkedActiveDays);
 
-                } else if(mode == 0){
+                } else if (mode == 0) {
                     loadWelfareToImageView(activeDay.getDay());
                 }
             }
@@ -239,6 +233,14 @@ public class GankWelfareActivity extends AppCompatActivity {
     }
 
     private void initBootomViewWithData(LinearLayout view, final List<ActiveDay> checkedActiveDays) {
+        int size = checkedActiveDays.size();
+        if (size > 0) {
+            mLlytBottom.setVisibility(View.VISIBLE);
+        } else {
+            mLlytBottom.setVisibility(View.GONE);
+            return;
+        }
+
         TextView tvCount = view.findViewById(R.id.tv_gank_bottom_count);
         TextView tvFriend = view.findViewById(R.id.tv_gank_bottom_friend);
         TextView tvTimeline = view.findViewById(R.id.tv_gank_bottom_timeline);
@@ -415,15 +417,20 @@ public class GankWelfareActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_normal:
-                mActiveDayAdapter.clearSelected();
+                if (mActiveDayAdapter.getMode() == 0) {
+                    return true;
+                }
                 mActiveDayAdapter.setMode(0);
+                mActiveDayAdapter.clearSelected();
                 mActiveDayAdapter.notifyDataSetChanged();
-
+                initBootomViewWithData(mLlytBottom, getCheckedActiveDays());
                 break;
             case R.id.menu_multiple:
+                if (mActiveDayAdapter.getMode() == 1) {
+                    return true;
+                }
                 mActiveDayAdapter.setMode(1);
                 mActiveDayAdapter.notifyDataSetChanged();
-
                 break;
         }
         return super.onOptionsItemSelected(item);
