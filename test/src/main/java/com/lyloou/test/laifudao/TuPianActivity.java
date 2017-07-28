@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +41,7 @@ import com.lyloou.test.common.NetWork;
 import com.lyloou.test.gank.Ushare;
 import com.lyloou.test.util.LouDialog;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Utoast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +58,7 @@ public class TuPianActivity extends AppCompatActivity {
     CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private Activity mContext;
     private TuPianAdapter mTuPianAdapter;
+    private int retryTimes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,17 +89,26 @@ public class TuPianActivity extends AppCompatActivity {
                     @Override
                     public void accept(@NonNull List<TuPian> tuPien) throws Exception {
                         // 模拟网络延迟
-                        SystemClock.sleep(3000);
+                        SystemClock.sleep(1000);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tupian -> {
-                            Toast.makeText(TuPianActivity.this, "加载成功", Toast.LENGTH_SHORT).show();
                             // 减少一个元素，构成奇数个数的列表
                             tupian.remove(tupian.size() - 1);
                             mTuPianAdapter.addItems(tupian);
+                            retryTimes = 0;
+                            Snackbar.make(findViewById(R.id.coordinator_xiaohua), "加载成功", Snackbar.LENGTH_SHORT).show();
                         }
-                        , throwable -> Toast.makeText(TuPianActivity.this, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
+                        , throwable -> {
+                            Utoast.show(mContext, "加载失败：" + throwable.getMessage() + "\n 重新尝试：" + retryTimes);
+                            if (retryTimes > 20) {
+                                Utoast.show(mContext, "网络真的不行了，你等会儿再来吧");
+                                return;
+                            }
+                            retryTimes++;
+                            loadData();
+                        });
         mCompositeDisposable.add(disposable);
     }
 
@@ -191,6 +203,7 @@ public class TuPianActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DoubleItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
 
     }
+
     @android.support.annotation.NonNull
     private Runnable getTipsRunnable() {
         return new Runnable() {
@@ -199,7 +212,7 @@ public class TuPianActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(mContext, "没有安装微信", Toast.LENGTH_SHORT).show();
+                        Utoast.show(mContext, "没有安装微信");
                     }
                 });
             }
