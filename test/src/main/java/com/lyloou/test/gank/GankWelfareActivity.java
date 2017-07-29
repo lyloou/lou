@@ -39,7 +39,7 @@ import com.lyloou.test.common.DoubleItemWithOneHeaderOffsetDecoration;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.LouDialogProgressTips;
 import com.lyloou.test.common.NetWork;
-import com.lyloou.test.common.WebContentActivity;
+import com.lyloou.test.common.webview.WebContentActivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 

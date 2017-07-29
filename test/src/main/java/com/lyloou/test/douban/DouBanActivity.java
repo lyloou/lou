@@ -32,7 +32,7 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
-import com.lyloou.test.common.WebActivity;
+import com.lyloou.test.common.webview.WebActivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 

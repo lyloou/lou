@@ -52,7 +52,7 @@
             android:label="@string/kingsoftware_daily_sentence"
             android:theme="@style/AppTheme.TranslucentStatus"/>
         <activity
-            android:name=".common.WebActivity"
+            android:name=".common.webview.WebActivity"
             android:label="@string/my_web"/>
         <activity
             android:name=".laifudao.TuPianActivity"
@@ -81,7 +81,7 @@
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:name=".gank.GankWelfareActivity"
             android:label="@string/gank_welfare"/>
-        <activity android:name=".common.WebContentActivity"/>
+        <activity android:name=".common.webview.WebContentActivity"/>
     </application>
 
 </manifest>

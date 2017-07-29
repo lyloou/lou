@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.common;
+package com.lyloou.test.common.webview;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,16 +25,16 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class WebContentActivity extends AppCompatActivity {
+public class WebActivity extends AppCompatActivity {
 
-    public static final String EXTRA_DATA_CONTENT = "extra_data_content";
-    private String mContent;
+    public static final String EXTRA_DATA_URL = "extra_data_url";
+    private String mUrl;
 
     private WebView mWvContent;
 
-    public static void newInstance(Context context, String content) {
-        Intent intent = new Intent(context, WebContentActivity.class);
-        intent.putExtra(EXTRA_DATA_CONTENT, content);
+    public static void newInstance(Context context, String url) {
+        Intent intent = new Intent(context, WebActivity.class);
+        intent.putExtra(EXTRA_DATA_URL, url);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -46,9 +46,9 @@ public class WebContentActivity extends AppCompatActivity {
         setContentView(mWvContent);
 
 
-        mContent = getIntent().getStringExtra(EXTRA_DATA_CONTENT);
-        if (mContent == null) {
-            mContent = "hello, world";
+        mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
+        if (mUrl == null) {
+            mUrl = "http://www.lyloou.com";
         }
 
         initView();
@@ -67,7 +67,12 @@ public class WebContentActivity extends AppCompatActivity {
         mWvContent.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url)));
+                if (url.startsWith("tel:")) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
+                    startActivity(intent);
+                    return true;
+                }
+                view.loadUrl(url);
                 return true;
             }
 
@@ -78,24 +83,17 @@ public class WebContentActivity extends AppCompatActivity {
             }
 
         });
-        showContent();
+
+        mWvContent.loadUrl(mUrl);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mWvContent.canGoBack()) {
+            mWvContent.goBack();
+            return;
+        }
 
-    public void showContent() {
-
-        String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/render.css\" type=\"text/css\">";
-
-        String result = "<!DOCTYPE html>\n"
-                + "<html lang=\"ZH-CN\" xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                + "<head>\n<meta charset=\"utf-8\" />\n"
-                + css
-                + "\n</head>\n<body>\n"
-                + "<div class=\"container bs-docs-container\">\n"
-                + "<div class=\"post-container\">\n"
-                + mContent
-                + "</div>\n</div>\n</body>\n</html>";
-
-        mWvContent.loadDataWithBaseURL("x-data://base", result,"text/html","utf-8",null);
+        super.onBackPressed();
     }
 }
