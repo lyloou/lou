@@ -63,6 +63,7 @@ public class Udate {
         return format(date, pattern, Locale.getDefault());
     }
 
+    // pattern: "yyyy-MM-dd'T'HH:mm:ss.SS'Z'" ==> 2017-05-09T14:28:32.974Z
     public static String format(Date date, String pattern, Locale locale) {
         SimpleDateFormat sdf = new SimpleDateFormat(pattern, locale);
         return sdf.format(date);
