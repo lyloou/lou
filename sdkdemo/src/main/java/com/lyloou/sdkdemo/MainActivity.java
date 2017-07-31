@@ -16,15 +16,82 @@
 
 package com.lyloou.sdkdemo;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Space;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+
+    public void onClick(View view) {
+        showDialog(this, "滚动中");
+    }
+
+    private void showDialog(final Context ctx, final String tips) {
+        if (ctx instanceof Activity) {
+            final Activity context = (Activity) ctx;
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int spacing = Uscreen.dp2Px(context, 16);
+                    int margin = Uscreen.dp2Px(context, 6);
+                    float fontSize = Uscreen.sp2Px(context, 12);
+                    LinearLayout layout = new LinearLayout(context);
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    layout.setLayoutParams(layoutParams);
+                    layout.setGravity(Gravity.CENTER);
+                    layout.setPadding(spacing, spacing, spacing, spacing);
+                    // add ProgressBar
+                    ProgressBar bar = new ProgressBar(context);
+                    layout.addView(bar, layoutParams);
+
+                    // add Space
+                    Space space = new Space(context);
+                    LinearLayout.LayoutParams spaceMargin = new LinearLayout.LayoutParams(margin, margin);
+                    layout.addView(space, spaceMargin);
+
+                    // add TextView
+                    TextView tvTips = new TextView(context);
+                    tvTips.setTextColor(Color.WHITE);
+                    tvTips.setTextSize(fontSize);
+                    tvTips.setText(tips);
+                    tvTips.setPadding(spacing, 0, spacing, 0);
+                    layout.addView(tvTips, layoutParams);
+
+                    dialog = new Dialog(context, android.R.style.Theme_Holo_Dialog_NoActionBar);
+                    dialog.setCancelable(true);
+                    dialog.getWindow().setDimAmount(0.3f);
+                    dialog.setContentView(layout);
+                    dialog.show();
+                }
+            });
+        }
+
+    }
+
+    private void dismissDialog() {
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
+    }
+
 }

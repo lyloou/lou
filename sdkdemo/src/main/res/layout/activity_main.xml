@@ -24,6 +24,7 @@
     tools:context="com.lyloou.sdkdemo.MainActivity">
 
     <TextView
+        android:onClick="onClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"

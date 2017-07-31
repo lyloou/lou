@@ -20,12 +20,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.Target;
 import com.lyloou.test.common.NetWork;
 
 import org.json.JSONArray;
@@ -35,9 +34,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -124,11 +123,7 @@ public class Ushare {
         FileOutputStream fileOutputStream = null;
         try {
             // 下载图片
-            Bitmap bitmap = Glide.with(applicationContext)
-                    .load(url)
-                    .asBitmap()
-                    .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                    .get();
+            Bitmap bitmap = BitmapFactory.decodeStream(new URL(url).openStream());
 
             // 保存图片
             File imgDir = new File(getDiskCacheDir(applicationContext), "image_caches");
@@ -147,7 +142,7 @@ public class Ushare {
             fileOutputStream.flush();
             return imgFile.getAbsolutePath();
 
-        } catch (InterruptedException | IOException | ExecutionException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
