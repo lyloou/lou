@@ -22,7 +22,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.SET_WALLPAPER"/>
     <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS"/>
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
@@ -33,7 +32,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTask"
@@ -78,10 +76,15 @@
             android:label="@string/meiriyiwen_random"
             android:theme="@style/AppTheme.TranslucentStatus"/>
         <activity
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:name=".gank.GankWelfareActivity"
-            android:label="@string/gank_welfare"/>
+            android:label="@string/gank_welfare"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
         <activity android:name=".common.webview.WebContentActivity"/>
+        <activity
+            android:name=".bus.BusActivity"
+            android:label="@string/bus_chelaile"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        </activity>
     </application>
 
 </manifest>
