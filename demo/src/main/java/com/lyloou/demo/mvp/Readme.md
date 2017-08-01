@@ -5,7 +5,11 @@
 
 ## 数据流向图 - The following demonstrates an example data flow throw the MVP.
 ![](mvp2.webp)
-
+> In this formulation, when a user triggers an event method of the view,
+it does nothing but invoke a method of the presenter that has no parameters and no return value.
+The presenter then retrieves data from the view through methods defined by the view interface. Finally,
+the presenter operates on the model and updates the view with the results of the operation.
+https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93presenter
 
 ## 参考资料
 - [Android Architecture with MVP or MVVM - Tutorial](http://www.vogella.com/tutorials/AndroidArchitecture/article.html)
