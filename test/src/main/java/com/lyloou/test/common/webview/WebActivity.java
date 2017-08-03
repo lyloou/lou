@@ -48,7 +48,7 @@ public class WebActivity extends AppCompatActivity {
 
         mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
         if (mUrl == null) {
-            mUrl = "http://lyloou.github.io";
+            mUrl = "https://lyloou.github.io";
         }
 
         initView();
