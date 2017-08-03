@@ -18,12 +18,13 @@ package com.lyloou.test.bus;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -59,20 +60,26 @@ public class BusActivity extends AppCompatActivity {
     private static final String URL_M355 = "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&modelVersion=0.0.8&last_src=app_meizhu_store&s=android&stats_referer=nearby&push_open=1&stats_act=auto_refresh&userId=unknown&geo_lt=4&lorder=1&geo_lat=22.544675&vc=83&sv=5.1&v=3.34.2&targetOrder=35&gpstype=gcj&imei=866808025006643&lineId=0755-M3553-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=Bv52Ecvs79wuuZVTTRbzNQ%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.947299&geo_lac=35.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043305+Safari%2F537.36&lat=22.544675&beforAds=&geo_lng=113.947299";
     Activity mContext;
     CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-    LouAdapter<Bus> adapter;
+    LouAdapter<Bus> mAdapter;
+    OkHttpClient mOkHttpClient = new OkHttpClient();
+    private SwipeRefreshLayout mRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        setContentView(initListView());
-
+        setContentView(R.layout.activity_bus);
+        initListView();
         whereIsBus(URL_M355);
         setTitle("M355 裕安路口-科技园");
     }
 
-    private View initListView() {
-        adapter = new LouAdapter<Bus>(new ListView(mContext), android.R.layout.simple_list_item_1) {
+    private void initListView() {
+        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_bus);
+        mRefreshLayout.setEnabled(false);
+
+        ListView listView = (ListView) findViewById(R.id.lv_bus);
+        mAdapter = new LouAdapter<Bus>(listView, android.R.layout.simple_list_item_1) {
             @Override
             protected void assign(ViewHolder holder, Bus s) {
                 // 用视图显示数据
@@ -80,17 +87,16 @@ public class BusActivity extends AppCompatActivity {
             }
         };
 
-        return adapter.getBindView();
     }
 
     private void whereIsBus(String url) {
-        OkHttpClient client = new OkHttpClient();
+        mRefreshLayout.setRefreshing(true);
+
         Request request = new Request
                 .Builder()
                 .url(url)
                 .build();
-
-        Call call = client.newCall(request);
+        Call call = mOkHttpClient.newCall(request);
         Disposable subscribe = Flowable
                 .fromCallable(new Callable<String>() {
                     @Override
@@ -152,19 +158,31 @@ public class BusActivity extends AppCompatActivity {
                     public void accept(@NonNull List<Bus> buses) throws Exception {
                         String busss = Arrays.toString(buses.toArray());
                         System.out.println(busss);
-                        if (adapter != null) {
-                            adapter.initList(buses);
+                        if (mAdapter != null) {
+                            mAdapter.initList(buses);
                         }
+                        mRefreshLayout.setRefreshing(false);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        Toast.makeText(mContext, "异常了" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                        mRefreshLayout.setRefreshing(false);
                     }
                 });
         mCompositeDisposable.add(subscribe);
     }
 
-    @Override
-    protected void onDestroy() {
-        if (mCompositeDisposable.isDisposed()) {
+    private void dispose() {
+        if (!mCompositeDisposable.isDisposed()) {
             mCompositeDisposable.dispose();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        dispose();
+
         super.onDestroy();
     }
 
