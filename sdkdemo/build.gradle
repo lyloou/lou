@@ -47,4 +47,6 @@ dependencies {
     compile "com.android.support.constraint:constraint-layout:$rootProject.constraintVersion"
     testCompile "junit:junit:$rootProject.junitVersion"
     compile "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+
+    compile "org.greenrobot:eventbus:3.0.0"
 }

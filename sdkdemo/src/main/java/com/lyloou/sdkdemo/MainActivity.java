@@ -30,19 +30,42 @@ import android.widget.ProgressBar;
 import android.widget.Space;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 public class MainActivity extends AppCompatActivity {
 
+    private Activity mContext;
 
     private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         setContentView(R.layout.activity_main);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        showDialog(this, "Loading");
+    }
+
     public void onClick(View view) {
-        showDialog(this, "滚动中");
+        EventBus.getDefault().post(new MessageEvent());
     }
 
     private void showDialog(final Context ctx, final String tips) {
@@ -71,13 +94,14 @@ public class MainActivity extends AppCompatActivity {
 
                     // add TextView
                     TextView tvTips = new TextView(context);
-                    tvTips.setTextColor(Color.WHITE);
+                    tvTips.setTextColor(Color.GRAY);
                     tvTips.setTextSize(fontSize);
                     tvTips.setText(tips);
                     tvTips.setPadding(spacing, 0, spacing, 0);
                     layout.addView(tvTips, layoutParams);
 
-                    dialog = new Dialog(context, android.R.style.Theme_Holo_Dialog_NoActionBar);
+                    // 黑色主题：android.R.style.Theme_Holo_Dialog_NoActionBar
+                    dialog = new Dialog(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
                     dialog.setCancelable(true);
                     dialog.getWindow().setDimAmount(0.3f);
                     dialog.setContentView(layout);
@@ -92,6 +116,10 @@ public class MainActivity extends AppCompatActivity {
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
         }
+    }
+
+    public static class MessageEvent {
+
     }
 
 }
