@@ -59,13 +59,31 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
-        showDialog(this, "Loading");
+        showDialog(this, event.message);
+        System.out.println("===============>1" + event.message + " " + Thread.currentThread().getName());
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND, priority = 2)
+    public void onMessageEventBG(MessageEvent event) {
+        System.out.println("===============>2" + event.message + " " + Thread.currentThread().getName());
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND, priority = 2)
+    public void onMessageEventBG2(MessageEvent event) {
+        System.out.println("===============>3" + event.message + " " + Thread.currentThread().getName());
+    }
+
+    @Subscribe(threadMode = ThreadMode.POSTING, priority = 1)
+    public void onMessageEventPosting(MessageEvent event) {
+        System.out.println("===============>0" + event.message + " " + Thread.currentThread().getName());
+        EventBus.getDefault().cancelEventDelivery(event);
     }
 
     public void onClick(View view) {
-        EventBus.getDefault().post(new MessageEvent());
+        EventBus.getDefault().post(new MessageEvent("Loading..."));
     }
 
     private void showDialog(final Context ctx, final String tips) {
@@ -119,7 +137,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class MessageEvent {
+        public final String message;
 
+        public MessageEvent(String message) {
+            this.message = message;
+        }
     }
 
 }
