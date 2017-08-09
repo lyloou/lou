@@ -17,10 +17,16 @@
 package com.lyloou.rxjava2;
 
 
+import org.reactivestreams.Subscriber;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
@@ -35,6 +41,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -51,7 +58,95 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class RxJavaTest {
     public static void main(String[] args) throws InterruptedException {
-//        Observable.just("hello, world").subscribe(s -> System.out.println(s));
+        sampleE();
+
+        ExecutorService hiExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "hi");
+            }
+        });
+        Schedulers.from(hiExecutor);
+    }
+    private static void sampleE() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        Observable
+                .fromCallable(new Callable<String>() {
+                    @Override
+                    public String call() throws Exception {
+                        System.out.println("=========>0 "+Thread.currentThread().getName());
+                        Thread.sleep(2000);
+                        return "Hi";
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(@NonNull Disposable disposable) throws Exception {
+                        System.out.println("=========>2 "+Thread.currentThread().getName());
+                    }
+                })
+                .subscribeOn(Schedulers.computation())
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(@NonNull Disposable disposable) throws Exception {
+                        System.out.println("=========>3 "+Thread.currentThread().getName());
+
+                    }
+                })
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        System.out.println(s);
+                        System.out.println("=========>5 "+Thread.currentThread().getName());
+                        latch.countDown();
+                    }
+                });
+
+        latch.await();
+    }
+
+    private static void sampleD() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        Observable
+                .fromCallable(new Callable<String>() {
+                    @Override
+                    public String call() throws Exception {
+                        System.out.println("=========>0 "+Thread.currentThread().getName());
+                        Thread.sleep(2000);
+                        return "Hi";
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        System.out.println("=========>1 "+Thread.currentThread().getName());
+
+                    }
+                })
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(@NonNull Disposable disposable) throws Exception {
+                        System.out.println("=========>2 "+Thread.currentThread().getName());
+                    }
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(Schedulers.computation())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        System.out.println(s);
+                        System.out.println("=========>5 "+Thread.currentThread().getName());
+                        latch.countDown();
+                    }
+                });
+
+        latch.await();
+    }
+
+    private static void sampleC() throws InterruptedException {
+        //        Observable.just("hello, world").subscribe(s -> System.out.println(s));
         final CountDownLatch latch = new CountDownLatch(1);
         new Thread(new Runnable() {
             @Override
@@ -83,14 +178,14 @@ public class RxJavaTest {
                 .doOnSuccess(new Consumer<String>() {
                     @Override
                     public void accept(String s) throws Exception {
-                        System.out.println("next:"+s);
-                        System.out.println("1:"+s);
+                        System.out.println("next:" + s);
+                        System.out.println("1:" + s);
                     }
                 })
                 .subscribe(new Consumer<String>() {
                     @Override
                     public void accept(String s) throws Exception {
-                        System.out.println("2:"+s);
+                        System.out.println("2:" + s);
                     }
                 })
         ;
@@ -238,23 +333,7 @@ public class RxJavaTest {
 
     private static void sample8() throws InterruptedException {
         //        final CountDownLatch latch = new CountDownLatch(0);
-        final CountDownLatch latch = new CountDownLatch(1);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("hello, world");
-                try {
-                    Thread.sleep(1000);
-                    latch.countDown();
-                    System.out.println("hello, world2");
-                    Thread.sleep(3000);
-                    latch.countDown();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-        latch.await();
+        sampleC();
     }
 
     private static void sample7() {
