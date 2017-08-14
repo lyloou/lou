@@ -15,6 +15,7 @@ import java.util.List;
 
 public class Uapk {
 
+    public static final String SEP = "    ";
     private static final String TAG = "Uapk";
 
     /**
@@ -100,8 +101,6 @@ public class Uapk {
         }
     }
 
-    public static final String SEP = "    ";
-
     /**
      * 收集设备参数信息
      * 参考资料：CrashHandler源代码
@@ -177,5 +176,34 @@ public class Uapk {
 
         context.sendBroadcast(addShortcutIntent);        // 发送广播添加图标
     }
+
+    // http://www.jianshu.com/p/2a1d052b8139
+    public static boolean isAppInstalled(Context context) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
+        if (pinfo != null) {
+            for (int i = 0; i < pinfo.size(); i++) {
+                String pn = pinfo.get(i).packageName;
+                if (pn.equals("com.tencent.mobileqq")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // https://github.com/Blankj/AndroidUtilCode/blob/master/utilcode/src/main/java/com/blankj/utilcode/util/AppUtils.java
+    public static boolean isAppInstalled2(Context context, String packageName) {
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        return intent != null;
+    }
+
+    public static boolean isWbInstall(Context context) {
+        Intent intent = new Intent("com.sina.weibo.action.sdkidentity");
+        intent.addCategory("android.intent.category.DEFAULT");
+        List list = context.getPackageManager().queryIntentServices(intent, 0);
+        return list != null && !list.isEmpty();
+    }
+
 }
 

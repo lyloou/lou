@@ -17,8 +17,6 @@
 package com.lyloou.rxjava2;
 
 
-import org.reactivestreams.Subscriber;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,23 +56,85 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class RxJavaTest {
     public static void main(String[] args) throws InterruptedException {
-        sampleE();
+        Observable<String> o1 = Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                long millis = (long) (Math.random() * 5000);
+                Thread.sleep(millis);
+                e.onNext("ooo1:" + millis);
+            }
+        });
 
+        Observable<String> o2 = Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                long millis = (long) (Math.random() * 5000);
+                Thread.sleep(millis);
+                e.onNext("ooo2:" + millis);
+            }
+        });
+
+        Observable<String> o3 = Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                long millis = (long) (Math.random() * 5000);
+                Thread.sleep(millis);
+                e.onNext("ooo3:" + millis);
+            }
+        });
+
+        Observable.concat(o1, o2, o3).take(2).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(@NonNull String s) throws Exception {
+                System.out.println(s);
+            }
+        });
+    }
+
+    private static void sampleF() {
         ExecutorService hiExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 return new Thread(r, "hi");
             }
         });
-        Schedulers.from(hiExecutor);
+
+
+        Single
+                .create(new SingleOnSubscribe<String>() {
+                    @Override
+                    public void subscribe(@NonNull SingleEmitter<String> emitter) throws Exception {
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println(Thread.currentThread().getName());
+
+                                try {
+                                    emitter.onSuccess("aaa");
+                                } catch (Exception e) {
+                                    emitter.onError(e);
+                                }
+                            }
+                        });
+                        thread.start();
+                    }
+                })
+                .observeOn(Schedulers.from(hiExecutor))
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        System.out.println("===========>" + s + " thread:" + Thread.currentThread().getName());
+                    }
+                });
     }
+
     private static void sampleE() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
         Observable
                 .fromCallable(new Callable<String>() {
                     @Override
                     public String call() throws Exception {
-                        System.out.println("=========>0 "+Thread.currentThread().getName());
+                        System.out.println("=========>0 " + Thread.currentThread().getName());
                         Thread.sleep(2000);
                         return "Hi";
                     }
@@ -83,14 +143,14 @@ public class RxJavaTest {
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(@NonNull Disposable disposable) throws Exception {
-                        System.out.println("=========>2 "+Thread.currentThread().getName());
+                        System.out.println("=========>2 " + Thread.currentThread().getName());
                     }
                 })
                 .subscribeOn(Schedulers.computation())
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(@NonNull Disposable disposable) throws Exception {
-                        System.out.println("=========>3 "+Thread.currentThread().getName());
+                        System.out.println("=========>3 " + Thread.currentThread().getName());
 
                     }
                 })
@@ -98,7 +158,7 @@ public class RxJavaTest {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
                         System.out.println(s);
-                        System.out.println("=========>5 "+Thread.currentThread().getName());
+                        System.out.println("=========>5 " + Thread.currentThread().getName());
                         latch.countDown();
                     }
                 });
@@ -112,7 +172,7 @@ public class RxJavaTest {
                 .fromCallable(new Callable<String>() {
                     @Override
                     public String call() throws Exception {
-                        System.out.println("=========>0 "+Thread.currentThread().getName());
+                        System.out.println("=========>0 " + Thread.currentThread().getName());
                         Thread.sleep(2000);
                         return "Hi";
                     }
@@ -121,14 +181,14 @@ public class RxJavaTest {
                 .doOnNext(new Consumer<String>() {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
-                        System.out.println("=========>1 "+Thread.currentThread().getName());
+                        System.out.println("=========>1 " + Thread.currentThread().getName());
 
                     }
                 })
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(@NonNull Disposable disposable) throws Exception {
-                        System.out.println("=========>2 "+Thread.currentThread().getName());
+                        System.out.println("=========>2 " + Thread.currentThread().getName());
                     }
                 })
                 .subscribeOn(Schedulers.computation())
@@ -137,7 +197,7 @@ public class RxJavaTest {
                     @Override
                     public void accept(@NonNull String s) throws Exception {
                         System.out.println(s);
-                        System.out.println("=========>5 "+Thread.currentThread().getName());
+                        System.out.println("=========>5 " + Thread.currentThread().getName());
                         latch.countDown();
                     }
                 });
