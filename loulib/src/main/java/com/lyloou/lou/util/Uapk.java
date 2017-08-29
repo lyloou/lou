@@ -7,10 +7,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.Signature;
 import android.os.Build;
 import android.util.Log;
 
 import java.lang.reflect.Field;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class Uapk {
@@ -203,6 +206,50 @@ public class Uapk {
         intent.addCategory("android.intent.category.DEFAULT");
         List list = context.getPackageManager().queryIntentServices(intent, 0);
         return list != null && !list.isEmpty();
+    }
+
+    /**
+     * MD5加密
+     *
+     * @param byteStr 需要加密的内容
+     * @return 返回 byteStr的md5值
+     */
+    public static String encryptionMD5(byte[] byteStr) {
+        MessageDigest messageDigest = null;
+        StringBuffer md5StrBuff = new StringBuffer();
+        try {
+            messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.reset();
+            messageDigest.update(byteStr);
+            byte[] byteArray = messageDigest.digest();
+            for (int i = 0; i < byteArray.length; i++) {
+                if (Integer.toHexString(0xFF & byteArray[i]).length() == 1) {
+                    md5StrBuff.append("0").append(Integer.toHexString(0xFF & byteArray[i]));
+                } else {
+                    md5StrBuff.append(Integer.toHexString(0xFF & byteArray[i]));
+                }
+            }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return md5StrBuff.toString();
+    }
+
+    /**
+     * [获取apk签名指纹的md5值 防止重新被打包](http://blog.csdn.net/manymore13/article/details/50717622)
+     * 获取app签名md5值
+     */
+    public static String getSignMd5Str(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+            Signature[] signs = packageInfo.signatures;
+            Signature sign = signs[0];
+            String signStr = encryptionMD5(sign.toByteArray());
+            return signStr;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 }
