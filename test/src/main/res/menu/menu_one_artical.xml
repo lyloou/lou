@@ -30,4 +30,9 @@
         android:id="@+id/menu_one_article_select"
         android:title="这天"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_one_article_here"
+        android:title="某天"
+        app:showAsAction="never"/>
 </menu>

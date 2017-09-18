@@ -24,10 +24,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -128,13 +132,17 @@ public class OneArticleActivity extends AppCompatActivity {
                 observable = NetWork.getOneArticleApi().getOneArticle(1);
                 layoutIt(observable);
                 break;
-            case R.id.menu_one_article_select:
-                showSpecialDayArticle();
-                break;
             case R.id.menu_one_article_random:
                 observable = NetWork.getOneArticleApi().getRandomArticle(1);
                 layoutIt(observable);
                 break;
+            case R.id.menu_one_article_select:
+                showSpecialDayArticle();
+                break;
+            case R.id.menu_one_article_here:
+                showSpecialDayArticleHere();
+                break;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -142,7 +150,7 @@ public class OneArticleActivity extends AppCompatActivity {
 
     private void showSpecialDayArticle() {
         LouDialog louDialog = LouDialog
-                .newInstance(mContext, R.layout.dialog_onearticle, R.style.Theme_AppCompat)
+                .newInstance(mContext, R.layout.dialog_onearticle, R.style.Theme_AppCompat_Dialog)
                 .setCancelable(true);
         DatePicker datePicker = louDialog.getView(R.id.dp_one_article);
         Calendar calendar = Calendar.getInstance();
@@ -156,13 +164,34 @@ public class OneArticleActivity extends AppCompatActivity {
                 String y = String.format(Locale.getDefault(), "%04d", year);
                 String m = String.format(Locale.getDefault(), "%02d", month + 1);
                 String d = String.format(Locale.getDefault(), "%02d", dayOfMonth);
-                String date = y+m+d;
+                String date = y + m + d;
                 Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, date);
                 layoutIt(observable);
                 louDialog.dismiss();
             }
         });
 
+        louDialog.show();
+    }
+
+    private void showSpecialDayArticleHere() {
+        LouDialog louDialog = LouDialog
+                .newInstance(mContext, R.layout.dialog_onearticle_here, R.style.Theme_AppCompat_Dialog)
+                .setCancelable(true);
+        EditText datePicker = louDialog.getView(R.id.et_one_article_here);
+        Button btn = louDialog.getView(R.id.btn_one_article_here);
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String date = datePicker.getText().toString();
+                if (!TextUtils.isEmpty(date.trim())) {
+                    Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, date);
+                    layoutIt(observable);
+                }
+                louDialog.dismiss();
+            }
+        });
 
         louDialog.show();
     }
