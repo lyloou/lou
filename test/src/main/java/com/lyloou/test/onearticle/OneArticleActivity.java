@@ -23,14 +23,24 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.Spanned;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
+import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,24 +60,22 @@ public class OneArticleActivity extends AppCompatActivity {
 
         initView();
 
-        loadData();
+        layoutIt(NetWork.getOneArticleApi().getOneArticle(1));
     }
 
 
-    private void loadData() {
-        Observable<OneArticle> observable = NetWork.getOneArticleApi().getOneArticle(1);
+    private void layoutIt(Observable<OneArticle> observable) {
         observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<OneArticle>() {
                                @Override
                                public void accept(@NonNull OneArticle oneArticle) throws Exception {
-                                   TextView tvTitle = findViewById(R.id.tv_title);
-                                   TextView tvAuthorDate = findViewById(R.id.tv_author_date);
-                                   TextView tvContent = findViewById(R.id.tv_content);
-                                   tvTitle.setText(oneArticle.getData().getTitle());
-                                   tvAuthorDate.setText(oneArticle.getData().getAuthor());
-                                   tvContent.setText(Html.fromHtml(oneArticle.getData().getContent()));
+                                   String title = oneArticle.getData().getTitle();
+                                   String authDate = oneArticle.getData().getAuthor() + "（" + oneArticle.getData().getDate().getCurr() + "）";
+                                   Spanned content = Html.fromHtml(oneArticle.getData().getContent());
+
+                                   showArticle(title, authDate, content);
                                }
                            }
                         , new Consumer<Throwable>() {
@@ -77,6 +85,15 @@ public class OneArticleActivity extends AppCompatActivity {
                                 Toast.makeText(mContext, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
+    }
+
+    private void showArticle(String title, String authDate, Spanned content) {
+        TextView tvTitle = findViewById(R.id.tv_title);
+        TextView tvAuthorDate = findViewById(R.id.tv_author_date);
+        TextView tvContent = findViewById(R.id.tv_content);
+        tvTitle.setText(title);
+        tvAuthorDate.setText(authDate);
+        tvContent.setText(content);
     }
 
     private void initView() {
@@ -95,5 +112,58 @@ public class OneArticleActivity extends AppCompatActivity {
         int image = (int) (98 * Math.random() + 1);
         String url = "https://meiriyiwen.com/images/new_feed/bg_" + image + ".jpg";
         Glide.with(mContext).load(url).into(ivHeader);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_one_artical, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Observable<OneArticle> observable = null;
+        switch (item.getItemId()) {
+            case R.id.menu_one_article_today:
+                observable = NetWork.getOneArticleApi().getOneArticle(1);
+                layoutIt(observable);
+                break;
+            case R.id.menu_one_article_select:
+                showSpecialDayArticle();
+                break;
+            case R.id.menu_one_article_random:
+                observable = NetWork.getOneArticleApi().getRandomArticle(1);
+                layoutIt(observable);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showSpecialDayArticle() {
+        LouDialog louDialog = LouDialog
+                .newInstance(mContext, R.layout.dialog_onearticle, R.style.Theme_AppCompat)
+                .setCancelable(true);
+        DatePicker datePicker = louDialog.getView(R.id.dp_one_article);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+
+            @Override
+            public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
+                System.out.printf("当前时间：%1$TY-%1$Tm-%1$Td %1$TH:%1$TM:%1$TS", new Date());
+                String y = String.format(Locale.getDefault(), "%04d", year);
+                String m = String.format(Locale.getDefault(), "%02d", month + 1);
+                String d = String.format(Locale.getDefault(), "%02d", dayOfMonth);
+                String date = y+m+d;
+                Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, date);
+                layoutIt(observable);
+                louDialog.dismiss();
+            }
+        });
+
+
+        louDialog.show();
     }
 }

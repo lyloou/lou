@@ -39,4 +39,8 @@ public interface OneArticleApi {
     @Headers({"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"})
     @GET("random")
     Observable<OneArticle> getRandomArticle(@Query("dev") int dev);
+
+    @Headers({"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"})
+    @GET("day")
+    Observable<OneArticle> getSpecialArticle(@Query("dev") int dev, @Query("date") String date);
 }

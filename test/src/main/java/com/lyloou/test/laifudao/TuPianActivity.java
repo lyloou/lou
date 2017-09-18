@@ -36,10 +36,10 @@ import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
+import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.LouDialogProgressTips;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.gank.Ushare;
-import com.lyloou.test.util.LouDialog;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 

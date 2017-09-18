@@ -69,10 +69,6 @@
             android:label="@string/douban_top250"/>
         <activity
             android:name=".onearticle.OneArticleActivity"
-            android:label="@string/meiriyiwen"
-            android:theme="@style/AppTheme.TranslucentStatus"/>
-        <activity
-            android:name=".onearticle.OneArticleRandomActivity"
             android:label="@string/meiriyiwen_random"
             android:theme="@style/AppTheme.TranslucentStatus"/>
         <activity

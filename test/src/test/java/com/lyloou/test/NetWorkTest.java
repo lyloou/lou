@@ -25,7 +25,9 @@ import com.lyloou.test.onearticle.OneArticle;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
 import io.reactivex.annotations.NonNull;
@@ -136,6 +138,34 @@ public class NetWorkTest {
         CountDownLatch latch = new CountDownLatch(1);
         NetWork.getOneArticleApi()
                 .getOneArticle(1)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .subscribe(new Consumer<OneArticle>() {
+                               @Override
+                               public void accept(@NonNull OneArticle article) throws Exception {
+                                   System.out.println(article.getData().getTitle());
+                                   latch.countDown();
+                               }
+                           }
+                        , new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                throwable.printStackTrace();
+                                latch.countDown();
+                            }
+                        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void specialDayArticle() {
+        CountDownLatch latch = new CountDownLatch(1);
+        NetWork.getOneArticleApi()
+                .getSpecialArticle(1, "20170917")
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .subscribe(new Consumer<OneArticle>() {
