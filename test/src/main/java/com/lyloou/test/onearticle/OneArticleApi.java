@@ -19,6 +19,7 @@ package com.lyloou.test.onearticle;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 /**
@@ -31,9 +32,11 @@ import retrofit2.http.Query;
 public interface OneArticleApi {
 
     // https://github.com/jokermonn/-Api/blob/master/OneArticle.md
+    @Headers({"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"})
     @GET("today")
     Observable<OneArticle> getOneArticle(@Query("dev") int dev);
 
+    @Headers({"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"})
     @GET("random")
     Observable<OneArticle> getRandomArticle(@Query("dev") int dev);
 }
