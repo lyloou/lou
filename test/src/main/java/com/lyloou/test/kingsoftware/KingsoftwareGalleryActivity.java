@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.util.Uscreen;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -66,14 +67,15 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
     private void initView() {
 
-
         GalleryPagerAdapter adapter = new GalleryPagerAdapter();
         mViewPager.setAdapter(adapter);
-        adapter.setClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleScreenStatus();
+        adapter.setClickListener(view -> toggleScreenStatus());
+        adapter.setLongClickListener(view -> {
+            if (view instanceof ImageView) {
+                Uscreen.setWallpaper((ImageView) view);
+                return true;
             }
+            return false;
         });
 
         String formatedToday = SDF.format(new Date());
@@ -166,6 +168,7 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
     private class GalleryPagerAdapter extends PagerAdapter {
         final List<String> days;
         private View.OnClickListener clickListener;
+        private View.OnLongClickListener longClickListener;
 
         public GalleryPagerAdapter() {
             days = new ArrayList<>();
@@ -173,6 +176,10 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
         public void setClickListener(View.OnClickListener clickListener) {
             this.clickListener = clickListener;
+        }
+
+        public void setLongClickListener(View.OnLongClickListener longClickListener) {
+            this.longClickListener = longClickListener;
         }
 
         public void addItemAndNotify(String day) {
@@ -194,6 +201,7 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
             container.addView(photoView, ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT);
             loadDataAndRenderView(days.get(position), photoView);
             photoView.setOnClickListener(clickListener);
+            photoView.setOnLongClickListener(longClickListener);
             return photoView;
         }
 

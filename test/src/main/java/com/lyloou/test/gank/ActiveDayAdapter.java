@@ -130,14 +130,14 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     mItemClickListener.onClick(holder.getAdapterPosition(), activeDay);
                 }
             });
-            holder.view.setOnLongClickListener(new View.OnLongClickListener() {
+            ImageView ivItem = holder.ivItem;
+            ivItem.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    mItemClickListener.onLongClick(holder.getAdapterPosition(), activeDay);
+                    mItemClickListener.onLongClick(ivItem);
                     return true;
                 }
             });
-            ImageView ivItem = holder.ivItem;
             loadWelfareToImageView(activeDay.getDay(), ivItem);
 
         } else if (viewHolder instanceof HeaderHolder) {
@@ -189,6 +189,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     .placeholder(R.mipmap.bg)
                                     .centerCrop()
                                     .into(ivPic);
+                            ivPic.setTag(ivPic.getId(), welfareUrl);
                         } catch (IOException | JSONException e) {
                             e.printStackTrace();
                         }
@@ -244,7 +245,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     interface OnItemClickListener {
         void onClick(int realPosition, ActiveDay activeDay);
 
-        void onLongClick(int position, ActiveDay activeDay);
+        void onLongClick(ImageView view);
     }
 
     private static class ActiveDayHolder extends RecyclerView.ViewHolder {

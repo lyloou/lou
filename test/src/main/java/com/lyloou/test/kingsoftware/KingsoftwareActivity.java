@@ -17,19 +17,16 @@
 package com.lyloou.test.kingsoftware;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
-import com.lyloou.test.util.Uview;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -53,18 +50,7 @@ public class KingsoftwareActivity extends AppCompatActivity {
 
     private void initView() {
         mImageView = (ImageView) findViewById(R.id.iv_kingsoftware);
-        mImageView.setOnLongClickListener(v -> {
-
-            Bitmap bitmap = Uview.getBitmapFromImageView(mImageView);
-
-            if (bitmap == null) {
-                Toast.makeText(mContext, "无法设壁纸", Toast.LENGTH_SHORT).show();
-            } else {
-                Uscreen.setBackgroundViaBitmap(mContext, bitmap);
-                Toast.makeText(mContext, "已设壁纸", Toast.LENGTH_SHORT).show();
-            }
-            return false;
-        });
+        Uscreen.setWallpaper(mImageView);
     }
 
     private void loadData() {

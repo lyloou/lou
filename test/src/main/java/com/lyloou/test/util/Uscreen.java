@@ -24,13 +24,16 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -91,17 +94,18 @@ public class Uscreen {
             rootView.setClipToPadding(true);
         }
     }
-    public static void setViewMarginTop(Activity activity, View view){
+
+    public static void setViewMarginTop(Activity activity, View view) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         params.topMargin = getStatusBarHeight(activity);
     }
 
-    public static void setToolbarMarginTop(Activity activity, Toolbar toolbar){
+    public static void setToolbarMarginTop(Activity activity, Toolbar toolbar) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) toolbar.getLayoutParams();
         params.topMargin = getStatusBarHeight(activity);
     }
 
-    public static int getStatusBarHeight(Activity activity){
+    public static int getStatusBarHeight(Activity activity) {
         int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
         int statusBarHeight = activity.getResources().getDimensionPixelSize(resourceId);
         return statusBarHeight;
@@ -162,6 +166,21 @@ public class Uscreen {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void setWallpaper(ImageView imageView) {
+        imageView.setOnLongClickListener(v -> {
+
+            Bitmap bitmap = Uview.getBitmapFromImageView(imageView);
+
+            if (bitmap == null) {
+                Snackbar.make(imageView,"无法设壁纸" , Snackbar.LENGTH_SHORT).show();
+            } else {
+                Uscreen.setBackgroundViaBitmap(imageView.getContext(), bitmap);
+                Snackbar.make(imageView,"已设壁纸" , Snackbar.LENGTH_SHORT).show();
+            }
+            return false;
+        });
     }
 
 }

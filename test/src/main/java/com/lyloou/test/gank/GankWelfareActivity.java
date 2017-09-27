@@ -17,7 +17,9 @@
 package com.lyloou.test.gank;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -50,7 +52,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -189,8 +193,43 @@ public class GankWelfareActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onLongClick(int position, ActiveDay activeDay) {
-                loadWelfareToImageView(activeDay.getDay());
+            public void onLongClick(ImageView view) {
+                Object tag = view.getTag(view.getId());
+                if (tag != null && tag instanceof String) {
+                    String url = String.valueOf(tag);
+                    if (!TextUtils.isEmpty(url)) {
+                        Utoast.show(mContext, "正在设置壁纸");
+
+                        Observable
+                                .fromCallable(new Callable<Bitmap>() {
+                                    @Override
+                                    public Bitmap call() throws Exception {
+                                        return Glide.with(mContext)
+                                                .load(url)
+                                                .asBitmap()
+                                                .into(Uscreen.getScreenWidth(mContext), Uscreen.getScreenHeight(mContext))
+                                                .get();
+                                    }
+                                })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<Bitmap>() {
+                                    @Override
+                                    public void accept(@NonNull Bitmap s) throws Exception {
+                                        Uscreen.setBackgroundViaBitmap(mContext, s);
+                                        Snackbar.make(view, "已设壁纸", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                }, new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(@NonNull Throwable throwable) throws Exception {
+                                        Snackbar.make(view, "设置壁纸失败", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                } else {
+                    Utoast.show(mContext, "URL不存在");
+                }
+
             }
         });
         recyclerView.setAdapter(mActiveDayAdapter);
