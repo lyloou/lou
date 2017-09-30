@@ -124,13 +124,14 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder.cbItem.setChecked(activeDay.isSelected());
             }
             holder.tvItem.setText(activeDay.getDay());
-            holder.view.setOnClickListener(new View.OnClickListener() {
+
+            ImageView ivItem = holder.ivItem;
+            ivItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     mItemClickListener.onClick(holder.getAdapterPosition(), activeDay);
                 }
             });
-            ImageView ivItem = holder.ivItem;
             ivItem.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
