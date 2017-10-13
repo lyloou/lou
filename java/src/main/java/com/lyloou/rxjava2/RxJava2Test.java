@@ -21,17 +21,185 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Notification;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
 
 public class RxJava2Test {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("say/hi");
 
-        sample9();
+        sampleG();
+    }
+
+    private static void sampleG() {
+        Observable.just(1)
+                .ofType(String.class)
+                .subscribe(s -> {
+                    System.out.println("-->");
+                    System.out.println(s);
+                });
+
+        Observable.just("2")
+                .ofType(String.class)
+                .subscribe(s -> {
+                    System.out.println("-->");
+                    System.out.println(s);
+                });
+    }
+
+    private static void sampleF() {
+        CompositeDisposable disposables = new CompositeDisposable();
+        Disposable disposable1 = Observable.just(1).subscribe(System.out::println);
+        Disposable disposable2 = Observable.just(2).subscribeOn(Schedulers.io())
+                .subscribe(integer -> {
+                    Thread.sleep(3000);
+                    System.out.println(integer);
+                });
+        Disposable disposable3 = Observable.just(3).subscribe(System.out::println);
+        disposables.add(disposable1);
+        disposables.add(disposable1);
+        disposables.add(disposable2);
+        disposables.add(disposable3);
+
+        System.out.println("2:" + disposable2.isDisposed());
+        System.out.println("all:" + disposables.isDisposed());
+        disposables.dispose();
+        System.out.println("2:" + disposable2.isDisposed());
+        System.out.println("all:" + disposables.isDisposed());
+    }
+
+    private static void sampleE() {
+        Observable.just(1, 2, 3, 4).toList().subscribe(integers -> integers.forEach(System.out::print));
+        System.out.println();
+        Observable.just(3, 2, 5, 4, 2, 1).toSortedList((o1, o2) -> o1 - o2).subscribe(System.out::println);
+
+        Observable.just("a", "b", "c").toMap(String::hashCode).subscribe(System.out::println);
+    }
+
+    private static void sampleD() {
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+                e.onComplete();
+            }
+        }).defaultIfEmpty("3").subscribe(new Consumer<String>() {
+            @Override
+            public void accept(@NonNull String integer) throws Exception {
+                System.out.println("c:" + integer);
+            }
+        });
+
+    }
+
+    private static void sampleC() {
+        Observable.just(1, 2, 3, 4)
+                .all(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(@NonNull Integer integer) throws Exception {
+                        return integer < 31;
+                    }
+                })
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(@NonNull Boolean aBoolean) throws Exception {
+                        System.out.println(aBoolean);
+                    }
+                });
+
+        Observable.just(1, 2, 3, 4).contains(3).subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(@NonNull Boolean aBoolean) throws Exception {
+                System.out.println(aBoolean);
+            }
+        });
+
+
+        Observable.fromArray().isEmpty().subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(@NonNull Boolean aBoolean) throws Exception {
+                System.out.println(aBoolean);
+            }
+        });
+    }
+
+    private static void sampleB() {
+        Observable
+                .create(new ObservableOnSubscribe<Integer>() {
+                    @Override
+                    public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
+                        if (true) {
+                            e.onError(new NullPointerException("空指针错误"));
+                        }
+                        e.onComplete();
+                    }
+                })
+//                .onErrorResumeNext(new Function<Throwable, ObservableSource<? extends Integer>>() {
+//                    @Override
+//                    public ObservableSource<? extends Integer> apply(@NonNull Throwable throwable) throws Exception {
+//                        System.out.println("----------->");
+//                        return Observable.just(2);
+//                    }
+//                })
+//                .onErrorReturn(new Function<Throwable, Integer>() {
+//                    @Override
+//                    public Integer apply(@NonNull Throwable throwable) throws Exception {
+//                        System.out.println("----------->");
+//                        // throwable.printStackTrace();
+//                        return 1;
+//                    }
+//                })
+                .onExceptionResumeNext(new Observable<Integer>() {
+                    @Override
+                    protected void subscribeActual(Observer<? super Integer> observer) {
+                        observer.onNext(32);
+                    }
+                })
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(@NonNull Integer integer) throws Exception {
+                        System.out.println(integer);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        throwable.printStackTrace();
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        System.out.println("=====>complication");
+                    }
+                });
+    }
+
+    private static void sampleA() {
+        ObservableSource<Integer> ob2 = Observable.just(1, 3, 5, 7, 9);
+        Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
+                for (int i = 0; i < 6; i++) {
+                    Thread.sleep(i * 1000);
+                    e.onNext(i);
+                }
+                e.onComplete();
+            }
+        }).timeout(4000, TimeUnit.MILLISECONDS, ob2).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(@NonNull Integer integer) throws Exception {
+                System.out.println(integer);
+            }
+        });
     }
 
     private static void sample9() {
@@ -152,6 +320,7 @@ public class RxJava2Test {
                     return;
                 }
                 System.out.println(aLong);
+                System.out.println(Thread.currentThread().getName());
                 latch.countDown();
             }
         });
