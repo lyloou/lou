@@ -42,7 +42,7 @@ public class RxBus {
         subject.onNext(o);
     }
 
-    public <T> Observable<T> toObservalbe(Class<T> eventType) {
+    public <T> Observable<T> toObservable(Class<T> eventType) {
         return subject.ofType(eventType);
     }
 }

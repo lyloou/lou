@@ -28,14 +28,14 @@ public class Main {
     private static Disposable subscribe;
 
     public static void main(String[] args) {
-        registe();
+        register();
 
         RxBus.getInstance().post("今日宴客，你们猜，谁会来的最晚");
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                RxBus.getInstance().post("👇");
+                RxBus.getInstance().post("开门--👇");
             }
         }, "线程2").start();
 
@@ -85,27 +85,28 @@ public class Main {
                 if (subscribe != null && !subscribe.isDisposed()) {
                     subscribe.dispose();
                     System.out.println("砰的一声，大门关了");
+                    System.out.println("来，继续，噔噔咔咔，噔咔，噔咔，噔噔咔咔");
                 }
             }
         }).start();
 
         RxBus.getInstance().post("DJ，迪斯科，迪斯卡，D，J，跳起来");
+
     } /* Output:
-    声音来自:main，说：今日宴客，你们猜，谁会来的最晚
-    声音来自:线程2，说：👇
-    声音来自:main，说：DJ，迪斯科，迪斯卡，D，J，跳起来
-    声音来自:pool-1-thread-1，说：不是我
-    声音来自:pool-1-thread-1，说：肯定不是我
-            后门悄悄的被关了
-    声音来自:Thread-0，说：不好意思，我来迟了
-    砰的一声，大门关了
+声音来自:main，说：今日宴客，你们猜，谁会来的最晚
+声音来自:线程2，说：开门--👇
+声音来自:main，说：DJ，迪斯科，迪斯卡，D，J，跳起来
+声音来自:pool-1-thread-1，说：不是我
+声音来自:pool-1-thread-1，说：肯定不是我
+后门悄悄的被关了
+声音来自:Thread-0，说：不好意思，我来迟了
+砰的一声，大门关了
+来，继续，噔噔咔咔，噔咔，噔咔，噔噔咔咔
 
-    Process finished with exit code 0
+*///~
 
-    *///~
-
-    private static void registe() {
-        subscribe = RxBus.getInstance().toObservalbe(String.class).subscribe(new Consumer<String>() {
+    private static void register() {
+        subscribe = RxBus.getInstance().toObservable(String.class).subscribe(new Consumer<String>() {
             @Override
             public void accept(@NonNull String s) throws Exception {
                 System.out.print("声音来自:" + Thread.currentThread().getName());
