@@ -14,16 +14,29 @@
  * limitations under the License.
  */
 
-package com.lyloou.sdkdemo;
+package com.lyloou.sdkdemo.dagger;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
+
+import com.lyloou.sdkdemo.R;
+
+import javax.inject.Inject;
 
 public class DaggerActivity extends AppCompatActivity {
+    @Inject
+    UserModel mUserModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dagger);
+        ActivityComponent component = DaggerActivityComponent.builder().activityModule(new ActivityModule()).build();
+        component.inject(this);
+
+        TextView tv = findViewById(R.id.tv_dagger);
+        tv.setText(mUserModel.id + "\n" + mUserModel.name + "\n" + mUserModel.gender);
+
     }
 }
