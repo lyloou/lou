@@ -22,8 +22,12 @@ public class UserModel {
     String gender;
 
     public UserModel() {
+        this("Jason");
+    }
+
+    public UserModel(String name) {
+        this.name = name;
         this.id = "0001";
-        this.name = "Jason";
         this.gender = "Male";
     }
 }

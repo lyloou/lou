@@ -16,13 +16,29 @@
 
 package com.lyloou.sdkdemo.dagger;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
 @Module
 public class ActivityModule {
+    private String name;
+
+    public ActivityModule(String name) {
+        this.name = name;
+    }
+
+    @Singleton
     @Provides
     UserModel provideUserModel() {
-        return new UserModel();
+        return new UserModel(name);
+    }
+
+    @Named("Default")
+    @Provides
+    UserModel provideUserModelDefault() {
+        return new UserModel("default");
     }
 }

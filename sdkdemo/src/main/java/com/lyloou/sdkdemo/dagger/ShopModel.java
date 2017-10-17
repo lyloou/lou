@@ -16,12 +16,19 @@
 
 package com.lyloou.sdkdemo.dagger;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-import dagger.Component;
+public class ShopModel {
+    private UserModel mUserModel;
 
-@Singleton
-@Component(modules = ActivityModule.class)
-public interface ActivityComponent {
-    void inject(DaggerActivity activity);
+
+    @Inject
+    public ShopModel(@Named("Default") UserModel userModel) {
+        mUserModel = userModel;
+    }
+
+    public String shopping() {
+        return mUserModel.name + " 开始购物了";
+    }
 }

@@ -28,15 +28,27 @@ public class DaggerActivity extends AppCompatActivity {
     @Inject
     UserModel mUserModel;
 
+    @Inject
+    UserModel mUserModel2;
+
+    @Inject
+    ShopModel mShopModel;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dagger);
-        ActivityComponent component = DaggerActivityComponent.builder().activityModule(new ActivityModule()).build();
+        ActivityComponent component = DaggerActivityComponent.builder().activityModule(new ActivityModule("WhoA")).build();
         component.inject(this);
 
         TextView tv = findViewById(R.id.tv_dagger);
-        tv.setText(mUserModel.id + "\n" + mUserModel.name + "\n" + mUserModel.gender);
+        tv.setText(mUserModel.id + "\n" + mUserModel.name + "\n" + mUserModel.gender + "\n" + mShopModel.shopping()
+                + "\n mUserModel1:" + mUserModel.hashCode()
+
+                + "\n\n\n"
+                + mUserModel2.id + "\n" + mUserModel2.name + "\n" + mUserModel2.gender + "\n" + mShopModel.shopping()
+                + "\n mUserModel2:" + mUserModel2.hashCode());
 
     }
 }
