@@ -16,12 +16,9 @@
 
 package com.lyloou.sdkdemo.dagger;
 
-import javax.inject.Singleton;
-
 import dagger.Component;
 
-@Singleton
-@Component(modules = ActivityModule.class, dependencies = BusinessComponent.class)
-public interface ActivityComponent {
-    void inject(DaggerActivity activity);
+@Component(modules = BusinessModule.class)
+public interface BusinessComponent {
+    Business getBusiness();
 }

@@ -16,18 +16,15 @@
 
 package com.lyloou.sdkdemo.dagger;
 
-public class UserModel {
-    String id;
-    String name;
-    String gender;
+import dagger.Module;
+import dagger.Provides;
 
-    public UserModel() {
-        this("Jason");
+@Module
+public class BusinessModule {
+
+    @Provides
+    Business provideBusiness() {
+        return new Business("我是商家");
     }
 
-    public UserModel(String name) {
-        this.name = name;
-        this.id = "0001";
-        this.gender = "Male";
-    }
 }

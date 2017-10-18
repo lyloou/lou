@@ -16,12 +16,18 @@
 
 package com.lyloou.sdkdemo.dagger;
 
-import javax.inject.Singleton;
+public class User {
+    String id;
+    String name;
+    String gender;
 
-import dagger.Component;
+    public User() {
+        this("Jason");
+    }
 
-@Singleton
-@Component(modules = ActivityModule.class, dependencies = BusinessComponent.class)
-public interface ActivityComponent {
-    void inject(DaggerActivity activity);
+    public User(String name) {
+        this.name = name;
+        this.id = "0001";
+        this.gender = "Male";
+    }
 }

@@ -19,16 +19,16 @@ package com.lyloou.sdkdemo.dagger;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-public class ShopModel {
-    private UserModel mUserModel;
+public class Shop {
+    private User mUser;
 
 
     @Inject
-    public ShopModel(@Named("Default") UserModel userModel) {
-        mUserModel = userModel;
+    public Shop(@Named("Default") User user) {
+        mUser = user;
     }
 
     public String shopping() {
-        return mUserModel.name + " 开始购物了";
+        return mUser.name + " 开始购物了";
     }
 }

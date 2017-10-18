@@ -26,29 +26,39 @@ import javax.inject.Inject;
 
 public class DaggerActivity extends AppCompatActivity {
     @Inject
-    UserModel mUserModel;
+    User mUser;
 
     @Inject
-    UserModel mUserModel2;
+    User mUser2;
 
     @Inject
-    ShopModel mShopModel;
+    Shop mShop;
+
+    @Inject
+    Business mBusiness;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dagger);
-        ActivityComponent component = DaggerActivityComponent.builder().activityModule(new ActivityModule("WhoA")).build();
+        ActivityComponent component = DaggerActivityComponent.builder()
+                .activityModule(new ActivityModule("WhoA"))
+                .businessComponent(DaggerBusinessComponent.builder().build())
+                .build();
         component.inject(this);
 
         TextView tv = findViewById(R.id.tv_dagger);
-        tv.setText(mUserModel.id + "\n" + mUserModel.name + "\n" + mUserModel.gender + "\n" + mShopModel.shopping()
-                + "\n mUserModel1:" + mUserModel.hashCode()
+        tv.setText(mUser.id + "\n" + mUser.name + "\n" + mUser.gender + "\n" + mShop.shopping()
+                + "\n mUserModel1:" + mUser.hashCode()
 
                 + "\n\n\n"
-                + mUserModel2.id + "\n" + mUserModel2.name + "\n" + mUserModel2.gender + "\n" + mShopModel.shopping()
-                + "\n mUserModel2:" + mUserModel2.hashCode());
+                + mUser2.id + "\n" + mUser2.name + "\n" + mUser2.gender + "\n" + mShop.shopping()
+                + "\n mUser2:" + mUser2.hashCode()
+
+                + "\n\n\n"
+                + "mBusiness:"+mBusiness.getName()
+        );
 
     }
 }

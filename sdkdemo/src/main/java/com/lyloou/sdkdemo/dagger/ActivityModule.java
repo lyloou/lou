@@ -32,13 +32,13 @@ public class ActivityModule {
 
     @Singleton
     @Provides
-    UserModel provideUserModel() {
-        return new UserModel(name);
+    User provideUserModel() {
+        return new User(name);
     }
 
     @Named("Default")
     @Provides
-    UserModel provideUserModelDefault() {
-        return new UserModel("default");
+    User provideUserModelDefault() {
+        return new User("default");
     }
 }
