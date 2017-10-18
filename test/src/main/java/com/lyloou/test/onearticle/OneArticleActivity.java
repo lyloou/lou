@@ -22,13 +22,12 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -40,46 +39,70 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.common.db.ArticleEntry;
+import com.lyloou.test.common.db.DbCallback;
+import com.lyloou.test.common.db.LouSQLite;
 import com.lyloou.test.util.Uscreen;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class OneArticleActivity extends AppCompatActivity {
 
-    Activity mContext;
+    private Activity mContext;
+    private String mCurrentDay;
+    private List<String> mExistDays;
+    private CompositeDisposable mDisposable;
+    private MenuItem mItemFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = this;
         setContentView(R.layout.activity_onearticle);
+        mContext = this;
+        mDisposable = new CompositeDisposable();
 
+        initData();
         initView();
 
         layoutIt(NetWork.getOneArticleApi().getOneArticle(1));
     }
 
+    private void initData() {
+        LouSQLite.init(this.getApplicationContext(), DbCallback.getInstance());
+    }
 
     private void layoutIt(Observable<OneArticle> observable) {
-        observable
+        mDisposable.add(observable
+                .doOnNext(new Consumer<OneArticle>() {
+                    @Override
+                    public void accept(@NonNull OneArticle oneArticle) throws Exception {
+                        if (mExistDays == null) {
+                            List<String> lists = LouSQLite.query(DbCallback.TABLE_NAME_ONE_ARTICLE
+                                    , "select * from " + DbCallback.TABLE_NAME_ONE_ARTICLE
+                                    , null);
+                            mExistDays = lists;
+                            System.out.println("=====>" + Arrays.toString(lists.toArray()));
+                        }
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<OneArticle>() {
                                @Override
                                public void accept(@NonNull OneArticle oneArticle) throws Exception {
-                                   String title = oneArticle.getData().getTitle();
-                                   String authDate = oneArticle.getData().getAuthor() + "（" + oneArticle.getData().getDate().getCurr() + "）";
-                                   Spanned content = Html.fromHtml(oneArticle.getData().getContent());
-
-                                   showArticle(title, authDate, content);
+                                   showArticle(oneArticle);
                                }
                            }
                         , new Consumer<Throwable>() {
@@ -88,16 +111,36 @@ public class OneArticleActivity extends AppCompatActivity {
                                 throwable.printStackTrace();
                                 Toast.makeText(mContext, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        });
+                        }));
     }
 
-    private void showArticle(String title, String authDate, Spanned content) {
+    private void showArticle(@NonNull OneArticle oneArticle) {
+        mCurrentDay = oneArticle.getData().getDate().getCurr();
+        refreshFavoriteItem(mExistDays.contains(mCurrentDay));
+
+        String title = oneArticle.getData().getTitle();
+        String authDate = oneArticle.getData().getAuthor() + "（" + mCurrentDay + "）";
+        String htmlContent = oneArticle.getData().getContent();
+
         TextView tvTitle = findViewById(R.id.tv_title);
         TextView tvAuthorDate = findViewById(R.id.tv_author_date);
-        TextView tvContent = findViewById(R.id.tv_content);
         tvTitle.setText(title);
         tvAuthorDate.setText(authDate);
-        tvContent.setText(content);
+
+        WebView wvContent = findViewById(R.id.wv_content);
+        String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/render.css\" type=\"text/css\">";
+
+        String result = "<!DOCTYPE html>\n"
+                + "<html lang=\"ZH-CN\" xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                + "<head>\n<meta charset=\"utf-8\" />\n"
+                + css
+                + "\n</head>\n<body>\n"
+                + "<div class=\"container bs-docs-container\">\n"
+                + "<div class=\"post-container\">\n"
+                + htmlContent
+                + "</div>\n</div>\n</body>\n</html>";
+
+        wvContent.loadDataWithBaseURL("x-data://base", result, "text/html", "utf-8", null);
     }
 
     private void initView() {
@@ -121,6 +164,7 @@ public class OneArticleActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_one_artical, menu);
+        mItemFavorite = menu.findItem(R.id.menu_one_article_collect);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -142,10 +186,64 @@ public class OneArticleActivity extends AppCompatActivity {
             case R.id.menu_one_article_here:
                 showSpecialDayArticleHere();
                 break;
+            case R.id.menu_one_article_collect:
+                toggleFavoriteStatus();
+                break;
 
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (!mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+    }
+
+    private void toggleFavoriteStatus() {
+        if (mItemFavorite == null) {
+            return;
+        }
+
+        mDisposable.add(Observable.just(mCurrentDay)
+                .map(new Function<String, Boolean>() {
+                    @Override
+                    public Boolean apply(@NonNull String day) throws Exception {
+                        boolean contains = mExistDays.contains(day);
+                        addToOrRemoveFromFavorite(day, contains);
+                        return !contains;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(@NonNull Boolean exist) {
+                        refreshFavoriteItem(exist);
+                    }
+                }));
+    }
+
+    private void refreshFavoriteItem(@NonNull Boolean exist) {
+        mItemFavorite.setIcon(exist ? R.mipmap.ic_favorite : R.mipmap.ic_favorite_border);
+    }
+
+    // 注意：不要在主线程中操作
+    private void addToOrRemoveFromFavorite(@NonNull String day, boolean remove) {
+        // 包含的话则移除，不包含的话则添加
+        if (remove) {
+            LouSQLite.delete(DbCallback.TABLE_NAME_ONE_ARTICLE
+                    , ArticleEntry.COLEUM_NAME_DATE + "=?"
+                    , new String[]{day});
+            mExistDays.remove(day);
+        } else {
+            LouSQLite.insert(DbCallback.TABLE_NAME_ONE_ARTICLE, day);
+            mExistDays.add(day);
+        }
     }
 
     private void showSpecialDayArticle() {

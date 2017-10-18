@@ -35,4 +35,10 @@
         android:id="@+id/menu_one_article_here"
         android:title="某天"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/menu_one_article_collect"
+        android:title="收藏"
+        android:icon="@mipmap/ic_favorite_border"
+        app:showAsAction="always"/>
 </menu>
