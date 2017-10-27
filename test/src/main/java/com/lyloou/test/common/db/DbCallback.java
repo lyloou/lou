@@ -19,7 +19,6 @@ package com.lyloou.test.common.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.provider.BaseColumns;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +34,9 @@ public class DbCallback implements LouSQLite.ICallBack {
     private static final String TABLE_SCHEMA_ONE_ARTICLE =
             "CREATE TABLE " + TABLE_NAME_ONE_ARTICLE + " (" +
                     ArticleEntry._ID + TYPE_INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
-                    ArticleEntry.COLEUM_NAME_DATE + TYPE_INTEGER +
+                    ArticleEntry.COLEUM_NAME_DATE + TYPE_TEXT +SEP_COMMA +
+                    ArticleEntry.COLEUM_NAME_TITLE + TYPE_TEXT + SEP_COMMA +
+                    ArticleEntry.COLEUM_NAME_AUTHOR + TYPE_TEXT +
                     ")";
     private static DbCallback INSTANCE;
 
@@ -80,8 +81,11 @@ public class DbCallback implements LouSQLite.ICallBack {
     public <T> void assignValuesByEntity(String tableName, T t, ContentValues values) {
         switch (tableName) {
             case TABLE_NAME_ONE_ARTICLE:
-                if (t instanceof String) {
-                    values.put(ArticleEntry.COLEUM_NAME_DATE, String.valueOf(t));
+                if (t instanceof Article) {
+                    Article t2 = (Article) t;
+                    values.put(ArticleEntry.COLEUM_NAME_DATE, t2.getDate());
+                    values.put(ArticleEntry.COLEUM_NAME_TITLE, t2.getTitle());
+                    values.put(ArticleEntry.COLEUM_NAME_AUTHOR, t2.getAuthor());
                 }
                 break;
         }
@@ -91,7 +95,10 @@ public class DbCallback implements LouSQLite.ICallBack {
     public <T> T newEntityByCursor(String tableName, Cursor cursor) {
         switch (tableName) {
             case TABLE_NAME_ONE_ARTICLE:
-                return (T) cursor.getString(cursor.getColumnIndex(ArticleEntry.COLEUM_NAME_DATE));
+                String date = cursor.getString(cursor.getColumnIndex(ArticleEntry.COLEUM_NAME_DATE));
+                String title = cursor.getString(cursor.getColumnIndex(ArticleEntry.COLEUM_NAME_TITLE));
+                String author = cursor.getString(cursor.getColumnIndex(ArticleEntry.COLEUM_NAME_AUTHOR));
+                return (T) new Article(date, author, title);
         }
 
         return null;

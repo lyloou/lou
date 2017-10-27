@@ -39,11 +39,13 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.common.db.Article;
 import com.lyloou.test.common.db.ArticleEntry;
 import com.lyloou.test.common.db.DbCallback;
 import com.lyloou.test.common.db.LouSQLite;
 import com.lyloou.test.util.Uscreen;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -61,7 +63,7 @@ import io.reactivex.schedulers.Schedulers;
 public class OneArticleActivity extends AppCompatActivity {
 
     private Activity mContext;
-    private String mCurrentDay;
+    private Article mCurrentDay;
     private List<String> mExistDays;
     private CompositeDisposable mDisposable;
     private MenuItem mItemFavorite;
@@ -89,10 +91,14 @@ public class OneArticleActivity extends AppCompatActivity {
                     @Override
                     public void accept(@NonNull OneArticle oneArticle) throws Exception {
                         if (mExistDays == null) {
-                            List<String> lists = LouSQLite.query(DbCallback.TABLE_NAME_ONE_ARTICLE
+                            List<Article> lists = LouSQLite.query(DbCallback.TABLE_NAME_ONE_ARTICLE
                                     , "select * from " + DbCallback.TABLE_NAME_ONE_ARTICLE
                                     , null);
-                            mExistDays = lists;
+                            List<String> lists2 = new ArrayList<String>();
+                            for (Article a : lists) {
+                                    lists2.add(a.getDate());
+                            }
+                            mExistDays = lists2;
                             System.out.println("=====>" + Arrays.toString(lists.toArray()));
                         }
                     }
@@ -115,11 +121,11 @@ public class OneArticleActivity extends AppCompatActivity {
     }
 
     private void showArticle(@NonNull OneArticle oneArticle) {
-        mCurrentDay = oneArticle.getData().getDate().getCurr();
-        refreshFavoriteItem(mExistDays.contains(mCurrentDay));
+        mCurrentDay = new Article(oneArticle.getData().getDate().getCurr(), oneArticle.getData().getAuthor(), oneArticle.getData().getTitle());
+        refreshFavoriteItem(mExistDays.contains(mCurrentDay.getDate()));
 
         String title = oneArticle.getData().getTitle();
-        String authDate = oneArticle.getData().getAuthor() + "（" + mCurrentDay + "）";
+        String authDate = oneArticle.getData().getAuthor() + "（" + mCurrentDay.getDate() + "）";
         String htmlContent = oneArticle.getData().getContent();
 
         TextView tvTitle = findViewById(R.id.tv_title);
@@ -209,7 +215,7 @@ public class OneArticleActivity extends AppCompatActivity {
             return;
         }
 
-        mDisposable.add(Observable.just(mCurrentDay)
+        mDisposable.add(Observable.just(mCurrentDay.getDate())
                 .map(new Function<String, Boolean>() {
                     @Override
                     public Boolean apply(@NonNull String day) throws Exception {
@@ -241,7 +247,7 @@ public class OneArticleActivity extends AppCompatActivity {
                     , new String[]{day});
             mExistDays.remove(day);
         } else {
-            LouSQLite.insert(DbCallback.TABLE_NAME_ONE_ARTICLE, day);
+            LouSQLite.insert(DbCallback.TABLE_NAME_ONE_ARTICLE, mCurrentDay);
             mExistDays.add(day);
         }
     }

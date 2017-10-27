@@ -31,5 +31,5 @@ img {
 ul {
     padding: 0;
     margin: .2em .2em .2em;
-    list-style: none
+    list-style-position:inside;
 }

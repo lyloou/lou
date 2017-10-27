@@ -16,10 +16,26 @@
 
 package com.lyloou.test.common.db;
 
-import android.provider.BaseColumns;
+public class Article {
+    private String date;
+    private String author;
+    private String title;
 
-public class ArticleEntry implements BaseColumns {
-    public static final String COLEUM_NAME_DATE = "date";
-    public static final String COLEUM_NAME_TITLE = "title";
-    public static final String COLEUM_NAME_AUTHOR = "author";
+    public Article(String date, String author, String title) {
+        this.date = date;
+        this.author = author;
+        this.title = title;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }

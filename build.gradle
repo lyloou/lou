@@ -37,10 +37,10 @@ ext {
     minSdkVersion = 15
     targetSdkVersion = 26
     compileSdkVersion = 26
-    buildToolsVersion = '26.0.0'
+    buildToolsVersion = '26.0.2'
 
     // App dependencies
-    supportLibraryVersion = '26.0.0-beta2'
+    supportLibraryVersion = '27.0.0'
     junitVersion = '4.12'
     rxjavaVersion = '2.1.1'
     rxandroidVersion = '2.0.1'

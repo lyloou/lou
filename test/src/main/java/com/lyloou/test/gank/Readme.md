@@ -1,3 +1,4 @@
+- [x] gank: http://www.w3school.com.cn/cssref/pr_list-style-position.asp
 
 ## 微信多图片分享功能
 
