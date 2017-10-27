@@ -11,8 +11,8 @@
     <!-- 用于欢迎界面的Activity主题 -->
     <style name="lou_activity_first" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@null</item>
-        <item name="@android:windowTranslucentNavigation">true</item>
-        <item name="@android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
 </resources>
