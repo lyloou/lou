@@ -24,6 +24,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -167,6 +168,14 @@ public class GankWelfareActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_gank);
+        toolbar.setTitle("Gank.io");
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        toolbar.setNavigationIcon(R.mipmap.back_white);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        setSupportActionBar(toolbar);
+
         EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.erv_gank_welfare);
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_gank_welfare);
         ImageView ivEmpty = (ImageView) findViewById(R.id.iv_empty);

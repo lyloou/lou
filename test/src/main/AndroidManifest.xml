@@ -74,7 +74,7 @@
         <activity
             android:name=".gank.GankWelfareActivity"
             android:label="@string/gank_welfare"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
+            android:theme="@style/AppTheme"/>
         <activity android:name=".common.webview.WebContentActivity"/>
         <activity
             android:name=".bus.BusActivity"
