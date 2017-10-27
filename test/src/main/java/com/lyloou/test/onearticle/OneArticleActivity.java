@@ -280,11 +280,14 @@ public class OneArticleActivity extends AppCompatActivity {
             LouSQLite.delete(DbCallback.TABLE_NAME_ONE_ARTICLE
                     , ArticleEntry.COLEUM_NAME_DATE + "=?"
                     , new String[]{art.getDate()});
+            Article toBeDeleteArticle = null;
             for (Article article : mFavorites) {
                 if (art.getDate().equals(article.getDate())) {
-                    mFavorites.remove(article);
+                    toBeDeleteArticle = article;
+                    break;
                 }
             }
+            mFavorites.remove(toBeDeleteArticle);
         } else {
             LouSQLite.insert(DbCallback.TABLE_NAME_ONE_ARTICLE, art);
             mFavorites.add(art);
