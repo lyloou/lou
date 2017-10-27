@@ -35,6 +35,10 @@
         android:id="@+id/menu_one_article_here"
         android:title="某天"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/menu_one_article_my_favorites"
+        android:title="我的收藏夹"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_one_article_collect"

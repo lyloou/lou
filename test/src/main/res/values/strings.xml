@@ -24,7 +24,7 @@
     <string name="kingsoftware_daily_sentence_gallery">金山词霸 - 每日一句（画廊）</string>
     <string name="douban_top250">豆瓣 - Top250（加载更多）</string>
     <string name="meiriyiwen">每日一文 - 今天</string>
-    <string name="meiriyiwen_random">每日一文 - 某天</string>
+    <string name="meiriyiwen_random">每日一文 - 某某天</string>
     <string name="gank_welfare">Gank - 福利</string>
     <string name="bus_chelaile">公交 - 车来了</string>
 </resources>

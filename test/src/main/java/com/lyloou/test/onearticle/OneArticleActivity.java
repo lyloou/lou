@@ -17,6 +17,7 @@
 package com.lyloou.test.onearticle;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -28,15 +29,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
+import com.lyloou.test.common.LouAdapter;
 import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.db.Article;
@@ -45,7 +49,6 @@ import com.lyloou.test.common.db.DbCallback;
 import com.lyloou.test.common.db.LouSQLite;
 import com.lyloou.test.util.Uscreen;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -64,7 +67,7 @@ public class OneArticleActivity extends AppCompatActivity {
 
     private Activity mContext;
     private Article mCurrentDay;
-    private List<String> mExistDays;
+    private List<Article> mFavorites;
     private CompositeDisposable mDisposable;
     private MenuItem mItemFavorite;
 
@@ -90,16 +93,11 @@ public class OneArticleActivity extends AppCompatActivity {
                 .doOnNext(new Consumer<OneArticle>() {
                     @Override
                     public void accept(@NonNull OneArticle oneArticle) throws Exception {
-                        if (mExistDays == null) {
-                            List<Article> lists = LouSQLite.query(DbCallback.TABLE_NAME_ONE_ARTICLE
+                        if (mFavorites == null) {
+                            mFavorites = LouSQLite.query(DbCallback.TABLE_NAME_ONE_ARTICLE
                                     , "select * from " + DbCallback.TABLE_NAME_ONE_ARTICLE
                                     , null);
-                            List<String> lists2 = new ArrayList<String>();
-                            for (Article a : lists) {
-                                    lists2.add(a.getDate());
-                            }
-                            mExistDays = lists2;
-                            System.out.println("=====>" + Arrays.toString(lists.toArray()));
+                            System.out.println("=====>收藏夹：" + Arrays.toString(mFavorites.toArray()));
                         }
                     }
                 })
@@ -120,9 +118,20 @@ public class OneArticleActivity extends AppCompatActivity {
                         }));
     }
 
+
+    private boolean contains(Article art) {
+        for (Article article : mFavorites) {
+            if (article.getDate().equals(art.getDate())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     private void showArticle(@NonNull OneArticle oneArticle) {
         mCurrentDay = new Article(oneArticle.getData().getDate().getCurr(), oneArticle.getData().getAuthor(), oneArticle.getData().getTitle());
-        refreshFavoriteItem(mExistDays.contains(mCurrentDay.getDate()));
+        refreshItemFavoriteStatus(contains(mCurrentDay));
 
         String title = oneArticle.getData().getTitle();
         String authDate = oneArticle.getData().getAuthor() + "（" + mCurrentDay.getDate() + "）";
@@ -195,10 +204,40 @@ public class OneArticleActivity extends AppCompatActivity {
             case R.id.menu_one_article_collect:
                 toggleFavoriteStatus();
                 break;
+            case R.id.menu_one_article_my_favorites:
+                showMyFavorites();
+                break;
 
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showMyFavorites() {
+        ListView listView = new ListView(mContext);
+
+        final LouAdapter<Article> adapter = new LouAdapter<Article>(listView, android.R.layout.simple_list_item_1) {
+            @Override
+            protected void assign(ViewHolder holder, Article s) {
+                holder.putText(android.R.id.text1, s.toString());
+            }
+        };
+        adapter.initList(mFavorites);
+        LouDialog louDialog = LouDialog.newInstance(mContext, listView, 0);
+        Dialog dialog = louDialog.getDialog();
+        dialog.setTitle("我的收藏夹");
+        louDialog.show();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Article article = mFavorites.get(i);
+                Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, article.getDate());
+                layoutIt(observable);
+                louDialog.dismiss();
+            }
+        });
+
     }
 
     @Override
@@ -211,16 +250,12 @@ public class OneArticleActivity extends AppCompatActivity {
     }
 
     private void toggleFavoriteStatus() {
-        if (mItemFavorite == null) {
-            return;
-        }
-
-        mDisposable.add(Observable.just(mCurrentDay.getDate())
-                .map(new Function<String, Boolean>() {
+        mDisposable.add(Observable.just(mCurrentDay)
+                .map(new Function<Article, Boolean>() {
                     @Override
-                    public Boolean apply(@NonNull String day) throws Exception {
-                        boolean contains = mExistDays.contains(day);
-                        addToOrRemoveFromFavorite(day, contains);
+                    public Boolean apply(@NonNull Article article) throws Exception {
+                        boolean contains = contains(article);
+                        addToOrRemoveFromFavorites(article, contains);
                         return !contains;
                     }
                 })
@@ -229,26 +264,30 @@ public class OneArticleActivity extends AppCompatActivity {
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(@NonNull Boolean exist) {
-                        refreshFavoriteItem(exist);
+                        refreshItemFavoriteStatus(exist);
                     }
                 }));
     }
 
-    private void refreshFavoriteItem(@NonNull Boolean exist) {
+    private void refreshItemFavoriteStatus(@NonNull Boolean exist) {
         mItemFavorite.setIcon(exist ? R.mipmap.ic_favorite : R.mipmap.ic_favorite_border);
     }
 
     // 注意：不要在主线程中操作
-    private void addToOrRemoveFromFavorite(@NonNull String day, boolean remove) {
+    private void addToOrRemoveFromFavorites(@NonNull Article art, boolean remove) {
         // 包含的话则移除，不包含的话则添加
         if (remove) {
             LouSQLite.delete(DbCallback.TABLE_NAME_ONE_ARTICLE
                     , ArticleEntry.COLEUM_NAME_DATE + "=?"
-                    , new String[]{day});
-            mExistDays.remove(day);
+                    , new String[]{art.getDate()});
+            for (Article article : mFavorites) {
+                if (art.getDate().equals(article.getDate())) {
+                    mFavorites.remove(article);
+                }
+            }
         } else {
-            LouSQLite.insert(DbCallback.TABLE_NAME_ONE_ARTICLE, mCurrentDay);
-            mExistDays.add(day);
+            LouSQLite.insert(DbCallback.TABLE_NAME_ONE_ARTICLE, art);
+            mFavorites.add(art);
         }
     }
 
