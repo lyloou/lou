@@ -81,6 +81,10 @@
             android:label="@string/bus_chelaile"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
+        <activity
+            android:name=".bus.BusTvActivity"
+            android:label="@string/bustv_chelaile"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
     </application>
 
 </manifest>

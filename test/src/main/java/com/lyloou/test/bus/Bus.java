@@ -220,14 +220,14 @@ public class Bus {
 
     @Override
     public String toString() {
-        String info = "";
+        StringBuilder info = new StringBuilder();
         List<TravelsBean> travels = getTravels();
         for (TravelsBean travelsBean : travels) {
             long arrivalTime = travelsBean.arrivalTime;
             Date obj = new Date(arrivalTime);
             long interval = (arrivalTime - new Date().getTime()) / 1000 / 60;
             String time = SDF.format(obj) + " - " + interval + "分钟";
-            info += String.valueOf(time);
+            info.append(String.valueOf(time));
         }
 
         return busId + "  " + info;

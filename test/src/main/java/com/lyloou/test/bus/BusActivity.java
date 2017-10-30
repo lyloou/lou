@@ -45,7 +45,6 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -79,7 +78,7 @@ public class BusActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bus);
         initListView();
         whereIsBus(URL_323);
-        setTitle("M355 西乡盐田大门-裕安路口");
+        setMyTitle("323 回家咯");
     }
 
     private void initListView() {
@@ -105,7 +104,8 @@ public class BusActivity extends AppCompatActivity {
                 .url(url)
                 .build();
         Call call = mOkHttpClient.newCall(request);
-        Disposable subscribe = Flowable
+
+        mCompositeDisposable.add(Flowable
                 .fromCallable(new Callable<String>() {
                     @Override
                     public String call() throws Exception {
@@ -177,8 +177,7 @@ public class BusActivity extends AppCompatActivity {
                         Toast.makeText(mContext, "异常了" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         mRefreshLayout.setRefreshing(false);
                     }
-                });
-        mCompositeDisposable.add(subscribe);
+                }));
     }
 
     private void dispose() {
@@ -228,11 +227,14 @@ public class BusActivity extends AppCompatActivity {
                 whereIsBus(URL_610);
                 break;
         }
-                setTitle(item.getTitle());
+        String title = item.getTitle().toString();
+        if (!title.startsWith("===")) {
+            this.setMyTitle(title);
+        }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setTitle(String m355) {
+    private void setMyTitle(String m355) {
         ActionBar supportActionBar = getSupportActionBar();
         if (null != supportActionBar) {
             supportActionBar.setTitle(m355);
