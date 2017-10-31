@@ -12,13 +12,16 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 
@@ -202,6 +205,23 @@ public class Uview {
             }
         }
         return result;
+    }
+
+    public static Bitmap getBitmapFromImageView(ImageView imageView) {
+
+        Drawable drawable = imageView.getDrawable();
+        if (drawable != null && drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            if (bitmap != null) {
+                return bitmap;
+            }
+        }
+
+        imageView.buildDrawingCache();
+        Bitmap bitmap = imageView.getDrawingCache();
+        return bitmap;
     }
 
     /**

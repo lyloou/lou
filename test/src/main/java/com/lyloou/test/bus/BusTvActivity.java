@@ -104,20 +104,21 @@ public class BusTvActivity extends AppCompatActivity {
 
         int space = Uscreen.dp2Px(mContext, 24);
         int sep = Uscreen.dp2Px(mContext, 16);
-        int white = getResources().getColor(R.color.white);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams sepParams = new LinearLayout.LayoutParams(MATCH_PARENT, sep);
         for (String s : map.keySet()) {
             View view = new View(mContext);
-            view.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, sep));
+            view.setLayoutParams(sepParams);
             ll.addView(view);
 
             TextView tv = new TextView(mContext);
             tv.setLayoutParams(layoutParams);
             tv.setPadding(space, space, space, space);
-            tv.setBackgroundColor(white);
+            tv.setBackgroundResource(R.drawable.ripple_gray_radius_2);
             tv.setGravity(Gravity.CENTER_VERTICAL);
             tv.setText(s);
             tv.setTextSize(16);
+            tv.setTextColor(getResources().getColor(android.R.color.black));
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -200,9 +201,10 @@ public class BusTvActivity extends AppCompatActivity {
                         System.out.println(busss);
                         StringBuilder sb = new StringBuilder(key);
                         for (Bus bus : buses) {
-                            sb.append("\n").append(bus);
+                            sb.append("\n  ").append(bus);
                         }
                         tv.setText(sb);
+                        tv.setTextColor(getResources().getColor(R.color.colorAccent));
 
                     }
                 }, new Consumer<Throwable>() {
