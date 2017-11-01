@@ -93,12 +93,7 @@ public class OneArticleActivity extends AppCompatActivity {
                 .doOnNext(new Consumer<OneArticle>() {
                     @Override
                     public void accept(@NonNull OneArticle oneArticle) throws Exception {
-                        if (mFavorites == null) {
-                            mFavorites = LouSQLite.query(DbCallback.TABLE_NAME_ONE_ARTICLE
-                                    , "select * from " + DbCallback.TABLE_NAME_ONE_ARTICLE
-                                    , null);
-                            System.out.println("=====>收藏夹：" + Arrays.toString(mFavorites.toArray()));
-                        }
+                        queryFromDb();
                     }
                 })
                 .subscribeOn(Schedulers.io())
@@ -116,6 +111,15 @@ public class OneArticleActivity extends AppCompatActivity {
                                 Toast.makeText(mContext, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }));
+    }
+
+    private void queryFromDb() {
+        if (mFavorites == null) {
+            mFavorites = LouSQLite.query(DbCallback.TABLE_NAME_ONE_ARTICLE
+                    , "select * from " + DbCallback.TABLE_NAME_ONE_ARTICLE
+                    , null);
+            System.out.println("=====>收藏夹：" + Arrays.toString(mFavorites.toArray()));
+        }
     }
 
 
@@ -222,6 +226,12 @@ public class OneArticleActivity extends AppCompatActivity {
                 holder.putText(android.R.id.text1, s.toString());
             }
         };
+
+        if(mFavorites == null){
+            Toast.makeText(mContext, "重新加载中",  Toast.LENGTH_SHORT).show();
+            queryFromDb();
+        }
+
         adapter.initList(mFavorites);
         LouDialog louDialog = LouDialog.newInstance(mContext, listView, 0);
         Dialog dialog = louDialog.getDialog();
