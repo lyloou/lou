@@ -203,11 +203,14 @@ public class GankWelfareActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(ImageView view) {
+
+
                 Object tag = view.getTag(view.getId());
                 if (tag != null && tag instanceof String) {
                     String url = String.valueOf(tag);
                     if (!TextUtils.isEmpty(url)) {
-                        Utoast.show(mContext, "正在设置壁纸");
+                        LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
+                        progressTips.show("正在设置壁纸");
 
                         Observable
                                 .fromCallable(new Callable<Bitmap>() {
@@ -226,11 +229,13 @@ public class GankWelfareActivity extends AppCompatActivity {
                                     @Override
                                     public void accept(@NonNull Bitmap s) throws Exception {
                                         Uscreen.setBackgroundViaBitmap(mContext, s);
+                                        progressTips.hide();
                                         Snackbar.make(view, "已设壁纸", Snackbar.LENGTH_SHORT).show();
                                     }
                                 }, new Consumer<Throwable>() {
                                     @Override
                                     public void accept(@NonNull Throwable throwable) throws Exception {
+                                        progressTips.hide();
                                         Snackbar.make(view, "设置壁纸失败", Snackbar.LENGTH_SHORT).show();
                                     }
                                 });
