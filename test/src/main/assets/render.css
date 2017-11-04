@@ -9,6 +9,9 @@ body {
     color: #444;
     overflow: auto;
     overflow-x: hidden
+    letter-spacing: 2px;
+    line-height: 1.4em;
+    font-size: 16px;
 }
 
 a {
