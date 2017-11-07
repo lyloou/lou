@@ -107,12 +107,10 @@ public class BusTvActivity extends AppCompatActivity {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams sepParams = new LinearLayout.LayoutParams(MATCH_PARENT, sep);
         for (String s : map.keySet()) {
-            View view = new View(mContext);
-            view.setLayoutParams(sepParams);
-            ll.addView(view);
 
             TextView tv = new TextView(mContext);
             tv.setLayoutParams(layoutParams);
+            tv.setElevation(4);
             tv.setPadding(space, space, space, space);
             tv.setBackgroundResource(R.drawable.ripple_gray_radius_2);
             tv.setGravity(Gravity.CENTER_VERTICAL);
@@ -126,6 +124,10 @@ public class BusTvActivity extends AppCompatActivity {
                 }
             });
             ll.addView(tv);
+
+            View view = new View(mContext);
+            view.setLayoutParams(sepParams);
+            ll.addView(view);
         }
     }
 

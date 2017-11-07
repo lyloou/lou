@@ -1,8 +1,8 @@
 
 - [ ] 视频 https://github.com/jokermonn/-Api/blob/master/Livideo.md
-- [ ] 声音
+- [ ] 声音 https://stackoverflow.com/questions/21343389/android-mp3-play-from-url
 
-- [ ] 每日一文收藏功能；
+- [x] 每日一文收藏功能；
 - [ ] 图片是否显示总开关；
 - [ ] 金山词霸 - 查词：
     - http://dict-co.iciba.com/api/dictionary.php?key=87FBF330AEEFD3BAB2C15864E561967B&type=json&w=this

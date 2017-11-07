@@ -19,7 +19,7 @@
     <item android:state_pressed="true">
         <shape>
             <corners android:radius="6dp"/>
-            <solid android:color="#f0f0f0"/>
+            <solid android:color="#e0e0e0"/>
         </shape>
     </item>
 
