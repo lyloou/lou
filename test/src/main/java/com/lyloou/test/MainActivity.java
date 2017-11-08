@@ -65,15 +65,11 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Uscreen.setToolbarMarginTop(this, toolbar);
 
         toolbar.setNavigationIcon(R.mipmap.back_white);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        Uscreen.setToolbarMarginTop(this, toolbar);
+
         ImageView ivHeader = (ImageView) findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
         NetWork.getKingsoftwareApi()

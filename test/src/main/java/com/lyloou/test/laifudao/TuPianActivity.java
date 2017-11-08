@@ -118,6 +118,7 @@ public class TuPianActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        Uscreen.setToolbarMarginTop(mContext, toolbar);
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.coolapsing_toolbar_layout_xiaohua);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
@@ -129,7 +130,7 @@ public class TuPianActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> Glide
-                                .with(TuPianActivity.this)
+                                .with(mContext)
                                 .load(daily.getPicture2())
                                 .centerCrop()
                                 .into(ivHeader)

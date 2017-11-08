@@ -18,7 +18,9 @@ package com.lyloou.test.gank;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +45,7 @@ import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.LouDialogProgressTips;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebContentActivity;
+import com.lyloou.test.laifudao.TuPianActivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 
@@ -169,12 +172,11 @@ public class GankWelfareActivity extends AppCompatActivity {
 
     private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_gank);
-        toolbar.setTitle("Gank.io");
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-//        toolbar.setNavigationIcon(R.mipmap.back_white);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        toolbar.setTitle("gank.io");
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.mipmap.back_black);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        Uscreen.setToolbarMarginTop(mContext, toolbar);
 
         EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.erv_gank_welfare);
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_gank_welfare);
@@ -262,8 +264,6 @@ public class GankWelfareActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new DoubleItemWithOneHeaderOffsetDecoration(Uscreen.dp2Px(mContext, 16)));
         recyclerView.addOnScrollListener(mListener);
-
-        Glide.with(this).load(R.drawable.loading).asGif().placeholder(R.mipmap.empty).into(ivEmpty);
 
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
