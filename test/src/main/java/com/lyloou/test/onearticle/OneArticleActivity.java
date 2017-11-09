@@ -28,9 +28,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -220,20 +220,23 @@ public class OneArticleActivity extends AppCompatActivity {
     private void showMyFavorites() {
         ListView listView = new ListView(mContext);
 
-        final LouAdapter<Article> adapter = new LouAdapter<Article>(listView, android.R.layout.simple_list_item_1) {
+        final LouAdapter<Article> adapter = new LouAdapter<Article>(listView, R.layout.item_onearticle_favorite) {
             @Override
             protected void assign(ViewHolder holder, Article s) {
-                holder.putText(android.R.id.text1, s.toString());
+                holder.putText(R.id.tv_title, s.getTitle());
+                holder.putText(R.id.tv_author_date, s.getAuthor() + " - " + s.getDate());
             }
         };
 
-        if(mFavorites == null){
-            Toast.makeText(mContext, "重新加载中",  Toast.LENGTH_SHORT).show();
+        if (mFavorites == null) {
+            Toast.makeText(mContext, "重新加载中", Toast.LENGTH_SHORT).show();
             queryFromDb();
         }
 
         adapter.initList(mFavorites);
-        LouDialog louDialog = LouDialog.newInstance(mContext, listView, 0);
+        LouDialog louDialog = LouDialog.newInstance(mContext, listView, R.style.Theme_AppCompat_Dialog);
+        louDialog.setWH(-1, Uscreen.getScreenHeight(mContext) * 2 / 3);
+        louDialog.setCancelable(true);
         Dialog dialog = louDialog.getDialog();
         dialog.setTitle("我的收藏夹");
         louDialog.show();
@@ -335,9 +338,9 @@ public class OneArticleActivity extends AppCompatActivity {
                 .newInstance(mContext, R.layout.dialog_onearticle_here, R.style.Theme_AppCompat_Dialog)
                 .setCancelable(true);
         EditText datePicker = louDialog.getView(R.id.et_one_article_here);
-        Button btn = louDialog.getView(R.id.btn_one_article_here);
+        TextView tv = louDialog.getView(R.id.tv_one_article_here);
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String date = datePicker.getText().toString();

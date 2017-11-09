@@ -20,9 +20,9 @@
               android:layout_height="match_parent"
               android:background="@color/white"
               android:orientation="vertical"
-              android:paddingBottom="16dp"
-              android:paddingLeft="24dp"
-              android:paddingRight="24dp"
+              android:paddingBottom="0dp"
+              android:paddingLeft="32dp"
+              android:paddingRight="32dp"
               android:paddingTop="16dp">
 
     <EditText
@@ -34,17 +34,35 @@
         android:inputType="number"
         android:maxLines="1"
         android:minLines="1"
-        android:minWidth="56dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"/>
 
-    <Button
-        android:id="@+id/btn_one_article_here"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
-        android:text="确定"
-        android:textColor="@color/white"
-        android:textSize="18sp"/>
+        android:orientation="horizontal">
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/tv_one_article_here"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorAccent"
+            android:paddingBottom="6dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="6dp"
+            android:text="确定"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
 
 </LinearLayout>
