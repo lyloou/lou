@@ -27,10 +27,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
 import android.webkit.WebView;
-import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,8 +56,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class OneArticleActivity extends AppCompatActivity {
@@ -90,26 +85,13 @@ public class OneArticleActivity extends AppCompatActivity {
 
     private void layoutIt(Observable<OneArticle> observable) {
         mDisposable.add(observable
-                .doOnNext(new Consumer<OneArticle>() {
-                    @Override
-                    public void accept(@NonNull OneArticle oneArticle) throws Exception {
-                        queryFromDb();
-                    }
-                })
+                .doOnNext(oneArticle -> queryFromDb())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<OneArticle>() {
-                               @Override
-                               public void accept(@NonNull OneArticle oneArticle) throws Exception {
-                                   showArticle(oneArticle);
-                               }
-                           }
-                        , new Consumer<Throwable>() {
-                            @Override
-                            public void accept(@NonNull Throwable throwable) throws Exception {
-                                throwable.printStackTrace();
-                                Toast.makeText(mContext, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
+                .subscribe(this::showArticle
+                        , throwable -> {
+                            throwable.printStackTrace();
+                            Toast.makeText(mContext, "加载失败：" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         }));
     }
 
@@ -241,14 +223,11 @@ public class OneArticleActivity extends AppCompatActivity {
         dialog.setTitle("我的收藏夹");
         louDialog.show();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Article article = mFavorites.get(i);
-                Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, article.getDate());
-                layoutIt(observable);
-                louDialog.dismiss();
-            }
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
+            Article article = mFavorites.get(i);
+            Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, article.getDate());
+            layoutIt(observable);
+            louDialog.dismiss();
         });
 
     }
@@ -264,22 +243,14 @@ public class OneArticleActivity extends AppCompatActivity {
 
     private void toggleFavoriteStatus() {
         mDisposable.add(Observable.just(mCurrentDay)
-                .map(new Function<Article, Boolean>() {
-                    @Override
-                    public Boolean apply(@NonNull Article article) throws Exception {
-                        boolean contains = contains(article);
-                        addToOrRemoveFromFavorites(article, contains);
-                        return !contains;
-                    }
+                .map(article -> {
+                    boolean contains = contains(article);
+                    addToOrRemoveFromFavorites(article, contains);
+                    return !contains;
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Boolean>() {
-                    @Override
-                    public void accept(@NonNull Boolean exist) {
-                        refreshItemFavoriteStatus(exist);
-                    }
-                }));
+                .subscribe(this::refreshItemFavoriteStatus));
     }
 
     private void refreshItemFavoriteStatus(@NonNull Boolean exist) {
@@ -314,21 +285,18 @@ public class OneArticleActivity extends AppCompatActivity {
         DatePicker datePicker = louDialog.getView(R.id.dp_one_article);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
-
-            @Override
-            public void onDateChanged(DatePicker datePicker, int year, int month, int dayOfMonth) {
-                Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
-                System.out.printf("当前时间：%1$TY-%1$Tm-%1$Td %1$TH:%1$TM:%1$TS", new Date());
-                String y = String.format(Locale.getDefault(), "%04d", year);
-                String m = String.format(Locale.getDefault(), "%02d", month + 1);
-                String d = String.format(Locale.getDefault(), "%02d", dayOfMonth);
-                String date = y + m + d;
-                Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, date);
-                layoutIt(observable);
-                louDialog.dismiss();
-            }
-        });
+        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
+                (datePicker1, year, month, dayOfMonth) -> {
+                    Log.d("Date", "Year=" + year + " Month=" + (month + 1) + " day=" + dayOfMonth);
+                    System.out.printf("当前时间：%1$TY-%1$Tm-%1$Td %1$TH:%1$TM:%1$TS", new Date());
+                    String y = String.format(Locale.getDefault(), "%04d", year);
+                    String m = String.format(Locale.getDefault(), "%02d", month + 1);
+                    String d = String.format(Locale.getDefault(), "%02d", dayOfMonth);
+                    String date = y + m + d;
+                    Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, date);
+                    layoutIt(observable);
+                    louDialog.dismiss();
+                });
 
         louDialog.show();
     }
@@ -340,16 +308,13 @@ public class OneArticleActivity extends AppCompatActivity {
         EditText datePicker = louDialog.getView(R.id.et_one_article_here);
         TextView tv = louDialog.getView(R.id.tv_one_article_here);
 
-        tv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String date = datePicker.getText().toString();
-                if (!TextUtils.isEmpty(date.trim())) {
-                    Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, date);
-                    layoutIt(observable);
-                }
-                louDialog.dismiss();
+        tv.setOnClickListener(view -> {
+            String date = datePicker.getText().toString();
+            if (!TextUtils.isEmpty(date.trim())) {
+                Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, date);
+                layoutIt(observable);
             }
+            louDialog.dismiss();
         });
 
         louDialog.show();
