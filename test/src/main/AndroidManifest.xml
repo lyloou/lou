@@ -85,6 +85,10 @@
             android:name=".bus.BusTvActivity"
             android:label="@string/bustv_chelaile"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
+        <activity
+            android:name=".man.ManActivity"
+            android:label="@string/man"
+            android:theme="@style/AppTheme.TranslucentStatus"/>
     </application>
 
 </manifest>
