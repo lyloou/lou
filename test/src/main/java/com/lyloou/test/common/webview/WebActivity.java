@@ -41,6 +41,7 @@ public class WebActivity extends AppCompatActivity {
     private String mUrl;
     private WebView mWvContent;
     private Activity mContext;
+    private boolean scrolled;
 
     public static void newInstance(Context context, String url, String tag) {
         sKey = context.getClass().getSimpleName().toUpperCase() + "_" + tag;
@@ -113,9 +114,10 @@ public class WebActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                if (newProgress > 50) {
+                if (!scrolled && newProgress > 50) {
                     int lastPosition = Usp.getInstance().getInt(sKey + "position", 0);
                     view.scrollTo(0, lastPosition);
+                    scrolled = true;
                 }
             }
         });
