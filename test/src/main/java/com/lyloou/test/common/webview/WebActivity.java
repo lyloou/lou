@@ -16,23 +16,35 @@
 
 package com.lyloou.test.common.webview;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
+
+import com.lyloou.test.R;
+import com.lyloou.test.util.Unet;
+import com.lyloou.test.util.Usp;
 
 public class WebActivity extends AppCompatActivity {
 
-    public static final String EXTRA_DATA_URL = "extra_data_url";
+    public static final String EXTRA_DATA_URL = "EXTRA_DATA_URL";
+    private static String sKey;
     private String mUrl;
-
     private WebView mWvContent;
+    private Activity mContext;
 
-    public static void newInstance(Context context, String url) {
+    public static void newInstance(Context context, String url, String tag) {
+        sKey = context.getClass().getSimpleName().toUpperCase() + "_" + tag;
+
         Intent intent = new Intent(context, WebActivity.class);
         intent.putExtra(EXTRA_DATA_URL, url);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -42,19 +54,35 @@ public class WebActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mWvContent = new WebView(this);
-        setContentView(mWvContent);
+        setContentView(R.layout.activity_web);
+        mContext = this;
 
-
-        mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
-        if (mUrl == null) {
-            mUrl = "https://lyloou.github.io";
-        }
-
+        Usp.init(mContext);
+        initData();
         initView();
     }
 
+    private void initData() {
+        if (!Unet.isAvailable(mContext)) {
+            Toast.makeText(mContext, "没网络了", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!TextUtils.isEmpty(sKey)) {
+            mUrl = Usp.getInstance().getString(sKey, null);
+        }
+
+        if (TextUtils.isEmpty(mUrl)) {
+            mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
+            if (TextUtils.isEmpty(mUrl)) {
+                mUrl = "https://lyloou.github.io";
+            }
+        }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
     private void initView() {
+        mWvContent = findViewById(R.id.wv_content);
         mWvContent.setScrollbarFadingEnabled(true);
         mWvContent.getSettings().setJavaScriptEnabled(true);
         mWvContent.getSettings().setBuiltInZoomControls(false);
@@ -76,15 +104,25 @@ public class WebActivity extends AppCompatActivity {
                 return true;
             }
 
-
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
             }
-
+        });
+        mWvContent.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                if (newProgress > 50) {
+                    int lastPosition = Usp.getInstance().getInt(sKey + "position", 0);
+                    view.scrollTo(0, lastPosition);
+                }
+            }
         });
 
         mWvContent.loadUrl(mUrl);
+
+        findViewById(R.id.fab).setOnClickListener(v -> mContext.finish());
     }
 
     @Override
@@ -95,5 +133,16 @@ public class WebActivity extends AppCompatActivity {
         }
 
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Usp.getInstance()
+                .putString(sKey, mWvContent.getUrl())
+                .putInt(sKey + "position", mWvContent.getScrollY())
+                .putString(sKey, mWvContent.getUrl())
+                .commit();
+        sKey = null;
     }
 }

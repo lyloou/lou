@@ -16,11 +16,14 @@
 
 package com.lyloou.test.man;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +43,7 @@ import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebActivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Usp;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,6 +60,7 @@ public class ManActivity extends AppCompatActivity {
         stringMap.put("陈 皓", "https://coolshell.cn/");
         stringMap.put("刘未鹏", "http://mindhacks.cn/");
         stringMap.put("廖雪峰", "https://www.liaoxuefeng.com/");
+        stringMap.put("王 垠", "http://www.yinwang.org/");
     }
 
     @Override
@@ -143,7 +148,28 @@ public class ManActivity extends AppCompatActivity {
             String label = (String) labels[position];
             holder.tvTitle.setText(label);
             holder.view.setOnClickListener(v ->
-                    WebActivity.newInstance(holder.view.getContext(), stringMap.get(label)));
+                    WebActivity.newInstance(holder.view.getContext(), stringMap.get(label), label));
+            holder.view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    final Context context = v.getContext();
+                    Usp.init(context);
+                    new AlertDialog
+                            .Builder(context)
+                            .setTitle("清除它的历史记录：" + label)
+                            .setCancelable(true)
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String key = context.getClass().getSimpleName().toUpperCase() + "_" + label;
+                                    Usp.getInstance().remove(key).commit();
+                                }
+                            })
+                            .create()
+                            .show();
+                    return true;
+                }
+            });
         }
 
         @Override
