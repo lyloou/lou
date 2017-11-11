@@ -16,17 +16,21 @@
 
 package com.lyloou.test.onearticle;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -44,6 +48,7 @@ import com.lyloou.test.common.db.Article;
 import com.lyloou.test.common.db.ArticleEntry;
 import com.lyloou.test.common.db.DbCallback;
 import com.lyloou.test.common.db.LouSQLite;
+import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.Arrays;
@@ -128,7 +133,6 @@ public class OneArticleActivity extends AppCompatActivity {
         tvTitle.setText(title);
         tvAuthorDate.setText(authDate);
 
-        WebView wvContent = findViewById(R.id.wv_content);
         String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/render.css\" type=\"text/css\">";
 
         String result = "<!DOCTYPE html>\n"
@@ -141,7 +145,8 @@ public class OneArticleActivity extends AppCompatActivity {
                 + htmlContent
                 + "</div>\n</div>\n</body>\n</html>";
 
-        wvContent.loadDataWithBaseURL("x-data://base", result, "text/html", "utf-8", null);
+        WebView webView = findViewById(R.id.wv_content);
+        webView.loadDataWithBaseURL("x-data://base", result, "text/html", "utf-8", null);
     }
 
     private void initView() {
@@ -160,6 +165,26 @@ public class OneArticleActivity extends AppCompatActivity {
         int image = (int) (98 * Math.random() + 1);
         String url = "https://meiriyiwen.com/images/new_feed/bg_" + image + ".jpg";
         Glide.with(mContext).load(url).into(ivHeader);
+
+        NestedScrollView nestedScrollView = findViewById(R.id.nsv_view);
+
+        View fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+
+            ObjectAnimator anim = ObjectAnimator.ofInt(nestedScrollView, "scrollY", nestedScrollView.getScrollY(), 0);
+            anim.setDuration(500);
+            anim.start();
+        });
+        AppBarLayout appBarLayout = findViewById(R.id.app_bar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                int totalScrollRange = appBarLayout.getTotalScrollRange();
+                float offset = verticalOffset * 1.0f / totalScrollRange;
+                fab.setScaleX(offset);
+                fab.setScaleY(offset);
+            }
+        });
     }
 
     @Override

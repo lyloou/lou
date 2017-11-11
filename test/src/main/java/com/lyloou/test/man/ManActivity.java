@@ -84,7 +84,7 @@ public class ManActivity extends AppCompatActivity {
                 .subscribe(daily -> {
                             Glide
                                     .with(ivHeader.getContext().getApplicationContext())
-                                    .load(daily.getPicture2())
+                                    .load("http://ww2.sinaimg.cn/large/7a8aed7bjw1f0cw7swd9tj20hy0qogoo.jpg")
                                     .centerCrop()
                                     .into(ivHeader);
                             tvHeader.setText(daily.getContent());
