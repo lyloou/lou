@@ -48,7 +48,6 @@ import com.lyloou.test.common.db.Article;
 import com.lyloou.test.common.db.ArticleEntry;
 import com.lyloou.test.common.db.DbCallback;
 import com.lyloou.test.common.db.LouSQLite;
-import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.Arrays;
@@ -150,14 +149,14 @@ public class OneArticleActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_onearticle);
+        Toolbar toolbar = findViewById(R.id.toolbar_onearticle);
         toolbar.setTitle("每日一文");
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(mContext, toolbar);
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.coolapsing_toolbar_layout_onearticle);
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.coolapsing_toolbar_layout_onearticle);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
         ImageView ivHeader = collapsingToolbarLayout.findViewById(R.id.iv_header);
@@ -176,14 +175,11 @@ public class OneArticleActivity extends AppCompatActivity {
             anim.start();
         });
         AppBarLayout appBarLayout = findViewById(R.id.app_bar);
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                int totalScrollRange = appBarLayout.getTotalScrollRange();
-                float offset = verticalOffset * 1.0f / totalScrollRange;
-                fab.setScaleX(offset);
-                fab.setScaleY(offset);
-            }
+        appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
+            int totalScrollRange = appBarLayout1.getTotalScrollRange();
+            float offset = verticalOffset * 1.0f / totalScrollRange;
+            fab.setScaleX(offset);
+            fab.setScaleY(offset);
         });
     }
 
@@ -196,7 +192,7 @@ public class OneArticleActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Observable<OneArticle> observable = null;
+        Observable<OneArticle> observable;
         switch (item.getItemId()) {
             case R.id.menu_one_article_today:
                 observable = NetWork.getOneArticleApi().getOneArticle(1);
