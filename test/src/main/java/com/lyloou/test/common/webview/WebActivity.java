@@ -16,14 +16,21 @@
 
 package com.lyloou.test.common.webview;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -41,10 +48,13 @@ public class WebActivity extends AppCompatActivity {
     private String mUrl;
     private WebView mWvContent;
     private Activity mContext;
-    private boolean scrolled;
+    private boolean isScrolled;
+    private boolean isShowFab;
 
     public static void newInstance(Context context, String url, String tag) {
-        sKey = context.getClass().getSimpleName().toUpperCase() + "_" + tag;
+        if (!TextUtils.isEmpty(tag)) {
+            sKey = context.getClass().getSimpleName().toUpperCase() + "_" + tag;
+        }
 
         Intent intent = new Intent(context, WebActivity.class);
         intent.putExtra(EXTRA_DATA_URL, url);
@@ -114,17 +124,52 @@ public class WebActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                if (!scrolled && newProgress > 50) {
+                if (!isScrolled && newProgress > 50) {
                     int lastPosition = Usp.getInstance().getInt(sKey + "position", 0);
                     view.scrollTo(0, lastPosition);
-                    scrolled = true;
+                    isScrolled = true;
                 }
             }
         });
 
         mWvContent.loadUrl(mUrl);
 
-        findViewById(R.id.fab).setOnClickListener(v -> mContext.finish());
+        if (!TextUtils.isEmpty(sKey)) {
+            View fabWrap = findViewById(R.id.fab_wrap);
+            FloatingActionButton fab = findViewById(R.id.fab);
+            FloatingActionButton fab1 = findViewById(R.id.fab_1);
+            FloatingActionButton fab2 = findViewById(R.id.fab_2);
+            FloatingActionButton fab3 = findViewById(R.id.fab_3);
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(v -> {
+                showFab(isShowFab = !isShowFab, fab1, fab2, fab3);
+                fabWrap.setBackgroundColor(isShowFab ? Color.parseColor("#66dddddd") : Color.parseColor("#00000000"));
+            });
+            fab1.setOnClickListener(v -> mContext.finish());
+            fab2.setOnClickListener(v -> {
+                String title = mWvContent.getTitle();
+                String url = mWvContent.getUrl();
+                String text = "[" + title + "]" + "(" + url + ")";
+                ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboardManager != null) {
+                    ClipData label = ClipData.newPlainText("label", text);
+                    clipboardManager.setPrimaryClip(label);
+                    Snackbar.make(mWvContent, "标题链接已复制到剪切板", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+            fab3.setOnClickListener(v -> {
+                ObjectAnimator anim = ObjectAnimator.ofInt(mWvContent, "scrollY", mWvContent.getScrollY(), 0);
+                anim.setDuration(500);
+                anim.start();
+            });
+
+        }
+    }
+
+    private void showFab(boolean isShowFab, View... views) {
+        for (View view : views) {
+            view.setVisibility(isShowFab ? View.VISIBLE : View.GONE);
+        }
     }
 
     @Override
@@ -140,11 +185,17 @@ public class WebActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Usp.getInstance()
-                .putString(sKey, mWvContent.getUrl())
-                .putInt(sKey + "position", mWvContent.getScrollY())
-                .putString(sKey, mWvContent.getUrl())
-                .commit();
-        sKey = null;
+        saveUrlAndPositionToHistory();
+    }
+
+    private void saveUrlAndPositionToHistory() {
+        if (!TextUtils.isEmpty(sKey)) {
+            Usp.getInstance()
+                    .putString(sKey, mWvContent.getUrl())
+                    .putInt(sKey + "position", mWvContent.getScrollY())
+                    .putString(sKey, mWvContent.getUrl())
+                    .commit();
+            sKey = null;
+        }
     }
 }
