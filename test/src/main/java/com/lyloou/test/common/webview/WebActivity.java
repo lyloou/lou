@@ -141,15 +141,21 @@ public class WebActivity extends AppCompatActivity {
             FloatingActionButton fab2 = findViewById(R.id.fab_2);
             FloatingActionButton fab3 = findViewById(R.id.fab_3);
             fab.setVisibility(View.VISIBLE);
+            fabWrap.setOnClickListener(v -> {
+                showFab(isShowFab = false, fab1, fab2, fab3);
+                fabWrap.setClickable(false);
+            });
+            fabWrap.setClickable(false);
+
             fab.setOnClickListener(v -> {
                 showFab(isShowFab = !isShowFab, fab1, fab2, fab3);
-                fabWrap.setBackgroundColor(isShowFab ? Color.parseColor("#66dddddd") : Color.parseColor("#00000000"));
+                fabWrap.setClickable(isShowFab);
             });
             fab1.setOnClickListener(v -> mContext.finish());
             fab2.setOnClickListener(v -> {
                 String title = mWvContent.getTitle();
                 String url = mWvContent.getUrl();
-                String text = "[" + title + "]" + "(" + url + ")";
+                String text = "- [" + title + "]" + "(" + url + ")";
                 ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
                 if (clipboardManager != null) {
                     ClipData label = ClipData.newPlainText("label", text);
