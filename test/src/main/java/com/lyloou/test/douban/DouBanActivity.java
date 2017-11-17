@@ -108,8 +108,6 @@ public class DouBanActivity extends AppCompatActivity {
     private void initView() {
         EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.erv_douban);
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_douban);
-        ImageView ivEmpty = (ImageView) findViewById(R.id.iv_empty);
-        RelativeLayout rlytEmpty = (RelativeLayout) findViewById(R.id.rlyt_empty);
 
         mSubjectAdapter = new SubjectAdapter(this);
         mSubjectAdapter.setOnItemClickListener(new SubjectAdapter.OnItemClickListener() {
@@ -122,13 +120,12 @@ public class DouBanActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(mSubjectAdapter);
         recyclerView.setItemTypeCount(mSubjectAdapter.getItemTypeCount());
-        recyclerView.setEmptyView(rlytEmpty);
+        recyclerView.setEmptyView(findViewById(R.id.rlyt_empty));
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(mContext, 16)));
         recyclerView.addOnScrollListener(mListener);
 
-        Glide.with(this).load(R.drawable.loading).asGif().placeholder(R.mipmap.empty).into(ivEmpty);
 
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

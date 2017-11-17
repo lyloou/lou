@@ -18,9 +18,7 @@ package com.lyloou.test.gank;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +42,6 @@ import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.LouDialogProgressTips;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebContentActivity;
-import com.lyloou.test.laifudao.TuPianActivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 
@@ -172,7 +168,7 @@ public class GankWelfareActivity extends AppCompatActivity {
 
     private void initView() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_gank);
-        toolbar.setTitle("gank.io");
+        toolbar.setTitle("GANK.IO");
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_black);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
@@ -180,8 +176,6 @@ public class GankWelfareActivity extends AppCompatActivity {
 
         EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.erv_gank_welfare);
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_gank_welfare);
-        ImageView ivEmpty = (ImageView) findViewById(R.id.iv_empty);
-        RelativeLayout rlytEmpty = (RelativeLayout) findViewById(R.id.rlyt_empty);
         mLlytBottom = (LinearLayout) findViewById(R.id.llyt_bottom);
 
         mActiveDayAdapter = new ActiveDayAdapter(this);
@@ -250,7 +244,7 @@ public class GankWelfareActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(mActiveDayAdapter);
         recyclerView.setItemTypeCount(mActiveDayAdapter.getItemTypeCount());
-        recyclerView.setEmptyView(rlytEmpty);
+        recyclerView.setEmptyView(findViewById(R.id.rlyt_empty));
         recyclerView.setHasFixedSize(true);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

@@ -23,8 +23,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.lyloou.test.R;
 import com.lyloou.test.util.Unet;
 import com.lyloou.test.util.Usp;
+import com.lyloou.test.util.Utoast;
 
 public class WebActivity extends AppCompatActivity {
 
@@ -96,8 +97,9 @@ public class WebActivity extends AppCompatActivity {
         mWvContent = findViewById(R.id.wv_content);
         mWvContent.setScrollbarFadingEnabled(true);
         mWvContent.getSettings().setJavaScriptEnabled(true);
-        mWvContent.getSettings().setBuiltInZoomControls(false);
-        mWvContent.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        mWvContent.getSettings().setBuiltInZoomControls(true);
+        mWvContent.getSettings().setDisplayZoomControls(false);
+        mWvContent.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         mWvContent.getSettings().setDomStorageEnabled(true);
         mWvContent.getSettings().setAppCacheEnabled(false);
         mWvContent.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -124,6 +126,7 @@ public class WebActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
+                Utoast.show(mContext, "progress:" + newProgress);
                 if (!isScrolled && newProgress > 50) {
                     int lastPosition = Usp.getInstance().getInt(sKey + "position", 0);
                     view.scrollTo(0, lastPosition);
@@ -202,6 +205,21 @@ public class WebActivity extends AppCompatActivity {
                     .putString(sKey, mWvContent.getUrl())
                     .commit();
             sKey = null;
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus && Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
     }
 }
