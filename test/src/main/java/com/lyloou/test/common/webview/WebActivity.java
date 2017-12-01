@@ -159,12 +159,14 @@ public class WebActivity extends AppCompatActivity {
                 String title = mWvContent.getTitle();
                 String url = mWvContent.getUrl();
                 String text = "- [" + title + "]" + "(" + url + ")";
-                ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                if (clipboardManager != null) {
-                    ClipData label = ClipData.newPlainText("label", text);
-                    clipboardManager.setPrimaryClip(label);
-                    Snackbar.make(mWvContent, "标题链接已复制到剪切板", Snackbar.LENGTH_SHORT).show();
-                }
+                String tips = "- [标题](链接)已复制到剪切板";
+                copyToClipboard(text, tips);
+            });
+            fab2.setOnLongClickListener(v -> {
+                String text = mWvContent.getUrl();
+                String tips = "(链接)已复制到剪切板";
+                copyToClipboard(text, tips);
+                return true;
             });
             fab3.setOnClickListener(v -> {
                 ObjectAnimator anim = ObjectAnimator.ofInt(mWvContent, "scrollY", mWvContent.getScrollY(), 0);
@@ -172,6 +174,15 @@ public class WebActivity extends AppCompatActivity {
                 anim.start();
             });
 
+        }
+    }
+
+    private void copyToClipboard(String text, String tips) {
+        ClipboardManager clipboardManager = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboardManager != null) {
+            ClipData label = ClipData.newPlainText("label", text);
+            clipboardManager.setPrimaryClip(label);
+            Snackbar.make(mWvContent, tips, Snackbar.LENGTH_SHORT).show();
         }
     }
 
