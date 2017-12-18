@@ -49,7 +49,7 @@ public class DouBanActivity extends AppCompatActivity {
 
 
     private static final String TAG = "DouBanActivity";
-    private static final int TOTAL_ITEM_SIZE = 60;
+    private static final int TOTAL_ITEM_SIZE = 250;
     private SwipeRefreshLayout mRefreshLayout;
     private boolean mIsLoading = false;
     private SubjectAdapter mSubjectAdapter;
