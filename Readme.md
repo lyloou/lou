@@ -19,6 +19,7 @@ compile 'com.lyloou:lou:1.0.4'
 
 ## `test` module
 我经常用来学习和放松的一个app；
+下载地址：https://play.google.com/store/apps/details?id=com.lyloou.test
 
 <br/>
 <img src="./art/images/test_01.jpg" width="360" height="640" />
