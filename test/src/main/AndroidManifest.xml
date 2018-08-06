@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright  (c) 2017 Lyloou
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,30 +14,31 @@
   ~ limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.lyloou.test">
+    package="com.lyloou.test">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
-    <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:name=".MyApplication"
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
-            android:exported="true"
-            android:theme="@style/WelcomeAppTheme">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.TranslucentStatus">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -46,59 +46,58 @@
         </activity>
 
         <activity
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale"
+            android:name=".WelcomeActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:name=".MainActivity"
-            android:theme="@style/AppTheme.TranslucentStatus"/>
+            android:theme="@style/WelcomeAppTheme" />
 
         <activity
             android:name=".media.MediaRecorderActivity"
-            android:label="@string/media_audio"/>
+            android:label="@string/media_audio" />
         <activity
             android:name=".kingsoftware.KingsoftwareActivity"
             android:label="@string/kingsoftware_daily_sentence"
-            android:theme="@style/AppTheme.TranslucentStatus"/>
+            android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".bus.BusActivity"
             android:label="@string/bus_chelaile"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
 
         <activity
             android:name=".common.webview.WebActivity"
-            android:label="@string/my_web"/>
+            android:label="@string/my_web" />
         <activity
             android:name=".laifudao.TuPianActivity"
             android:label="@string/laifudao_tupian"
-            android:theme="@style/AppTheme.TranslucentStatus"/>
+            android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".laifudao.XiaoHuaActivity"
             android:label="@string/laifudao_xiaohua"
-            android:theme="@style/AppTheme.TranslucentStatus"/>
+            android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".kingsoftware.KingsoftwareGalleryActivity"
             android:label="@string/kingsoftware_daily_sentence_gallery"
-            android:theme="@style/AppTheme.TranslucentStatus"/>
+            android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".douban.DouBanActivity"
-            android:label="@string/douban_top250"/>
+            android:label="@string/douban_top250" />
         <activity
             android:name=".onearticle.OneArticleActivity"
             android:label="@string/meiriyiwen_random"
-            android:theme="@style/AppTheme.TranslucentStatus"/>
+            android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".gank.GankWelfareActivity"
             android:label="@string/gank_welfare"
-            android:theme="@style/AppTheme.TranslucentStatus"/>
-        <activity android:name=".common.webview.WebContentActivity"/>
+            android:theme="@style/AppTheme.TranslucentStatus" />
+        <activity android:name=".common.webview.WebContentActivity" />
         <activity
             android:name=".bus.BusTvActivity"
             android:label="@string/bustv_chelaile"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".man.ManActivity"
             android:label="@string/man"
-            android:theme="@style/AppTheme.TranslucentStatus"/>
+            android:theme="@style/AppTheme.TranslucentStatus" />
     </application>
 
 </manifest>

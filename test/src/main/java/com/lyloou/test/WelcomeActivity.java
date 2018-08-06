@@ -31,32 +31,26 @@ public class WelcomeActivity extends Activity {
 
     @SuppressLint("CheckResult")
     private void initView() {
-        if (!MyApplication.sSkipWelcome) {
-            ImageView ivWelcome = findViewById(R.id.iv_welcome);
-            NetWork.getKingsoftwareApi()
-                    .getDaily("")
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(daily -> {
-                                Glide.with(ivWelcome.getContext().getApplicationContext())
-                                        .load(daily.getFenxiang_img())
-                                        .into(new GlideDrawableImageViewTarget(ivWelcome) {
-                                            @Override
-                                            protected void setResource(GlideDrawable resource) {
-                                                // https://github.com/bumptech/glide/issues/275
-                                                super.setResource(resource);
-                                                ivWelcome.setVisibility(View.VISIBLE);
-                                            }
-                                        });
+        ImageView ivWelcome = findViewById(R.id.iv_welcome);
+        NetWork.getKingsoftwareApi()
+                .getDaily("")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(daily -> {
+                            Glide.with(getApplicationContext())
+                                    .load(daily.getFenxiang_img())
+                                    .into(new GlideDrawableImageViewTarget(ivWelcome) {
+                                        @Override
+                                        protected void setResource(GlideDrawable resource) {
+                                            // https://github.com/bumptech/glide/issues/275
+                                            super.setResource(resource);
+                                            ivWelcome.setVisibility(View.VISIBLE);
+                                        }
+                                    });
 
-                                ivWelcome.postDelayed(this::toNext, 3000);
-                            }
-                            , Throwable::printStackTrace);
-            MyApplication.sSkipWelcome = true;
-            return;
-        }
-
-        toNext();
+                            ivWelcome.postDelayed(this::toNext, 3000);
+                        }
+                        , Throwable::printStackTrace);
     }
 
     private void toNext() {
