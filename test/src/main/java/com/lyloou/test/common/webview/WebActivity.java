@@ -24,6 +24,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +32,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -87,7 +89,7 @@ public class WebActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(mUrl)) {
             mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
             if (TextUtils.isEmpty(mUrl)) {
-                mUrl = "https://lyloou.github.io";
+                mUrl = "https://m.taobao.com";
             }
         }
     }
@@ -108,15 +110,12 @@ public class WebActivity extends AppCompatActivity {
         mWvContent.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("tel:")) {
-                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
-                    startActivity(intent);
-                    return true;
-                }
-                view.loadUrl(url);
-                return true;
+                return super.shouldOverrideUrlLoading(view, url);
             }
-
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();
+            }
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
