@@ -89,7 +89,7 @@ public class WebActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(mUrl)) {
             mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
             if (TextUtils.isEmpty(mUrl)) {
-                mUrl = "https://m.taobao.com";
+                mUrl = "http://lyloou.com";
             }
         }
     }

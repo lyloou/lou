@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        toNext();
+
         setContentView(R.layout.activity_main);
         CrashHandler.getInstance().init(this.getApplicationContext());
         initView();
@@ -166,5 +168,16 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private void toNext() {
+        if (MyApplication.sSkipWelcome) {
+            return;
+        }
+        MyApplication.sSkipWelcome = true;
+
+        Intent intent = new Intent(this, WelcomeActivity.class);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
     }
 }
