@@ -17,3 +17,4 @@ https://github.com/winterbe/java8-tutorial#functional-interfaces
 
 ## 参考资料
 - [java8-tutorial](https://github.com/winterbe/java8-tutorial)
+- https://github.com/shekhargulati/java8-the-missing-tutorial

@@ -17,8 +17,13 @@
 package com.lyloou.java8;
 
 import java.time.Clock;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -28,10 +33,31 @@ import java.util.stream.Stream;
  * Version:   V1.0
  * Date:      2017.07.10 13:17
  * <p>
- * Description:
+ * Description: https://github.com/shekhargulati/java8-the-missing-tutorial/blob/master/08-date-time-api.md
  */
+
 public class DateTime {
     public static void main(String[] args) {
+        LocalDate date = LocalDate.of(2018, Month.DECEMBER, 31);
+        System.out.println(date);
+        System.out.println(date.plusDays(1));
+        System.out.println(date.atStartOfDay(ZoneId.systemDefault()));
+
+        System.out.println(LocalDate.now());
+        System.out.println(LocalTime.now());
+        System.out.println(LocalDateTime.now());
+
+
+        System.out.println(Duration.between(
+                LocalDateTime.of(LocalDate.of(1992, Month.DECEMBER, 16),
+                        LocalTime.of(6, 0)),
+                LocalDateTime.now()).toDays());
+
+        System.out.println(LocalDate.now().format(DateTimeFormatter.ISO_DATE));
+    }
+
+
+    private static void dateTime1() {
         Clock clock = Clock.systemDefaultZone();
         System.out.println(Date.from(clock.instant()));
 

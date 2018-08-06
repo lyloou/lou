@@ -22,3 +22,5 @@
 
 ## 参考资料
 - 《Android进阶之光》p204
+- http://square.github.io/okhttp/
+- http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0106/2275.html
