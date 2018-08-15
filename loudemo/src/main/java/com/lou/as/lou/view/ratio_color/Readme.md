@@ -5,7 +5,7 @@
 * 让改变皮肤变得简单；
 
 ## 【效果图】 
-![ratiocolor.gif](http://img.blog.csdn.net/20160512181253339)
+![ratiocolor.gif](./ratioColor.gif)
 ## 【分析】
 **「动态加载皮肤分析」**
 
