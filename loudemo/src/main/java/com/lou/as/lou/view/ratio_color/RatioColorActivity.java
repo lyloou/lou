@@ -1,4 +1,4 @@
-package com.lou.as.lou;
+package com.lou.as.lou.view.ratio_color;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -6,11 +6,12 @@ import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.lou.as.lou.SharedPreferencesUtil;
 import com.lyloou.lou.activity.LouActivity;
 import com.lyloou.lou.util.Uscreen;
 import com.lyloou.lou.view.RatioColor;
 
-public class ViewRatioColorActivity extends LouActivity {
+public class RatioColorActivity extends LouActivity {
     private Activity mContext;
     private RatioColor mRatioColor;
 

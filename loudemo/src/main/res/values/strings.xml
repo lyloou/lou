@@ -28,4 +28,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_view_time_square">ViewTimeSquareActivity</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="view_setting_layout">View - SettingLayout</string>
+    <string name="adapter">Adapter</string>
+    <string name="view_ratio_color">View - RatioColor</string>
+    <string name="view_count_view">View - CountView</string>
+    <string name="tablayout_and_view_pager">TabLayout And ViewPager</string>
+    <string name="animation_activity">Animation - Activity</string>
+    <string name="view_color_picker_layout">View - ColorPickerLayout</string>
+    <string name="view_dialog">View - Dialog</string>
 </resources>
