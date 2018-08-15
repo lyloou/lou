@@ -7,7 +7,7 @@
 · 减少重复性代码，快速搭建设置界面（通过简单的配置，就可以达到想要的布局）；
 
 ## 【效果图】
-![效果图](https://img-blog.csdn.net/20160507202936768)
+![效果图](https://img-blog.csdn.net/20180815135140797?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2x5MTQxNDcyNTMyOA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 ## 【分析】
 - 设置界面大同小异，无非由标题，内容，图标等元素组成；
