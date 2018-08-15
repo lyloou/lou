@@ -16,17 +16,18 @@ import android.widget.TextView;
 
 import com.lyloou.lou.R;
 import com.lyloou.lou.util.Uscreen;
-import com.lyloou.lou.util.Uview;
 
 
 public class SettingLayout extends LinearLayout {
     private Context mContext;
+    private SparseArray<Item> mItems;
     private SparseArray<View> mItemViews;
 
     public SettingLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
-        mItemViews = new SparseArray<View>();
+        mItems = new SparseArray<>();
+        mItemViews = new SparseArray<>();
     }
 
     public SettingLayout(Context context, AttributeSet attrs) {
@@ -52,11 +53,12 @@ public class SettingLayout extends LinearLayout {
         addView(v, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, Uscreen.dp2Px(mContext, 48)));
         // 添加到SparseArray中，便于后期进行其他操作；
         mItemViews.put(item.titleStrId, v);
-        updateItem(item);
+        mItems.put(item.titleStrId, item);
+        refreshItem(item);
         return this;
     }
 
-    public SettingLayout updateItem(final Item item) {
+    public SettingLayout refreshItem(final Item item) {
         if (item == null) {
             throw new NullPointerException("Item为空");
         }
@@ -102,12 +104,12 @@ public class SettingLayout extends LinearLayout {
         }
 
         if (item.listener != null) {
-            Uview.clickEffectByAlphaWithBg(new OnClickListener() {
+            v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     item.listener.click(SettingLayout.this, item);
                 }
-            }, v);
+            });
         }
         return this;
     }
@@ -140,6 +142,10 @@ public class SettingLayout extends LinearLayout {
         tvTips.setTextSize(12);
         addView(tvTips);
         return this;
+    }
+
+    public Item getItem(int strId) {
+        return mItems.get(strId);
     }
 
     public View getItemView(Item item) {

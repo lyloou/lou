@@ -1,52 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/colorAccent"
-              android:orientation="vertical"
-              tools:context=".DialogActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f5"
+    android:orientation="vertical"
+    tools:context=".DialogActivity">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:gravity="center"
-        android:text="我是标题"/>
+        android:text="我是弹框之王" />
 
     <Button
         android:id="@+id/btn_show_progressDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show Progress Dialog"/>
+        android:layout_margin="16dp"
+        android:background="@drawable/ripple_gray_radius_2"
+        android:text="Show Progress Dialog"
+        android:textColor="@color/white" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="1dp"/>
 
     <Button
         android:id="@+id/btn_show_toastDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show Toast Dialog"/>
+        android:layout_margin="16dp"
+        android:background="@drawable/ripple_gray_radius_2"
+        android:text="Show Toast Dialog"
+        android:textColor="@color/white" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="1dp"/>
 
     <Button
         android:id="@+id/btn_show_LouDialogAtBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show Bottom Dialog"/>
+        android:layout_margin="16dp"
+        android:background="@drawable/ripple_gray_radius_2"
+        android:text="Show Bottom Dialog"
+        android:textColor="@color/white" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="1dp"/>
 
     <Button
         android:id="@+id/btn_show_LouDialogAtBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Show Bottom Sheet Dialog"/>
+        android:layout_margin="16dp"
+        android:background="@drawable/ripple_gray_radius_2"
+        android:text="Show Bottom Sheet Dialog"
+        android:textColor="@color/white" />
 
 </LinearLayout>

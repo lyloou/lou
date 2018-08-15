@@ -1,13 +1,14 @@
-package com.lou.as.lou;
+package com.lou.as.lou.view.count_view;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.lou.as.lou.R;
 import com.lyloou.lou.util.Utoast;
 import com.lyloou.lou.view.CountView;
 
-public class ViewCountViewActivity extends AppCompatActivity {
+public class CountViewActivity extends AppCompatActivity {
     private Activity mContext;
 
     @Override
