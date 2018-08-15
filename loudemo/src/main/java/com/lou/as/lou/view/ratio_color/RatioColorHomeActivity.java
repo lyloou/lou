@@ -2,12 +2,16 @@ package com.lou.as.lou.view.ratio_color;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
-import com.lou.as.lou.SharedPreferencesUtil;
 import com.lyloou.lou.activity.LouActivity;
+import com.lyloou.lou.util.Usp;
+
+import static com.lou.as.lou.view.ratio_color.Keys.KEY_SKIN;
 
 public class RatioColorHomeActivity extends LouActivity {
 
@@ -19,21 +23,29 @@ public class RatioColorHomeActivity extends LouActivity {
         super.onCreate(savedInstanceState);
         mContext = this;
 
-        mBtn = new Button(mContext);
-        mBtn.setText("点我改变背景色去囖");
-        mBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(mContext, RatioColorActivity.class));
-            }
-        });
+        transparent();
+
+        initView();
         setContentView(mBtn);
     }
+
+    private void transparent() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+    }
+
+    private void initView() {
+        mBtn = new Button(mContext);
+        mBtn.setText("点我改变背景色去囖");
+        mBtn.setOnClickListener(v -> startActivity(new Intent(mContext, RatioColorActivity.class)));
+    }
+
 
     @Override
     protected void onStart() {
         super.onStart();
-        mBtn.setBackgroundColor(SharedPreferencesUtil.getInstance(mContext).getSkin());
+        mBtn.setBackgroundColor(Usp.init(this).getInt(KEY_SKIN, Color.LTGRAY));
     }
 
 }

@@ -29,11 +29,14 @@
             android:name=".AdapterActivity"
             android:exported="true"
             android:label="@string/adapter" />
-        <activity android:name=".view.ratio_color.RatioColorActivity" />
+        <activity
+            android:name=".view.ratio_color.RatioColorActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".view.ratio_color.RatioColorHomeActivity"
-            android:label="@string/view_ratio_color" />
+            android:label="@string/view_ratio_color"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".view.setting_layout.SettingLayoutActivity"
