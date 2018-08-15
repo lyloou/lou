@@ -1,12 +1,12 @@
-###【关键词】
+## 【关键词】
 `修改皮肤` `自定义View`
 ***
-###【 问题】
+## 【 问题】
 * 让改变皮肤变得简单；
 
-###【效果图】 
+## 【效果图】 
 ![ratiocolor.gif](http://img.blog.csdn.net/20160512181253339)
-###【分析】
+## 【分析】
 **「动态加载皮肤分析」**
 
 * 改变背景后将颜色值保存到`SharedPreferences`中；
@@ -20,14 +20,14 @@
 * 可以直接让某个颜色处于选中状态；
 * 设置点击时的效果，增加趣味性；
 
-###【难点】
+## 【难点】
 * 动态修改颜色和选中状态；
 * 当元素比较多时的滑动处理；
 
-###【解决方案】
+## 【解决方案】
 * 参考代码；
 
-###【代码】
+## 【代码】
 *「Activity代码」*
 - [RatioColorActivity.java](https://github.com/lyloou/lou/blob/demo/loudemo/src/main/java/com/lou/as/lou/view/ratio_color/RatioColorActivity.java)
 
@@ -61,14 +61,14 @@ view_ratio_color_selector.xml
     </item>
 </selector>
 ```
-###【扩展】
+## 【扩展】
 * 目前对控件只做了横向处理，可以尝试下对控件进行纵向布局并处理滑动和回弹效果处理；
 
-### 案例
+## 案例
 - [https://github.com/lyloou/lou/blob/demo/loudemo/src/main/java/com/lou/as/lou/view/ratio_color](https://github.com/lyloou/lou/blob/demo/loudemo/src/main/java/com/lou/as/lou/view/ratio_color)
 
 ***
-###【参考资料】
+## 【参考资料】
 
 * [listview所带来的滑动冲突](http://blog.csdn.net/singwhatiwanna/article/details/8863232)
 * [Android-onInterceptTouchEvent()和onTouchEvent()总结](http://blog.csdn.net/lvxiangan/article/details/9309927)
