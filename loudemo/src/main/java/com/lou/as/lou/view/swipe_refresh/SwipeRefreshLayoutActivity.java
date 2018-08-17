@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package com.lou.as.lou;
+package com.lou.as.lou.view.swipe_refresh;
 
+import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-public class ViewSwipeRefreshLayoutActivity extends AppCompatActivity {
+import com.lou.as.lou.R;
+import com.lyloou.lou.util.Uscreen;
+import com.lyloou.lou.util.Usp;
+
+public class SwipeRefreshLayoutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +37,6 @@ public class ViewSwipeRefreshLayoutActivity extends AppCompatActivity {
 
         // 在布局中，使其包含在最外层
         final SwipeRefreshLayout srl = (SwipeRefreshLayout) findViewById(R.id.srl);
-
-
-        // 禁用
-        // srl.setEnabled(false);
 
         // 是否缩放
         srl.setProgressViewOffset(false, 0, 100);
@@ -47,25 +49,24 @@ public class ViewSwipeRefreshLayoutActivity extends AppCompatActivity {
                 android.R.color.holo_red_light);
 
         // 设置背景色
-        srl.setProgressBackgroundColor(android.R.color.holo_green_light);
+        srl.setProgressBackgroundColor(android.R.color.white);
 
         // 设置大小
         srl.setSize(SwipeRefreshLayout.LARGE);
 
         // 3秒后停止；
-        srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                srl.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.i(TAG, "run: stop");
-                        srl.setRefreshing(false);
-                    }
-                }, 3000);
-            }
-        });
+        srl.setOnRefreshListener(() -> srl.postDelayed(() -> {
+            srl.setRefreshing(false);
+            LinearLayout content = findViewById(R.id.llyt_content);
+            TextView child = new TextView(this);
+            child.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            int px = Uscreen.dp2Px(this, 16);
+            child.setPadding(px, px, px, px);
+            child.setText(String.valueOf(System.currentTimeMillis()));
+            content.addView(child, 0);
+            Snackbar.make(srl, "已刷新", Snackbar.LENGTH_LONG).show();
+        }, 3000));
     }
-
-    private static final String TAG = "ViewSwipe";
 }

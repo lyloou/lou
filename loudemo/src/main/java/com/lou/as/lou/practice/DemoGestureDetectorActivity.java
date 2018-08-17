@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.lou.as.lou.AdapterActivity;
+import com.lou.as.lou.feature.AdapterActivity;
 import com.lou.as.lou.R;
 import com.lyloou.lou.util.Uapk;
 import com.lyloou.lou.util.Utoast;

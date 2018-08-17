@@ -217,6 +217,17 @@ public abstract class LouAdapter<T> extends BaseAdapter {
         return mListView.getChildAt(currentIndex);
     }
 
+    public void addItem(int index, T o) {
+        addItem(index, o, true);
+    }
+
+    public void addItem(int index, T o, boolean filter) {
+        if (filter && contain(o)) {
+            return;
+        }
+        mLists.add(index, o);
+        updateChange();
+    }
 
     public void addItem(T o, boolean filter) {
         if (filter && contain(o)) {
