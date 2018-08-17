@@ -29,11 +29,15 @@
     <string name="title_activity_view_time_square">ViewTimeSquareActivity</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="view_setting_layout">View - SettingLayout</string>
-    <string name="adapter">Adapter</string>
     <string name="view_ratio_color">View - RatioColor</string>
     <string name="view_count_view">View - CountView</string>
-    <string name="tablayout_and_view_pager">TabLayout And ViewPager</string>
-    <string name="animation_activity">Animation - Activity</string>
     <string name="view_color_picker_layout">View - ColorPickerLayout</string>
     <string name="view_dialog">View - Dialog</string>
+    <string name="animation_activity">Animation - Activity</string>
+    <string name="tablayout_and_view_pager">TabLayout And ViewPager</string>
+    <string name="feature_adapter">Feature - Adapter</string>
+    <string name="feature_device_info">Feature - DeviceInfo</string>
+    <string name="feature_usp_demo">Feature - Usp</string>
+    <string name="view_swipe_refresh">View - SwipeRefresh</string>
+    <string name="view_pull_to_refresh">View - PullToRefresh</string>
 </resources>

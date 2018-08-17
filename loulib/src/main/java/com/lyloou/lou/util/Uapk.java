@@ -18,7 +18,7 @@ import java.util.List;
 
 public class Uapk {
 
-    public static final String SEP = "    ";
+
     private static final String TAG = "Uapk";
 
     /**
@@ -111,14 +111,17 @@ public class Uapk {
      * @param context
      */
     public static String collectDeviceInfo(Context context) {
-        StringBuilder infos = new StringBuilder();
+        final String SEP = "\n\t";
+        StringBuilder infos = new StringBuilder("设备信息");
         try {
             PackageManager pm = context.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
+            String packageName = context.getPackageName();
+            PackageInfo pi = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             if (pi != null) {
                 String versionName = pi.versionName == null ? "null" : pi.versionName;
                 String versionCode = pi.versionCode + "";
                 infos
+                        .append(SEP).append("app包名:").append(packageName)
                         .append(SEP).append("app版本名:").append(versionName)
                         .append(SEP).append("app版本号:").append(versionCode)
                         .append(SEP).append("设备型号:").append(Build.MODEL)
@@ -132,7 +135,7 @@ public class Uapk {
         for (Field field : fields) {
             try {
                 field.setAccessible(true);
-                infos.append("\n").append(field.getName()).append(":").append(field.get(null).toString());
+                infos.append(SEP).append(field.getName()).append(":").append(field.get(null).toString());
                 Log.d(TAG, field.getName() + " : " + field.get(null));
             } catch (Exception e) {
                 Log.e(TAG, "an error occured when collect crash info", e);

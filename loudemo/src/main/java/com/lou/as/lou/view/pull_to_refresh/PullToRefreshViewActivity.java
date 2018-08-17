@@ -1,15 +1,16 @@
-package com.lou.as.lou;
+package com.lou.as.lou.view.pull_to_refresh;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.lou.as.lou.R;
 import com.lyloou.lou.adapter.LouAdapter;
 import com.lyloou.lou.view.PullToRefreshView;
 
 import java.util.ArrayList;
 
-public class ViewPullToRefreshViewActivity extends Activity {
+public class PullToRefreshViewActivity extends AppCompatActivity {
     private LouAdapter<String> mPtrLvAdapter;
 
     @Override
@@ -57,7 +58,8 @@ public class ViewPullToRefreshViewActivity extends Activity {
                 ptrLv.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mPtrLvAdapter.addItem("I'm New");
+                        strs.add(0, "I'm New A");
+                        mPtrLvAdapter.addItem(0, "I'm New");
 
                         changeStatus(PullToRefreshView.OnChangeStatusListener.STATUS_COMPLETE, 0);
                         ptrLv.recover(true);
