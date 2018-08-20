@@ -40,4 +40,5 @@
     <string name="feature_usp_demo">Feature - Usp</string>
     <string name="view_swipe_refresh">View - SwipeRefresh</string>
     <string name="view_pull_to_refresh">View - PullToRefresh</string>
+    <string name="feature_notification_permission">Feature - NotificationPermission</string>
 </resources>

@@ -6,7 +6,7 @@ import android.support.annotation.CallSuper;
 import android.text.TextUtils;
 
 import com.lyloou.lou.other.CrashHandler;
-import com.lyloou.lou.util.Uapk;
+import com.lyloou.lou.util.Uapp;
 import com.lyloou.lou.util.Ustring;
 import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
@@ -32,7 +32,7 @@ public abstract class LouApplication extends Application {
     @CallSuper
     public void onCreate() {
         SKIP_WELCOME = false;
-        DEBUG = Uapk.isDebugable(this);
+        DEBUG = Uapp.isDebugable(this);
 
         // 根据路径的有效性，判断是否记录错误日志
         String crashLogPath = crashLogPath();

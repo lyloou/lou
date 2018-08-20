@@ -1,6 +1,10 @@
 package com.lyloou.lou.util;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AppOpsManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -9,17 +13,59 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Build;
+import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-public class Uapk {
+import static android.content.Context.ACTIVITY_SERVICE;
+
+public class Uapp {
 
 
-    private static final String TAG = "Uapk";
+    private static final String TAG = "Uapp";
+
+    /**
+     * 判断是否开启通知权限
+     * (https://blog.csdn.net/reglog/article/details/79863751)
+     *
+     * @param context
+     * @return
+     */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @SuppressWarnings("unchecked")
+    public static boolean isNotificationEnabled(Context context) {
+        String CHECK_OP_NO_THROW = "checkOpNoThrow";
+        String OP_POST_NOTIFICATION = "OP_POST_NOTIFICATION";
+
+        AppOpsManager mAppOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        ApplicationInfo appInfo = context.getApplicationInfo();
+        String pkg = context.getApplicationContext().getPackageName();
+        int uid = appInfo.uid;
+
+        /* Context.APP_OPS_MANAGER */
+        try {
+            Class appOpsClass = Class.forName(AppOpsManager.class.getName());
+
+            Method checkOpNoThrowMethod = appOpsClass.getMethod(CHECK_OP_NO_THROW, Integer.TYPE, Integer.TYPE,
+                    String.class);
+            Field opPostNotificationValue = appOpsClass.getDeclaredField(OP_POST_NOTIFICATION);
+
+            int value = (Integer) opPostNotificationValue.get(Integer.class);
+            return ((Integer) checkOpNoThrowMethod.invoke(mAppOps, value, uid, pkg) == AppOpsManager.MODE_ALLOWED);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+
+    }
+
 
     /**
      * 程序是否在前台运行
@@ -142,6 +188,39 @@ public class Uapk {
             }
         }
         return infos.toString();
+    }
+
+    // 获取设备唯一标识
+    @SuppressLint("HardwareIds")
+    public static String getDeviceId(Context context) {
+        // http://stackoverflow.com/questions/2785485/is-there-a-unique-android-device-id
+        return Settings.Secure.getString(context.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    /**
+     * 判断某一个类是否存在任务栈里面
+     * https://blog.csdn.net/androidstarjack/article/details/46708243
+     *
+     * @return
+     */
+    public static boolean isInRunningTasks(Context context, Class<? extends Activity> cls) {
+        Intent intent = new Intent(context, cls);
+        ComponentName cmpName = intent.resolveActivity(context.getPackageManager());
+        boolean flag = false;
+        if (cmpName != null) { // 说明系统中存在这个activity
+            ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+            if (am != null) {
+                List<ActivityManager.RunningTaskInfo> taskInfoList = am.getRunningTasks(10);
+                for (ActivityManager.RunningTaskInfo taskInfo : taskInfoList) {
+                    if (taskInfo.baseActivity.equals(cmpName)) { // 说明它已经启动了
+                        flag = true;
+                        break;  //跳出循环，优化效率
+                    }
+                }
+            }
+        }
+        return flag;
+
     }
 
     /**
