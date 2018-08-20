@@ -2,8 +2,6 @@ package com.lou.as.lou.feature;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -53,22 +51,18 @@ public class NotificationPermissionActivity extends LouActivity {
                     .show();
             return;
         }
+
         AlertDialog notificationDialog = new AlertDialog.Builder(context,
                 android.R.style.Theme_DeviceDefault_Light_Dialog)
-                .setTitle("友情提示").setMessage("订单需要通知！！！")
-                .setNegativeButton("取消", (dialog, which) -> Usp.init(context)
+                .setTitle("友情提示").setMessage("为了提供更优质的服务，请您开启通知权限")
+                .setNegativeButton("不用了", (dialog, which) -> Usp.init(context)
                         .putBoolean(KEY_SP_CLOSE_NOTIFICATION, true)
                         .commit())
                 .setNeutralButton("下次再说", (dialog, which) -> {
                     // do nothing
                 })
-                .setPositiveButton("设置", (dialog, which) -> {
-                    //跳转设置界面
-                    Intent intent = new Intent();
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-                    intent.setData(Uri.fromParts("package", getPackageName(), null));
-                    context.startActivity(intent);
+                .setPositiveButton("去开启", (dialog, which) -> {
+                    Uapp.openAppDetailSettings(context);
                 })
                 .setCancelable(false)
                 .create();
