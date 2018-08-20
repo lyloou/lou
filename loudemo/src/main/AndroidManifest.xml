@@ -84,6 +84,9 @@
         <activity
             android:name=".view.pull_to_refresh.PullToRefreshViewActivity"
             android:label="@string/view_pull_to_refresh" />
+        <activity
+            android:name=".feature.NotificationPermissionActivity"
+            android:label="@string/feature_notification_permission" />
     </application>
 
 </manifest>

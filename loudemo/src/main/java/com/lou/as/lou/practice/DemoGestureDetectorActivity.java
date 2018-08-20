@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.lou.as.lou.feature.AdapterActivity;
 import com.lou.as.lou.R;
-import com.lyloou.lou.util.Uapk;
+import com.lyloou.lou.util.Uapp;
 import com.lyloou.lou.util.Utoast;
 import com.orhanobut.logger.Logger;
 
@@ -52,7 +52,7 @@ public class DemoGestureDetectorActivity extends Activity implements
             @Override
             public void onClick(View v) {
 
-                Uapk.addActivityShortcut(DemoGestureDetectorActivity.this.getApplicationContext(),
+                Uapp.addActivityShortcut(DemoGestureDetectorActivity.this.getApplicationContext(),
                         "新3", R.mipmap.ic_launcher, AdapterActivity.class);
                 Utoast.show(DemoGestureDetectorActivity.this, "添加成功");
             }
