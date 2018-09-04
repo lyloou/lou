@@ -1,7 +1,7 @@
 package com.lyloou.effective_java2;
 
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -10,17 +10,9 @@ import java.util.concurrent.TimeUnit;
 public class P {
 
     public static void main(String[] args) {
-        CountDownLatch latch = new CountDownLatch(1);
-        Executors.newSingleThreadExecutor().execute(() -> {
-            System.out.println("--------------");
-            latch.countDown();
-        });
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
     }
+
 
     private static void p68_2() {
         ScheduledThreadPoolExecutor a = new ScheduledThreadPoolExecutor(1);
