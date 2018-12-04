@@ -20,7 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".practice.DemoGestureDetectorActivity" />
 
         <!-- ============= -->
@@ -39,29 +38,23 @@
         <activity
             android:name=".view.ratio_color.RatioColorActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".view.ratio_color.RatioColorHomeActivity"
             android:label="@string/view_ratio_color"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".view.setting_layout.SettingLayoutActivity"
             android:label="@string/view_setting_layout" />
         <activity android:name=".view.setting_layout.SettingLayoutChangeNameActivity" />
-
         <activity
             android:name=".view.count_view.CountViewActivity"
             android:label="@string/view_count_view" />
-
         <activity
             android:name=".android_guides.TabLayoutAndViewPagerActivity"
             android:label="@string/tablayout_and_view_pager" />
-
         <activity
             android:name=".practice.DemoActivityAnimationActivity"
             android:label="@string/animation_activity" />
-
         <activity
             android:name=".view.color_picker.ColorPickerLayoutActivity"
             android:label="@string/view_color_picker_layout" />
@@ -74,7 +67,6 @@
         <activity
             android:name=".view.swipe_refresh.SwipeRefreshLayoutActivity"
             android:label="@string/view_swipe_refresh" />
-
         <activity
             android:name=".feature.DeviceInfoActivity"
             android:label="@string/feature_device_info" />
@@ -87,6 +79,16 @@
         <activity
             android:name=".feature.NotificationPermissionActivity"
             android:label="@string/feature_notification_permission" />
+        <activity
+            android:name=".jetpack.ui.fragment.MyFragmentActivity"
+            android:label="@string/jetpack_ui_fragment1" />
+        <activity
+            android:name=".jetpack.ui.fragment.MyFragment2Activity"
+            android:label="@string/jetpack_ui_fragment2" />
+        <activity
+            android:name=".jetpack.ui.fragment.FragmentLayout"
+            android:label="@string/jetpack_ui_fragment3" />
+        <activity android:name=".jetpack.ui.fragment.FragmentLayout$DetailsActivity" />
     </application>
 
 </manifest>

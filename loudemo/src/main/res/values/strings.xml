@@ -41,4 +41,7 @@
     <string name="view_swipe_refresh">View - SwipeRefresh</string>
     <string name="view_pull_to_refresh">View - PullToRefresh</string>
     <string name="feature_notification_permission">Feature - NotificationPermission</string>
+    <string name="jetpack_ui_fragment1">jetpack - ui - fragment1</string>
+    <string name="jetpack_ui_fragment2">jetpack - ui - fragment2</string>
+    <string name="jetpack_ui_fragment3">jetpack - ui - fragment3</string>
 </resources>
