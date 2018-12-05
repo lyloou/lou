@@ -15,6 +15,9 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -42,16 +45,52 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    dataBinding {
+        enabled true
+    }
+}
+
+kapt {
+    generateStubs = true
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':loulib')
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':loulib')
 
     // butterknife
-    compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
+    implementation "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
 
-    compile "com.android.support.constraint:constraint-layout:$rootProject.constraintVersion"
+    implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintVersion"
+
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:$rootProject.lifecycle_version"
+    // alternatively - just ViewModel
+    implementation "android.arch.lifecycle:viewmodel:$rootProject.lifecycle_version"
+    // use -ktx for Kotlin
+    // alternatively - just LiveData
+    implementation "android.arch.lifecycle:livedata:$rootProject.lifecycle_version"
+    // alternatively - Lifecycles only (no ViewModel or LiveData).
+    //     Support library depends on this lightweight import
+    implementation "android.arch.lifecycle:runtime:$rootProject.lifecycle_version"
+
+    annotationProcessor "android.arch.lifecycle:compiler:$rootProject.lifecycle_version"
+    // use kapt for Kotlin
+    // alternately - if using Java8, use the following instead of compiler
+    implementation "android.arch.lifecycle:common-java8:$rootProject.lifecycle_version"
+
+    // optional - ReactiveStreams support for LiveData
+    implementation "android.arch.lifecycle:reactivestreams:$rootProject.lifecycle_version"
+
+    // optional - Test helpers for LiveData
+    testImplementation "android.arch.core:core-testing:$rootProject.lifecycle_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    kapt "com.android.databinding:compiler:$android_plugin_version"
 }
+repositories {
+    mavenCentral()
+}
+
+

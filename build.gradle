@@ -1,13 +1,16 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext.kotlin_version = '1.2.71'
+    ext.android_plugin_version = '3.0.1'
     repositories {
         jcenter()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath "com.android.tools.build:gradle:$android_plugin_version"
         classpath 'com.novoda:bintray-release:0.5.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -55,4 +58,5 @@ ext {
     butterknifeVersion = '8.7.0'
     nineoldandroidsVersion = '2.4.0'
     roomVersion = '1.0.0-rc1'
+    lifecycle_version = "1.1.1"
 }

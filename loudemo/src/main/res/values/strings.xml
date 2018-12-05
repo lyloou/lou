@@ -44,4 +44,5 @@
     <string name="jetpack_ui_fragment1">jetpack - ui - fragment1</string>
     <string name="jetpack_ui_fragment2">jetpack - ui - fragment2</string>
     <string name="jetpack_ui_fragment3">jetpack - ui - fragment3</string>
+    <string name="jetpack_architecture_databinding">jetpack - architecture - databinding</string>
 </resources>

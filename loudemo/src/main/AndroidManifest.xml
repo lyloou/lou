@@ -89,6 +89,9 @@
             android:name=".jetpack.ui.fragment.FragmentLayout"
             android:label="@string/jetpack_ui_fragment3" />
         <activity android:name=".jetpack.ui.fragment.FragmentLayout$DetailsActivity" />
+        <activity
+            android:name=".jetpack.architecture.databinding.DatabindingActivity"
+            android:label="@string/jetpack_architecture_databinding" />
     </application>
 
 </manifest>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="user"
+            type="com.lou.as.lou.jetpack.architecture.databinding.data.User" />
+
+        <variable
+            name="handler"
+            type="com.lou.as.lou.jetpack.architecture.databinding.handler.MyHandler" />
+
+        <variable
+            name="handler2"
+            type="com.lou.as.lou.jetpack.architecture.databinding.handler.MyHandler" />
+
+        <import type="java.util.List" />
+
+        <variable
+            name="userList"
+            type="List" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{handler::onClickFriend}"
+            android:padding="16dp"
+            android:text='@{"FirstName: " + user.firstName}' />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{handler2::onClickFriend}"
+            android:padding="16dp"
+            android:text='@{"LastName: " + user.lastName}' />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OOKK"
+            android:visibility="@{user.firstName.length() > 2 ? View.VISIBLE : View.GONE}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{String.valueOf(userList)}' />
+    </LinearLayout>
+</layout>
