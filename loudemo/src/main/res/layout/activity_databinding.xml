@@ -14,6 +14,10 @@
             type="User" />
 
         <variable
+            name="observableUser"
+            type="com.lou.as.lou.jetpack.architecture.databinding.observedata.ObservableUser" />
+
+        <variable
             name="handler"
             type="com.lou.as.lou.jetpack.architecture.databinding.handler.MyHandler" />
 
@@ -24,6 +28,10 @@
         <import type="java.util.List" />
 
         <variable
+            name="ouser"
+            type="com.lou.as.lou.jetpack.architecture.databinding.observedata.Ouser" />
+
+        <variable
             name="userList"
             type="List&lt;User&gt;" />
     </data>
@@ -31,31 +39,71 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{handler::onClickFriend}"
-            android:padding="16dp"
+            android:padding="8dp"
             android:text='@{"FirstName: " + user.firstName}' />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{handler2::onClickFriend}"
-            android:padding="16dp"
+            android:padding="8dp"
             android:text='@{"LastName: " + user.lastName}' />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="8dp"
             android:text="OOKK"
             android:visibility="@{user.firstName.length() > 2 ? View.VISIBLE : View.GONE}" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="8dp"
             android:text='@{String.valueOf(userList)}' />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="changeObservableUser"
+            android:padding="8dp"
+            android:text='@{"Observable FirstName: " + observableUser.firstName}' />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="changeObservableUser"
+            android:padding="8dp"
+            android:text='@{"Observable LastName: " + observableUser.lastName}' />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="changeObservableUser"
+            android:padding="8dp"
+            android:text='@{"Observable Age: " + observableUser.age}' />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="changeObservableUser"
+            android:padding="8dp"
+            android:text='@{"Ouser FirstName: " + observableUser.firstName}' />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="changeObservableUser"
+            android:padding="8dp"
+            android:text='@{"Ouser LastName: " + observableUser.lastName}' />
     </LinearLayout>
 </layout>
