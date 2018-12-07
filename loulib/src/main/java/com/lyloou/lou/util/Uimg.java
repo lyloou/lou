@@ -1,6 +1,10 @@
 package com.lyloou.lou.util;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,13 +13,24 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * Author:    Lou
@@ -92,6 +107,7 @@ public class Uimg {
     /**
      * 功能：获得圆角bitmap
      * 参考资料：http://blog.sina.com.cn/s/blog_5a6f39cf0101aqsw.html
+     *
      * @param bitmap
      * @param roundPx
      * @return
@@ -113,5 +129,124 @@ public class Uimg {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         return output;
+    }
+
+    public static void deleteDirContent(Context context, String dirPath) {
+        File dir = new File(Environment.getExternalStorageDirectory(), dirPath);
+        if (!dir.exists() || !dir.isDirectory()) {
+            return;
+        }
+
+        for (File file : dir.listFiles()) {
+            if (file.isFile()) {
+                if (file.delete()) {
+                    context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                            Uri.parse("file://" + file.getAbsolutePath())));
+                }
+            } else if (file.isDirectory()) {
+                deleteDirContent(context, dirPath); // 递规的方式删除文件夹
+            }
+        }
+        dir.delete();// 删除目录本身
+    }
+
+    public static void saveImageToGallery(Context context, String imageUrl, String dir) throws IOException {
+        Bitmap bmp = BitmapFactory.decodeStream(getImageStream(imageUrl));
+        if (bmp == null) {
+            throw new IOException("translate imageUrl to bmp failed");
+        }
+        saveImageToGallery(context, bmp, dir);
+    }
+
+    public static void saveImageToGallery(Context context, Bitmap bmp, String dir) throws IOException {
+        File file = toFile(bmp, dir, System.currentTimeMillis() + ".jpg");
+        if (file == null) {
+            return;
+        }
+
+        String path = file.getAbsolutePath();
+
+        // 把文件插入到系统图库
+        MediaStore.Images.Media.insertImage(context.getContentResolver(), path, "", null);
+        // 通知图库更新
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + path)));
+    }
+
+
+    public static File toFile(@NonNull Bitmap bmp, String dir, String fileName) throws IOException {
+        File appDir = new File(Environment.getExternalStorageDirectory(), dir);
+        if (!appDir.exists()) {
+            appDir.mkdirs();
+        }
+        File file = new File(appDir, fileName);
+        FileOutputStream fos = new FileOutputStream(file);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        fos.flush();
+        fos.close();
+        return file;
+    }
+
+    public static File toFile(String imageUrl, String dir, String fileName) throws IOException {
+        Bitmap bmp = BitmapFactory.decodeStream(getImageStream(imageUrl));
+        if (bmp == null) {
+            return null;
+        }
+        return toFile(bmp, dir, fileName);
+    }
+
+    public static InputStream getImageStream(String imageUrl) throws IOException {
+        URL url = new URL(imageUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setConnectTimeout(5 * 1000);
+        conn.setRequestMethod("GET");
+        if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            return conn.getInputStream();
+        }
+        return null;
+    }
+
+    private static final int CAMERA_REQUEST_CODE = 1;
+
+    /**
+     * request permission before call runnable
+     * Note: need add permission
+     * i.e.
+     * <pre>
+     * @<code>
+     *     Uimage.doImageTaskInCompatible(activity, () -> {
+     *         try {
+     *             String imageUrl = args.getString(0);
+     *             Uimage.saveImageToGallery(activity, imageUrl, IMAGE_PATH);
+     *         } catch (Exception e) {
+     *             // do error
+     *         }
+     *     });
+     * </code>
+     * </pre>
+     *
+     * @param activity
+     * @param runnable
+     */
+    public static void doImageTaskInCompatible(Activity activity, Runnable runnable) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            runnable.run();
+            return;
+        }
+
+        if (ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            runnable.run();
+        } else {
+            //申请STORAGE权限
+            ActivityCompat.requestPermissions(
+                    activity,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                    },
+                    CAMERA_REQUEST_CODE);
+        }
+
     }
 }
