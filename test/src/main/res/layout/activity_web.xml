@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<android.support.design.widget.CoordinatorLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -23,6 +23,45 @@
     android:layout_height="match_parent"
     android:background="#f5f5f5"
     tools:context=".common.webview.WebActivity">
+
+    <RelativeLayout
+        android:id="@+id/rylt"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentLeft="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="13dp"
+            android:src="@mipmap/back_black" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@id/iv_more"
+            android:layout_toRightOf="@id/iv_back"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="人人优品"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/iv_more"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="13dp"
+            android:src="@mipmap/ic_more" />
+    </RelativeLayout>
 
     <WebView
         android:id="@+id/wv_content"
@@ -92,4 +131,4 @@
     </FrameLayout>
 
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

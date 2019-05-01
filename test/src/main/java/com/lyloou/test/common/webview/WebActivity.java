@@ -23,7 +23,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
@@ -98,14 +97,20 @@ public class WebActivity extends AppCompatActivity {
     private void initView() {
         mWvContent = findViewById(R.id.wv_content);
         mWvContent.setScrollbarFadingEnabled(true);
-        mWvContent.getSettings().setJavaScriptEnabled(true);
-        mWvContent.getSettings().setBuiltInZoomControls(true);
-        mWvContent.getSettings().setDisplayZoomControls(false);
-        mWvContent.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
-        mWvContent.getSettings().setDomStorageEnabled(true);
-        mWvContent.getSettings().setAppCacheEnabled(false);
-        mWvContent.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        mWvContent.getSettings().setBlockNetworkImage(false);
+        WebSettings webSettings = mWvContent.getSettings();
+        // https://www.jianshu.com/p/14ca454ab3d1
+        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setBuiltInZoomControls(true);
+        webSettings.setDisplayZoomControls(false);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setAppCacheEnabled(false);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setBlockNetworkImage(false);
 
         mWvContent.setWebViewClient(new WebViewClient() {
             @Override
