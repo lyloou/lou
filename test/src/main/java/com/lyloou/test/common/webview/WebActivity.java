@@ -54,6 +54,9 @@ public class WebActivity extends AppCompatActivity {
     private boolean isShowFab;
 
     public static void newInstance(Context context, String url, String tag) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
         if (!TextUtils.isEmpty(tag)) {
             sKey = context.getClass().getSimpleName().toUpperCase() + "_" + tag;
         }

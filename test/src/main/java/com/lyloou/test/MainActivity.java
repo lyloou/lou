@@ -31,7 +31,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.common.CrashHandler;
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        toNext();
+        // toNext();
 
         setContentView(R.layout.activity_main);
         CrashHandler.getInstance().init(this.getApplicationContext());
@@ -66,6 +65,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        initTopPart();
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_main);
+        Map<String, Class> stringClassMap = Uactivity.getActivitiesMapFromManifest(this, this.getPackageName());
+
+        recyclerView.setAdapter(new MainAdapter(stringClassMap));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
+    }
+
+    private void initTopPart() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -106,19 +116,12 @@ public class MainActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_main);
-        Map<String, Class> stringClassMap = Uactivity.getActivitiesMapFromManifest(this, this.getPackageName());
-
-        recyclerView.setAdapter(new MainAdapter(stringClassMap));
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Toast.makeText(this, "你回来了", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "你回来了", Toast.LENGTH_SHORT).show();
     }
 
     static class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {

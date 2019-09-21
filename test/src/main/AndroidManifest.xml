@@ -84,6 +84,10 @@
             android:name=".man.ManActivity"
             android:label="@string/man"
             android:theme="@style/AppTheme.TranslucentStatus" />
+        <activity
+            android:name=".flow.FlowActivity"
+            android:label="@string/flow_time"
+            android:theme="@style/AppTheme.TranslucentStatus" />
     </application>
 
 </manifest>
