@@ -1,8 +1,15 @@
 package com.lyloou.test.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class Utime {
+
+    private static final SimpleDateFormat SDF_ONE = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+    private static final SimpleDateFormat SDF_TWO = new SimpleDateFormat("yyyyMMdd", Locale.CHINA);
 
     public static int[] getValidTime(String timeStart) {
         int hourOfDay;
@@ -47,4 +54,13 @@ public class Utime {
         return Utime.getTimeString(spendHour, spendMinute);
     }
 
+    public static String transferDay(String day) {
+        Date parse = null;
+        try {
+            parse = SDF_TWO.parse(day);
+        } catch (ParseException e) {
+            return null;
+        }
+        return SDF_ONE.format(parse);
+    }
 }

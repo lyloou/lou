@@ -32,13 +32,21 @@ import io.reactivex.schedulers.Schedulers;
 public class FlowActivity extends AppCompatActivity {
     private Context mContext;
     private FlowAdapter mAdapter;
+    private FlowDay mFlowDay;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
         setContentView(R.layout.activity_flow);
+        initData();
         initView();
+    }
+
+    private void initData() {
+        mFlowDay = new FlowDay();
+        mFlowDay.setDay("20190911");
+        mFlowDay.setItems(getFlowItems());
     }
 
     private void initView() {
@@ -51,7 +59,7 @@ public class FlowActivity extends AppCompatActivity {
     private EmptyRecyclerView initRecycleView() {
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_flow);
         mAdapter = new FlowAdapter(this);
-        mAdapter.addAll(getFlowItems());
+        mAdapter.addAll(mFlowDay.getItems());
         mAdapter.setOnItemListener(getOnItemListener());
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -113,9 +121,10 @@ public class FlowActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void initTopPart() {
+        String day = Utime.transferDay(mFlowDay.getDay());
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setTitle(day);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(this, toolbar);
@@ -123,7 +132,7 @@ public class FlowActivity extends AppCompatActivity {
         ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
         NetWork.getKingsoftwareApi()
-                .getDaily("")
+                .getDaily(day)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
