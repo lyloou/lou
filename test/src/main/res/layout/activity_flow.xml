@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".flow.FlowActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -49,30 +49,32 @@
                 android:layout_height="?android:actionBarSize"
                 app:contentInsetEnd="0dp"
                 app:contentInsetStart="0dp"
-                app:layout_collapseMode="pin"></android.support.v7.widget.Toolbar>
+                app:layout_collapseMode="pin" />
         </android.support.design.widget.CollapsingToolbarLayout>
 
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="16dp"
-        android:src="@android:drawable/ic_menu_compass"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|right" />
-
-
-    <com.lyloou.test.common.EmptyRecyclerView
-        android:id="@+id/erv_flow"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/item_flow" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:id="@+id/tv_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="这是一个地方" />
+
+        <com.lyloou.test.common.EmptyRecyclerView
+            android:id="@+id/erv_flow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tv_top"
+            tools:listitem="@layout/item_flow" />
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

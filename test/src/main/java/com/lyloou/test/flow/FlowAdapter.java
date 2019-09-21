@@ -18,9 +18,12 @@ package com.lyloou.test.flow;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lyloou.test.R;
@@ -31,15 +34,15 @@ import java.util.List;
 class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<FlowItem> mList;
     private Context mContext;
-    private OnItemClickListener mItemClickListener;
+    private OnItemListener mItemListener;
 
     FlowAdapter(Context context) {
         mContext = context;
         mList = new ArrayList<>();
     }
 
-    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
-        mItemClickListener = itemClickListener;
+    public void setOnItemListener(OnItemListener itemClickListener) {
+        mItemListener = itemClickListener;
     }
 
     @Override
@@ -54,14 +57,44 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         FlowHolder holder = (FlowHolder) viewHolder;
         FlowItem item = mList.get(position);
-        holder.tvTime.setText(item.getTime());
+        holder.tvTimeStart.setText(getFormatTime(item.getTimeStart()));
+        holder.tvTimeEnd.setText(getFormatTime(item.getTimeEnd()));
+        holder.tvTimeSep.setText(item.getTimeSep());
         holder.tvSpend.setText(item.getSpend());
-        holder.tvContent.setText(item.getContent());
-        holder.view.setOnClickListener(view -> {
-            if (mItemClickListener != null) {
-                mItemClickListener.onClick(item);
+        holder.etContent.setText(item.getContent());
+        holder.etContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
+        holder.tvTimeStart.setOnClickListener(view -> {
+            if (mItemListener != null) {
+                mItemListener.onClickTimeStart(item);
+            }
+        });
+        holder.tvTimeEnd.setOnClickListener(view -> {
+            if (mItemListener != null) {
+                mItemListener.onClickTimeEnd(item);
+            }
+        });
+    }
+
+
+    private String getFormatTime(String timeStr) {
+        if (timeStr == null) {
+            return "--:--";
+        }
+        return timeStr;
     }
 
     @Override
@@ -74,8 +107,8 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void addAll(List<FlowItem> subjects) {
-        mList.addAll(subjects);
+    public void addAll(List<FlowItem> items) {
+        mList.addAll(items);
         notifyDataSetChanged();
     }
 
@@ -83,22 +116,27 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return mList.size();
     }
 
-    interface OnItemClickListener {
-        void onClick(FlowItem subject);
+    interface OnItemListener {
+        void onClickTimeStart(FlowItem item);
+
+        void onClickTimeEnd(FlowItem item);
     }
 
     private static class FlowHolder extends RecyclerView.ViewHolder {
-        View view;
-        TextView tvTime;
+        TextView tvTimeStart;
+        TextView tvTimeEnd;
+        TextView tvTimeSep;
         TextView tvSpend;
-        TextView tvContent;
+        EditText etContent;
 
-        FlowHolder(View itemView) {
-            super(itemView);
-            view = itemView;
-            tvTime = view.findViewById(R.id.tv_time);
+        FlowHolder(View view) {
+            super(view);
+
+            tvTimeStart = view.findViewById(R.id.tv_time_start);
+            tvTimeEnd = view.findViewById(R.id.tv_time_end);
+            tvTimeSep = view.findViewById(R.id.tv_time_sep);
             tvSpend = view.findViewById(R.id.tv_spend);
-            tvContent = view.findViewById(R.id.tv_content);
+            etContent = view.findViewById(R.id.et_content);
         }
     }
 }

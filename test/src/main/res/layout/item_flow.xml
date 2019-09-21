@@ -26,46 +26,70 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorPrimaryDark" />
+        android:background="@color/colorPrimaryDark"
+        android:visibility="invisible" />
 
     <LinearLayout
-        android:id="@+id/llyt_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
-        <TextView
-            android:id="@+id/tv_time"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:maxLines="1"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="07:01-09:13" />
+            android:layout_weight="1">
+
+
+            <TextView
+                android:id="@+id/tv_time_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="07:01" />
+
+            <TextView
+                android:id="@+id/tv_time_sep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="——" />
+
+            <TextView
+                android:id="@+id/tv_time_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="09:13" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_spend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textStyle="bold"
             tools:text="25 分钟" />
     </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/tv_content"
+    <EditText
+        android:id="@+id/et_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@null"
         android:textSize="16sp"
         tools:text="多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorAccent" />
+        android:background="@color/colorAccent"
+        android:visibility="invisible" />
 </LinearLayout>
 

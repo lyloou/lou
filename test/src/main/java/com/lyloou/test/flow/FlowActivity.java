@@ -1,6 +1,8 @@
 package com.lyloou.test.flow;
 
 import android.annotation.SuppressLint;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,13 +15,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
-import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Utime;
 
 import java.util.ArrayList;
 
@@ -27,11 +30,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class FlowActivity extends AppCompatActivity {
+    private Context mContext;
+    private FlowAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mContext = this;
         setContentView(R.layout.activity_flow);
         initView();
     }
@@ -45,13 +50,50 @@ public class FlowActivity extends AppCompatActivity {
     @NonNull
     private EmptyRecyclerView initRecycleView() {
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_flow);
-        FlowAdapter adapter = new FlowAdapter(this);
-        adapter.addAll(getFlowItems());
-        recyclerView.setAdapter(adapter);
+        mAdapter = new FlowAdapter(this);
+        mAdapter.addAll(getFlowItems());
+        mAdapter.setOnItemListener(getOnItemListener());
+        recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new TimeLineItemDecoration());
         return recyclerView;
+    }
+
+    private FlowAdapter.OnItemListener getOnItemListener() {
+
+        return new FlowAdapter.OnItemListener() {
+            @Override
+            public void onClickTimeStart(FlowItem item) {
+                // 原文链接：https://blog.csdn.net/qq_17009881/article/details/75371406
+                TimePickerDialog.OnTimeSetListener listener = (view, hourOfDay, minute) -> {
+                    item.setTimeStart(Utime.getTimeString(hourOfDay, minute));
+                    notifyDataChanged(item);
+                };
+                showTimePicker(listener, Utime.getValidTime(item.getTimeStart()));
+            }
+
+            @Override
+            public void onClickTimeEnd(FlowItem item) {
+                TimePickerDialog.OnTimeSetListener listener = (view, hourOfDay, minute) -> {
+                    item.setTimeEnd(Utime.getTimeString(hourOfDay, minute));
+                    notifyDataChanged(item);
+                };
+                showTimePicker(listener, Utime.getValidTime(item.getTimeEnd()));
+            }
+        };
+    }
+
+    private void notifyDataChanged(FlowItem item) {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private void showTimePicker(TimePickerDialog.OnTimeSetListener listener, int[] time) {
+        if (time == null || time.length != 2) {
+            Toast.makeText(this, "程序异常", Toast.LENGTH_LONG).show();
+            return;
+        }
+        new TimePickerDialog(mContext, 0, listener, time[0], time[1], true).show();
     }
 
     @NonNull
@@ -60,8 +102,9 @@ public class FlowActivity extends AppCompatActivity {
         items.add(new FlowItem());
         for (int i = 0; i < 10; i++) {
             items.add(new FlowItem() {{
-                setTime("10:20-12:00");
-                setSpend("1:40");
+                setTimeStart("10:20");
+                setTimeSep("~");
+                setTimeEnd("12:00");
                 setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
             }});
         }
@@ -70,14 +113,14 @@ public class FlowActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void initTopPart() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(this, toolbar);
 
-        ImageView ivHeader = (ImageView) findViewById(R.id.iv_header);
+        ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
         NetWork.getKingsoftwareApi()
                 .getDaily("")
@@ -95,9 +138,7 @@ public class FlowActivity extends AppCompatActivity {
                         }
                         , Throwable::printStackTrace);
 
-        View fab = findViewById(R.id.fab);
-        fab.startAnimation(Uanimation.getRotateAnimation(3600));
-        fab.setOnClickListener(view -> {
+        tvHeader.setOnClickListener(view -> {
             Object tag = tvHeader.getTag();
             if (tag instanceof String) {
                 String newStr = (String) tag;
@@ -107,7 +148,7 @@ public class FlowActivity extends AppCompatActivity {
             }
         });
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
