@@ -20,6 +20,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,22 +62,10 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.tvTimeEnd.setText(getFormatTime(item.getTimeEnd()));
         holder.tvTimeSep.setText(item.getTimeSep());
         holder.tvSpend.setText(item.getSpend());
-        holder.etContent.setText(item.getContent());
-        holder.etContent.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        final EditText etContent = holder.etContent;
+        etContent.setText(item.getContent());
+        addChangeListener(etContent, item);
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
         holder.tvTimeStart.setOnClickListener(view -> {
             if (mItemListener != null) {
                 mItemListener.onClickTimeStart(item);
@@ -85,6 +74,39 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.tvTimeEnd.setOnClickListener(view -> {
             if (mItemListener != null) {
                 mItemListener.onClickTimeEnd(item);
+            }
+        });
+    }
+
+    private void addChangeListener(EditText editText, FlowItem item) {
+        // [How to get the Edit text position from Recycler View adapter using Text Watcher in android - Stack Overflow](https://stackoverflow.com/a/37916021)
+        TextWatcher watcher = new TextWatcher() {
+            private CharSequence s;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.e("TTAG", "beforeTextChanged:" + s);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.e("TTAG", "onTextChanged:" + s);
+                this.s = s;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (editText.hasFocus()) {
+                    Log.e("TTAG", "afterTextChanged:" + s);
+                    mItemListener.onTextChanged(item, this.s);
+                }
+            }
+        };
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                editText.addTextChangedListener(watcher);
+            } else {
+                editText.removeTextChangedListener(watcher);
             }
         });
     }
@@ -122,6 +144,8 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onClickTimeStart(FlowItem item);
 
         void onClickTimeEnd(FlowItem item);
+
+        void onTextChanged(FlowItem item, CharSequence s);
     }
 
     private static class FlowHolder extends RecyclerView.ViewHolder {

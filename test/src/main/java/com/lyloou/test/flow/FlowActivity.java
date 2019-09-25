@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -44,7 +45,7 @@ public class FlowActivity extends AppCompatActivity {
     private Activity mContext;
     private FlowAdapter mAdapter;
     private FlowDay mFlowDay;
-    private List<FlowItem> mFlowItems;
+    private List<FlowItem> mFlowItems = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,10 +57,18 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        mFlowDay = new FlowDay();
-        mFlowDay.setDay("20190911");
-        mFlowItems = getFlowItems();
-        mFlowDay.setItems(mFlowItems);
+        int id = 1;
+        consumeCursorById(id, cursor -> {
+            String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
+            String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
+            mFlowDay = new FlowDay();
+            mFlowDay.setId(id);
+            mFlowDay.setDay(day);
+            mFlowItems.addAll(FlowItemHelper.fromJson(items));
+            mFlowDay.setItems(mFlowItems);
+        });
+
+
     }
 
     private void initView() {
@@ -91,7 +100,7 @@ public class FlowActivity extends AppCompatActivity {
 
             newItem.setTimeStart(currentTime);
             mFlowItems.add(0, newItem);
-            notifyDataChanged();
+            setItemsDataAndSendNotifyDataChanged();
         });
     }
 
@@ -110,6 +119,19 @@ public class FlowActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new TimeLineItemDecoration());
         return recyclerView;
+    }
+
+    private Runnable updateDbTask = () -> {
+        SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
+        sd.update(DbHelper.TABLE_NAME, getContentValues(), "id=?", new String[]{String.valueOf(mFlowDay.getId())});
+        sd.close();
+    };
+
+    private Handler mHandler = new Handler();
+
+    private void delayUpdate() {
+        mHandler.removeCallbacks(updateDbTask);
+        mHandler.postDelayed(updateDbTask, 1000);
     }
 
     private FlowAdapter.OnItemListener getOnItemListener() {
@@ -132,6 +154,13 @@ public class FlowActivity extends AppCompatActivity {
                     notifyDataChanged();
                 };
                 showTimePicker(listener, Utime.getValidTime(item.getTimeEnd()));
+            }
+
+            @Override
+            public void onTextChanged(FlowItem item, CharSequence s) {
+                item.setContent(String.valueOf(s));
+                delayUpdate();
+
             }
         };
     }
@@ -258,7 +287,7 @@ public class FlowActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
+
         String content = FlowItemHelper.toPrettyText(mFlowDay.getItems());
 
         switch (item.getItemId()) {
@@ -269,31 +298,60 @@ public class FlowActivity extends AppCompatActivity {
             case R.id.menu_share:
                 Usystem.shareText(mContext, mFlowDay.getDay(), content);
             case R.id.menu_save:
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(DbHelper.COL_DAY, mFlowDay.getDay());
-                contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJson(mFlowDay.getItems()));
-                sd.insert(DbHelper.TABLE_NAME, null, contentValues);
-                sd.close();
+                updateDbTask.run();
                 break;
             case R.id.menu_recover:
-                Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where day = ?", new String[]{mFlowDay.getDay()});
-                cursor.moveToFirst();
-                String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
-                cursor.close();
-                mFlowItems = FlowItemHelper.fromJson(items);
-                mFlowDay.setItems(mFlowItems);
-                mAdapter.setList(mFlowItems);
-                notifyDataChanged();
+                consumeCursorById(mFlowDay.getId(), cursor -> {
+                    String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
+                    mFlowItems.clear();
+                    mFlowItems.addAll(FlowItemHelper.fromJson(items));
+                    setItemsDataAndSendNotifyDataChanged();
+                });
                 break;
             case R.id.menu_clear:
-                mAdapter.clearAll();
-                notifyDataChanged();
+                mFlowItems.clear();
+                setItemsDataAndSendNotifyDataChanged();
                 break;
             case R.id.menu_deep:
-
+                mFlowItems.clear();
+                setItemsDataAndSendNotifyDataChanged();
+                updateDbTask.run();
                 break;
         }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void consumeCursorByDay(Consumer<Cursor> consumer) {
+        SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
+        Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where day = ?", new String[]{mFlowDay.getDay()});
+        cursor.moveToFirst();
+        consumer.accept(cursor);
+        cursor.close();
+        sd.close();
+    }
+
+    private void consumeCursorById(int id, Consumer<Cursor> consumer) {
+        SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
+        Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where id = ?", new String[]{"" + id});
+        cursor.moveToFirst();
+        consumer.accept(cursor);
+        cursor.close();
+        sd.close();
+    }
+
+    private void setItemsDataAndSendNotifyDataChanged() {
+        mFlowDay.setItems(mFlowItems);
+        mAdapter.setList(mFlowItems);
+        notifyDataChanged();
+    }
+
+    @NonNull
+    private ContentValues getContentValues() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbHelper.COL_DAY, mFlowDay.getDay());
+        contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJson(mFlowDay.getItems()));
+        return contentValues;
     }
 
     private View getRootView(Activity activity) {
