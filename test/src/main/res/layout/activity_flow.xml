@@ -63,18 +63,36 @@
         android:background="@color/white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/tv_top"
+        <RelativeLayout
+            android:id="@+id/rlyt_top"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="这是一个地方" />
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="这是一个地方" />
+
+            <TextView
+                android:id="@+id/tv_add_item"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@color/colorAccentTransparent"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="添加"
+                android:textColor="@color/gray" />
+
+        </RelativeLayout>
 
         <com.lyloou.test.common.EmptyRecyclerView
             android:id="@+id/erv_flow"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/tv_top"
+            android:layout_below="@id/rlyt_top"
             tools:listitem="@layout/item_flow" />
     </RelativeLayout>
 

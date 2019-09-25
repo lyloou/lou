@@ -13,15 +13,15 @@ public class Utime {
     private static final SimpleDateFormat SDF_ONE = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
     private static final SimpleDateFormat SDF_TWO = new SimpleDateFormat("yyyyMMdd", Locale.CHINA);
 
-    public static int[] getValidTime(String timeStart) {
+    public static int[] getValidTime(String time) {
         int hourOfDay;
         int minute;
-        if (isInvalidTime(timeStart)) {
+        if (isInvalidTime(time)) {
             Calendar instance = Calendar.getInstance();
             hourOfDay = instance.get(Calendar.HOUR_OF_DAY);
             minute = instance.get(Calendar.MINUTE);
         } else {
-            String[] ts = timeStart.split(":");
+            String[] ts = time.split(":");
             hourOfDay = Integer.parseInt(ts[0]);
             minute = Integer.parseInt(ts[1]);
         }

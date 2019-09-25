@@ -16,6 +16,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +44,7 @@ public class FlowActivity extends AppCompatActivity {
     private Activity mContext;
     private FlowAdapter mAdapter;
     private FlowDay mFlowDay;
+    private List<FlowItem> mFlowItems;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,7 +58,8 @@ public class FlowActivity extends AppCompatActivity {
     private void initData() {
         mFlowDay = new FlowDay();
         mFlowDay.setDay("20190911");
-        mFlowDay.setItems(getFlowItems());
+        mFlowItems = getFlowItems();
+        mFlowDay.setItems(mFlowItems);
     }
 
     private void initView() {
@@ -64,6 +67,36 @@ public class FlowActivity extends AppCompatActivity {
         EmptyRecyclerView recyclerView = initRecycleView();
         initFabBottom(recyclerView);
         Uview.registerHideSoftKeyboardListener(this, getRootView(this));
+        initAttachView();
+    }
+
+    private void initAttachView() {
+        View tvAddItem = findViewById(R.id.tv_add_item);
+        tvAddItem.setOnClickListener(v -> {
+            FlowItem newItem = new FlowItem();
+            int[] startArr = Utime.getValidTime(null);
+            String currentTime = Utime.getTimeString(startArr[0], startArr[1]);
+
+            if (mFlowItems.size() > 0) {
+                FlowItem item = mFlowItems.get(0);
+                // 当前时间已经存在，则不在新建
+                if (currentTime.equals(item.getTimeStart())) {
+                    showTips("该时间点已经有了一个哦");
+                    return;
+                }
+                if (!TextUtils.isEmpty(item.getTimeEnd())) {
+                    currentTime = item.getTimeEnd();
+                }
+            }
+
+            newItem.setTimeStart(currentTime);
+            mFlowItems.add(0, newItem);
+            notifyDataChanged();
+        });
+    }
+
+    private void showTips(String text) {
+        Snackbar.make(getRootView(mContext), text, Snackbar.LENGTH_SHORT).show();
     }
 
     @NonNull
@@ -231,7 +264,7 @@ public class FlowActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_copy:
                 Usystem.copyString(mContext, content);
-                Snackbar.make(getRootView(mContext), "复制成功", Snackbar.LENGTH_SHORT).show();
+                showTips("复制成功");
                 break;
             case R.id.menu_share:
                 Usystem.shareText(mContext, mFlowDay.getDay(), content);
@@ -247,8 +280,9 @@ public class FlowActivity extends AppCompatActivity {
                 cursor.moveToFirst();
                 String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
                 cursor.close();
-                mFlowDay.setItems(FlowItemHelper.fromJson(items));
-                mAdapter.setList(mFlowDay.getItems());
+                mFlowItems = FlowItemHelper.fromJson(items);
+                mFlowDay.setItems(mFlowItems);
+                mAdapter.setList(mFlowItems);
                 notifyDataChanged();
                 break;
             case R.id.menu_clear:
