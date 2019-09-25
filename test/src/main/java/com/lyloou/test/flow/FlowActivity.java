@@ -1,9 +1,9 @@
 package com.lyloou.test.flow;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +28,7 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Usystem;
 import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Uview;
 
@@ -36,7 +38,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class FlowActivity extends AppCompatActivity {
-    private Context mContext;
+    private Activity mContext;
     private FlowAdapter mAdapter;
     private FlowDay mFlowDay;
 
@@ -59,7 +61,7 @@ public class FlowActivity extends AppCompatActivity {
         initTopPart();
         EmptyRecyclerView recyclerView = initRecycleView();
         initFabBottom(recyclerView);
-        Uview.registerHideSoftKeyboardListener(this, findViewById(android.R.id.content));
+        Uview.registerHideSoftKeyboardListener(this, getRootView(this));
     }
 
     @NonNull
@@ -190,13 +192,19 @@ public class FlowActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
+        String content = FlowItemHelper.toPrettyText(mFlowDay.getItems());
+
         switch (item.getItemId()) {
-            case R.id.menu_export:
+            case R.id.menu_copy:
+                Usystem.copyString(mContext, content);
+                Snackbar.make(getRootView(mContext), "复制成功", Snackbar.LENGTH_SHORT).show();
                 break;
+            case R.id.menu_share:
+                Usystem.shareText(mContext, mFlowDay.getDay(), content);
             case R.id.menu_save:
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(DbHelper.COL_DAY, mFlowDay.getDay());
-                contentValues.put(DbHelper.COL_ITEMS, FlowDayHelper.toJson(mFlowDay.getItems()));
+                contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJson(mFlowDay.getItems()));
                 sd.insert(DbHelper.TABLE_NAME, null, contentValues);
                 sd.close();
                 break;
@@ -205,7 +213,7 @@ public class FlowActivity extends AppCompatActivity {
                 cursor.moveToFirst();
                 String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
                 cursor.close();
-                mFlowDay.setItems(FlowDayHelper.fromJson(items));
+                mFlowDay.setItems(FlowItemHelper.fromJson(items));
                 mAdapter.setList(mFlowDay.getItems());
                 notifyDataChanged();
                 break;
@@ -213,10 +221,14 @@ public class FlowActivity extends AppCompatActivity {
                 mAdapter.clearAll();
                 notifyDataChanged();
                 break;
-            case R.id.menu_clear_deep:
+            case R.id.menu_deep:
 
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private View getRootView(Activity activity) {
+        return activity.findViewById(android.R.id.content);
     }
 }

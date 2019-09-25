@@ -1,5 +1,7 @@
 package com.lyloou.test.util;
 
+import android.text.TextUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,7 +16,7 @@ public class Utime {
     public static int[] getValidTime(String timeStart) {
         int hourOfDay;
         int minute;
-        if (timeStart == null) {
+        if (isInvalidTime(timeStart)) {
             Calendar instance = Calendar.getInstance();
             hourOfDay = instance.get(Calendar.HOUR_OF_DAY);
             minute = instance.get(Calendar.MINUTE);
@@ -26,10 +28,44 @@ public class Utime {
         return new int[]{hourOfDay, minute};
     }
 
+    /**
+     * 判断时间是否有效
+     *
+     * @param time 时间字符串，如：16:32
+     * @return 是否有效的结果
+     */
+    public static boolean isInvalidTime(String time) {
+        if (time == null) {
+            return true;
+        }
+        String[] split = time.split(":");
+        if (split.length != 2) {
+            return true;
+        }
+
+        if (!TextUtils.isDigitsOnly(split[0])) {
+            return true;
+        }
+        int hour = Integer.parseInt(split[0]);
+        if (hour < 0 || hour > 24) {
+            return true;
+        }
+
+        if (!TextUtils.isDigitsOnly(split[1])) {
+            return true;
+        }
+        int minute = Integer.parseInt(split[1]);
+        if (minute < 0 || minute > 60) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static String getTimeString(int h, int m) {
-        return (h < 10 ? ("0" + h) : ("" + h)) +
-                ":" +
-                (m < 10 ? ("0" + m) : ("" + m));
+        String hour = h < 10 ? ("0" + h) : ("" + h);
+        String minute = m < 10 ? ("0" + m) : ("" + m);
+        return hour + ":" + minute;
     }
 
 
