@@ -33,6 +33,8 @@ import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Uview;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -114,17 +116,49 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private ArrayList<FlowItem> getFlowItems() {
-        ArrayList<FlowItem> items = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            FlowItem e1 = new FlowItem();
-            e1.setTimeStart("10:20");
-            e1.setTimeSep("~");
-            e1.setTimeEnd("12:00");
-            e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
-            items.add(e1);
-        }
+    private List<FlowItem> getFlowItems() {
+        List<FlowItem> items = new ArrayList<>();
+        FlowItem e1 = new FlowItem();
+        e1.setTimeStart("08:20");
+        e1.setTimeSep("~");
+        e1.setTimeEnd("12:00");
+        e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
+        items.add(e1);
+
+        e1 = new FlowItem();
+        e1.setTimeStart("07:20");
+        e1.setTimeSep("~");
+        e1.setTimeEnd("12:00");
+        e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
+        items.add(e1);
+
+        e1 = new FlowItem();
+        e1.setTimeStart("12:20");
+        e1.setTimeSep("~");
+        e1.setTimeEnd("12:00");
+        e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
+        items.add(e1);
+
+        e1 = new FlowItem();
+        e1.setTimeStart("13:20");
+        e1.setTimeSep("~");
+        e1.setTimeEnd("15:00");
+        e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
+        items.add(e1);
+
+        sortItems(items);
+
+
         return items;
+    }
+
+    private void sortItems(List<FlowItem> items) {
+        Collections.sort(items, (o1, o2) -> {
+            if (o1 == null || o2 == null) {
+                return -1;
+            }
+            return o2.getTimeStart().compareTo(o1.getTimeStart());
+        });
     }
 
     @SuppressLint("CheckResult")
