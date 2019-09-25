@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright  (c) 2017 Lyloou
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,5 +20,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="white">#ffffff</color>
     <color name="gray">#444</color>
+    <color name="grayTransparent">#06000000</color>
     <color name="colorAccentTransparent">#66FF4081</color>
 </resources>
