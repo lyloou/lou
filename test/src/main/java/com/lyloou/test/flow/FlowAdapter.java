@@ -102,14 +102,16 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return getListSize();
     }
 
+    public void setList(List<FlowItem> items) {
+        mList = items;
+    }
+
     public void clearAll() {
         mList.clear();
-        notifyDataSetChanged();
     }
 
     public void addAll(List<FlowItem> items) {
         mList.addAll(items);
-        notifyDataSetChanged();
     }
 
     public int getListSize() {

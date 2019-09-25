@@ -2,7 +2,10 @@ package com.lyloou.test.flow;
 
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -60,7 +64,7 @@ public class FlowActivity extends AppCompatActivity {
     private EmptyRecyclerView initRecycleView() {
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_flow);
         mAdapter = new FlowAdapter(this);
-        mAdapter.addAll(mFlowDay.getItems());
+        mAdapter.setList(mFlowDay.getItems());
         mAdapter.setOnItemListener(getOnItemListener());
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -77,7 +81,7 @@ public class FlowActivity extends AppCompatActivity {
                 // 原文链接：https://blog.csdn.net/qq_17009881/article/details/75371406
                 TimePickerDialog.OnTimeSetListener listener = (view, hourOfDay, minute) -> {
                     item.setTimeStart(Utime.getTimeString(hourOfDay, minute));
-                    notifyDataChanged(item);
+                    notifyDataChanged();
                 };
                 showTimePicker(listener, Utime.getValidTime(item.getTimeStart()));
             }
@@ -86,14 +90,14 @@ public class FlowActivity extends AppCompatActivity {
             public void onClickTimeEnd(FlowItem item) {
                 TimePickerDialog.OnTimeSetListener listener = (view, hourOfDay, minute) -> {
                     item.setTimeEnd(Utime.getTimeString(hourOfDay, minute));
-                    notifyDataChanged(item);
+                    notifyDataChanged();
                 };
                 showTimePicker(listener, Utime.getValidTime(item.getTimeEnd()));
             }
         };
     }
 
-    private void notifyDataChanged(FlowItem item) {
+    private void notifyDataChanged() {
         mAdapter.notifyDataSetChanged();
     }
 
@@ -108,14 +112,13 @@ public class FlowActivity extends AppCompatActivity {
     @NonNull
     private ArrayList<FlowItem> getFlowItems() {
         ArrayList<FlowItem> items = new ArrayList<>();
-        items.add(new FlowItem());
         for (int i = 0; i < 10; i++) {
-            items.add(new FlowItem() {{
-                setTimeStart("10:20");
-                setTimeSep("~");
-                setTimeEnd("12:00");
-                setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
-            }});
+            FlowItem e1 = new FlowItem();
+            e1.setTimeStart("10:20");
+            e1.setTimeSep("~");
+            e1.setTimeEnd("12:00");
+            e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
+            items.add(e1);
         }
         return items;
     }
@@ -138,8 +141,7 @@ public class FlowActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
-                            Glide
-                                    .with(ivHeader.getContext().getApplicationContext())
+                            Glide.with(ivHeader.getContext().getApplicationContext())
                                     .load(daily.getPicture2())
                                     .centerCrop()
                                     .into(ivHeader);
@@ -181,5 +183,38 @@ public class FlowActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_flow, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
+        switch (item.getItemId()) {
+            case R.id.menu_export:
+                break;
+            case R.id.menu_save:
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(DbHelper.COL_DAY, mFlowDay.getDay());
+                contentValues.put(DbHelper.COL_ITEMS, FlowDayHelper.toJson(mFlowDay.getItems()));
+                sd.insert(DbHelper.TABLE_NAME, null, contentValues);
+                sd.close();
+                break;
+            case R.id.menu_recover:
+                Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where day = ?", new String[]{mFlowDay.getDay()});
+                cursor.moveToFirst();
+                String content = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
+                cursor.close();
+                mFlowDay.setItems(FlowDayHelper.fromJson(content));
+                mAdapter.setList(mFlowDay.getItems());
+                notifyDataChanged();
+                break;
+            case R.id.menu_clear:
+                mAdapter.clearAll();
+                notifyDataChanged();
+                break;
+            case R.id.menu_clear_deep:
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

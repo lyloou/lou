@@ -1,11 +1,20 @@
 package com.lyloou.test.flow;
 
+import com.google.gson.annotations.SerializedName;
 import com.lyloou.test.util.Utime;
 
-public class FlowItem {
+import java.io.Serializable;
+
+public class FlowItem implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @SerializedName("timeStart")
     private String timeStart;
+    @SerializedName("timeEnd")
     private String timeEnd;
+    @SerializedName("timeSep")
     private String timeSep = "~";
+    @SerializedName("content")
     private String content;
 
     public String getTimeStart() {

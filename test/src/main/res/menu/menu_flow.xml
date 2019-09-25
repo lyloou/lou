@@ -5,4 +5,25 @@
         android:id="@+id/menu_export"
         android:title="导出"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_save"
+        android:title="保存"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_clear"
+        android:title="清除"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_recover"
+        android:title="恢复"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_clear_deep"
+        android:title="清除(不可恢复)"
+        app:showAsAction="never" />
+
 </menu>
