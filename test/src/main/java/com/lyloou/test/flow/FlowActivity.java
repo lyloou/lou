@@ -28,6 +28,7 @@ import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utime;
+import com.lyloou.test.util.Uview;
 
 import java.util.ArrayList;
 
@@ -58,6 +59,7 @@ public class FlowActivity extends AppCompatActivity {
         initTopPart();
         EmptyRecyclerView recyclerView = initRecycleView();
         initFabBottom(recyclerView);
+        Uview.registerHideSoftKeyboardListener(this, findViewById(android.R.id.content));
     }
 
     @NonNull
@@ -201,9 +203,9 @@ public class FlowActivity extends AppCompatActivity {
             case R.id.menu_recover:
                 Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where day = ?", new String[]{mFlowDay.getDay()});
                 cursor.moveToFirst();
-                String content = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
+                String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
                 cursor.close();
-                mFlowDay.setItems(FlowDayHelper.fromJson(content));
+                mFlowDay.setItems(FlowDayHelper.fromJson(items));
                 mAdapter.setList(mFlowDay.getItems());
                 notifyDataChanged();
                 break;

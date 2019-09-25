@@ -16,9 +16,15 @@
 
 package com.lyloou.test.util;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 /**
@@ -44,5 +50,38 @@ public class Uview {
         imageView.buildDrawingCache();
         Bitmap bitmap = imageView.getDrawingCache();
         return bitmap;
+    }
+
+    /**
+     * [How to hide soft keyboard on android after clicking outside EditText? - Stack Overflow](https://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext)
+     *
+     * @param context 上下文
+     * @param view    EditText上层 view
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    public static void registerHideSoftKeyboardListener(Activity context, View view) {
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener((v, event) -> {
+                hideSoftKeyboard(context);
+                return false;
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                registerHideSoftKeyboardListener(context, innerView);
+            }
+        }
+    }
+
+    public static void hideSoftKeyboard(Activity context) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) context.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(
+                context.getCurrentFocus().getWindowToken(), 0);
     }
 }
