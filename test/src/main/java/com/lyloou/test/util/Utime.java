@@ -100,6 +100,11 @@ public class Utime {
         return SDF_ONE.format(parse);
     }
 
+    public static String today() {
+        Date parse = new Date();
+        return SDF_TWO.format(parse);
+    }
+
     public static String getFormatTime(String timeStr) {
         if (timeStr == null) {
             return "--:--";

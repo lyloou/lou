@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -43,10 +45,24 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class FlowActivity extends AppCompatActivity {
+    private static final String EXTRA_ID = "id";
+    private static final String EXTRA_DAY = "day";
     private Activity mContext;
     private FlowAdapter mAdapter;
     private FlowDay mFlowDay;
     private List<FlowItem> mFlowItems = new ArrayList<>();
+
+    public static void start(Context context, int id) {
+        Intent intent = new Intent(context, FlowActivity.class);
+        intent.putExtra(EXTRA_ID, id);
+        context.startActivity(intent);
+    }
+
+    public static void start(Context context, String day) {
+        Intent intent = new Intent(context, FlowActivity.class);
+        intent.putExtra(EXTRA_DAY, day);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,18 +74,45 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        int id = 1;
-        consumeCursorById(id, cursor -> {
-            String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
-            String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
-            mFlowDay = new FlowDay();
-            mFlowDay.setId(id);
-            mFlowDay.setDay(day);
-            mFlowDay.setItems(mFlowItems);
-            mFlowItems.addAll(FlowItemHelper.fromJson(items));
+        int id = getIntent().getIntExtra(EXTRA_ID, -1);
+        if (id != -1) {
+            consumeCursorById(id, this::fillData);
+            return;
+        }
+
+        String day = getIntent().getStringExtra(EXTRA_DAY);
+        if (!TextUtils.isEmpty(day)) {
+            consumeCursorByDay(day, this::fillData);
+            return;
+        }
+
+        // new FlowDay with today
+        String today = Utime.today();
+        consumeCursorByDay(today, cursor -> {
+            int count = cursor.getCount();
+            if (count == 0) {
+                FlowDay flowDay = new FlowDay();
+                flowDay.setDay(today);
+                long lId = insertFlowDayToDb(flowDay);
+                flowDay.setId((int) lId);
+                mFlowDay = flowDay;
+            } else {
+                fillData(cursor);
+            }
         });
 
+    }
 
+    private void fillData(Cursor cursor) {
+        int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
+        String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
+        mFlowItems.addAll(FlowItemHelper.fromJsonArray(items));
+        String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
+        mFlowDay = new FlowDay();
+        mFlowDay.setId(id);
+        mFlowDay.setDay(day);
+        mFlowDay.setItems(mFlowItems);
+        sortItems(mFlowItems);
     }
 
     private void initView() {
@@ -260,7 +303,12 @@ public class FlowActivity extends AppCompatActivity {
             if (o1 == null || o2 == null) {
                 return -1;
             }
-            return o2.getTimeStart().compareTo(o1.getTimeStart());
+            String o1TimeStart = o1.getTimeStart();
+            String o2TimeStart = o2.getTimeStart();
+            if (o1TimeStart == null || o2TimeStart == null) {
+                return -1;
+            }
+            return o2TimeStart.compareTo(o1TimeStart);
         });
     }
 
@@ -345,7 +393,7 @@ public class FlowActivity extends AppCompatActivity {
                 consumeCursorById(mFlowDay.getId(), cursor -> {
                     String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
                     mFlowItems.clear();
-                    mFlowItems.addAll(FlowItemHelper.fromJson(items));
+                    mFlowItems.addAll(FlowItemHelper.fromJsonArray(items));
                     updateUI();
                 });
                 break;
@@ -363,8 +411,18 @@ public class FlowActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void consumeCursorByDay(String day, Consumer<Cursor> consumer) {
+    private long insertFlowDayToDb(FlowDay flowDay) {
         SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbHelper.COL_DAY, flowDay.getDay());
+        contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJsonArray(flowDay.getItems()));
+        long id = sd.insert(DbHelper.TABLE_NAME, null, contentValues);
+        sd.close();
+        return id;
+    }
+
+    private void consumeCursorByDay(String day, Consumer<Cursor> consumer) {
+        SQLiteDatabase sd = new DbHelper(this).getReadableDatabase();
         Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where day = ?", new String[]{day});
         cursor.moveToFirst();
         consumer.accept(cursor);
@@ -373,7 +431,7 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     private void consumeCursorById(int id, Consumer<Cursor> consumer) {
-        SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
+        SQLiteDatabase sd = new DbHelper(this).getReadableDatabase();
         Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where id = ?", new String[]{"" + id});
         cursor.moveToFirst();
         consumer.accept(cursor);
@@ -385,7 +443,7 @@ public class FlowActivity extends AppCompatActivity {
     private ContentValues getContentValues() {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DbHelper.COL_DAY, mFlowDay.getDay());
-        contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJson(mFlowDay.getItems()));
+        contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJsonArray(mFlowDay.getItems()));
         return contentValues;
     }
 

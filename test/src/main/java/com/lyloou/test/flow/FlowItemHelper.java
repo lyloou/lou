@@ -14,12 +14,15 @@ public class FlowItemHelper {
     private static Type type = new TypeToken<List<FlowItem>>() {
     }.getType();
 
-    public static String toJson(List<FlowItem> items) {
+    public static String toJsonArray(List<FlowItem> items) {
+        if (items == null) {
+            return "[]";
+        }
         return gson.toJson(items, type);
     }
 
 
-    public static List<FlowItem> fromJson(String day) {
+    public static List<FlowItem> fromJsonArray(String day) {
         return gson.fromJson(day, type);
     }
 

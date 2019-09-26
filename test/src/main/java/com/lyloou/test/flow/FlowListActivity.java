@@ -16,7 +16,7 @@
 
 package com.lyloou.test.flow;
 
-import android.content.Intent;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -60,10 +60,9 @@ public class FlowListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_flow_list);
-        initData();
 
+        initData();
         initView();
 
     }
@@ -81,11 +80,12 @@ public class FlowListActivity extends AppCompatActivity {
     }
 
     private void consumeCursorByDay(Consumer<Cursor> consumer) {
-        SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
+        SQLiteDatabase sd = new DbHelper(this).getReadableDatabase();
         Cursor cursor = sd.rawQuery("select id,day from " + DbHelper.TABLE_NAME, null);
-        cursor.moveToFirst();
-        while (cursor.moveToNext()) {
-            consumer.accept(cursor);
+        if (cursor.moveToFirst()) {
+            do {
+                consumer.accept(cursor);
+            } while (cursor.moveToNext());
         }
         cursor.close();
         sd.close();
@@ -96,7 +96,7 @@ public class FlowListActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.rv_main);
 
-        recyclerView.setAdapter(new Adapter(mFlowDays));
+        recyclerView.setAdapter(new Adapter(this, mFlowDays));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
     }
@@ -131,7 +131,7 @@ public class FlowListActivity extends AppCompatActivity {
         fab.startAnimation(Uanimation.getRotateAnimation(3600));
         fab.setOnClickListener(view -> {
             Object tag = tvHeader.getTag();
-            if (tag != null && tag instanceof String) {
+            if (tag instanceof String) {
                 String newStr = (String) tag;
                 String oldStr = tvHeader.getText().toString();
                 tvHeader.setText(newStr);
@@ -144,16 +144,12 @@ public class FlowListActivity extends AppCompatActivity {
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        // Toast.makeText(this, "你回来了", Toast.LENGTH_SHORT).show();
-    }
-
     static class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         final List<FlowDay> list;
+        final Context context;
 
-        Adapter(List<FlowDay> list) {
+        Adapter(Context context, List<FlowDay> list) {
+            this.context = context;
             this.list = list;
         }
 
@@ -167,9 +163,7 @@ public class FlowListActivity extends AppCompatActivity {
         public void onBindViewHolder(ViewHolder holder, int position) {
             FlowDay flowDay = list.get(position);
             holder.tvTitle.setText(flowDay.getDay());
-            holder.view.setOnClickListener(v -> {
-
-            });
+            holder.view.setOnClickListener(v -> FlowActivity.start(context, flowDay.getDay()));
         }
 
         @Override
