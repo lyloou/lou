@@ -99,4 +99,11 @@ public class Utime {
         }
         return SDF_ONE.format(parse);
     }
+
+    public static String getFormatTime(String timeStr) {
+        if (timeStr == null) {
+            return "--:--";
+        }
+        return timeStr;
+    }
 }

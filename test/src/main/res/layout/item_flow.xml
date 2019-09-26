@@ -46,7 +46,7 @@
                 android:id="@+id/tv_time_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 tools:text="07:01" />
 
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 tools:text="——" />
 
@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 tools:text="09:13" />
         </LinearLayout>
@@ -82,8 +82,7 @@
         android:id="@+id/et_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/item_flow_bg"
-        android:padding="3dp"
+        android:background="@drawable/item_flow_et_bg"
         android:textColor="@color/gray"
         android:textSize="16sp"
         tools:text="多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间" />

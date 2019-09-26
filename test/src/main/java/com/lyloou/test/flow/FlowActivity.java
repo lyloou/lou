@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -64,8 +65,8 @@ public class FlowActivity extends AppCompatActivity {
             mFlowDay = new FlowDay();
             mFlowDay.setId(id);
             mFlowDay.setDay(day);
-            mFlowItems.addAll(FlowItemHelper.fromJson(items));
             mFlowDay.setItems(mFlowItems);
+            mFlowItems.addAll(FlowItemHelper.fromJson(items));
         });
 
 
@@ -82,26 +83,30 @@ public class FlowActivity extends AppCompatActivity {
     private void initAttachView() {
         View tvAddItem = findViewById(R.id.tv_add_item);
         tvAddItem.setOnClickListener(v -> {
-            FlowItem newItem = new FlowItem();
-            int[] startArr = Utime.getValidTime(null);
-            String currentTime = Utime.getTimeString(startArr[0], startArr[1]);
-
-            if (mFlowItems.size() > 0) {
-                FlowItem item = mFlowItems.get(0);
-                // 当前时间已经存在，则不在新建
-                if (currentTime.equals(item.getTimeStart())) {
-                    showTips("该时间点已经有了一个哦");
-                    return;
-                }
-                if (!TextUtils.isEmpty(item.getTimeEnd())) {
-                    currentTime = item.getTimeEnd();
-                }
-            }
-
-            newItem.setTimeStart(currentTime);
-            mFlowItems.add(0, newItem);
-            setItemsDataAndSendNotifyDataChanged();
+            addNewItem();
         });
+    }
+
+    private void addNewItem() {
+        FlowItem newItem = new FlowItem();
+        int[] startArr = Utime.getValidTime(null);
+        String currentTime = Utime.getTimeString(startArr[0], startArr[1]);
+
+        if (mFlowItems.size() > 0) {
+            FlowItem item = mFlowItems.get(0);
+            // 当前时间已经存在，则不在新建
+            if (currentTime.equals(item.getTimeStart())) {
+                showTips("该时间点已经有了一个哦");
+                return;
+            }
+            if (!TextUtils.isEmpty(item.getTimeEnd())) {
+                currentTime = item.getTimeEnd();
+            }
+        }
+
+        newItem.setTimeStart(currentTime);
+        mFlowItems.add(0, newItem);
+        updateDbAndUI();
     }
 
     private void showTips(String text) {
@@ -112,7 +117,7 @@ public class FlowActivity extends AppCompatActivity {
     private EmptyRecyclerView initRecycleView() {
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_flow);
         mAdapter = new FlowAdapter(this);
-        mAdapter.setList(mFlowDay.getItems());
+        mAdapter.setList(mFlowItems);
         mAdapter.setOnItemListener(getOnItemListener());
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -131,18 +136,24 @@ public class FlowActivity extends AppCompatActivity {
 
     private void delayUpdate() {
         mHandler.removeCallbacks(updateDbTask);
-        mHandler.postDelayed(updateDbTask, 1000);
+        mHandler.postDelayed(updateDbTask, 500);
     }
 
     private FlowAdapter.OnItemListener getOnItemListener() {
 
         return new FlowAdapter.OnItemListener() {
             @Override
+            public void onLongClickItem(FlowItem item) {
+                removeItem(item);
+            }
+
+            @Override
             public void onClickTimeStart(FlowItem item) {
                 // 原文链接：https://blog.csdn.net/qq_17009881/article/details/75371406
                 TimePickerDialog.OnTimeSetListener listener = (view, hourOfDay, minute) -> {
                     item.setTimeStart(Utime.getTimeString(hourOfDay, minute));
-                    notifyDataChanged();
+                    sortItems(mFlowItems);
+                    updateDbAndUI();
                 };
                 showTimePicker(listener, Utime.getValidTime(item.getTimeStart()));
             }
@@ -151,7 +162,8 @@ public class FlowActivity extends AppCompatActivity {
             public void onClickTimeEnd(FlowItem item) {
                 TimePickerDialog.OnTimeSetListener listener = (view, hourOfDay, minute) -> {
                     item.setTimeEnd(Utime.getTimeString(hourOfDay, minute));
-                    notifyDataChanged();
+                    sortItems(mFlowItems);
+                    updateDbAndUI();
                 };
                 showTimePicker(listener, Utime.getValidTime(item.getTimeEnd()));
             }
@@ -159,14 +171,43 @@ public class FlowActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(FlowItem item, CharSequence s) {
                 item.setContent(String.valueOf(s));
-                delayUpdate();
-
+                updateDb();
             }
         };
     }
 
-    private void notifyDataChanged() {
+    private void removeItem(FlowItem item) {
+        new AlertDialog.Builder(mContext)
+                .setMessage("确认删除时间段：\n"
+                        .concat(Utime.getFormatTime(item.getTimeStart()))
+                        .concat(item.getTimeSep())
+                        .concat(Utime.getFormatTime(item.getTimeEnd())))
+                .setPositiveButton("是的", (dialog, which) -> {
+                    mFlowItems.remove(item);
+                    updateDbAndUI();
+                })
+                .setNegativeButton("再想想", (dialog, which) -> {
+                })
+                .setCancelable(true)
+                .create()
+                .show();
+    }
+
+    private void updateDb(boolean... now) {
+        if (now.length > 0 && now[0]) {
+            updateDbTask.run();
+            return;
+        }
+        delayUpdate();
+    }
+
+    private void updateUI() {
         mAdapter.notifyDataSetChanged();
+    }
+
+    private void updateDbAndUI() {
+        updateUI();
+        updateDb();
     }
 
     private void showTimePicker(TimePickerDialog.OnTimeSetListener listener, int[] time) {
@@ -298,24 +339,24 @@ public class FlowActivity extends AppCompatActivity {
             case R.id.menu_share:
                 Usystem.shareText(mContext, mFlowDay.getDay(), content);
             case R.id.menu_save:
-                updateDbTask.run();
+                updateDb(true);
                 break;
             case R.id.menu_recover:
                 consumeCursorById(mFlowDay.getId(), cursor -> {
                     String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
                     mFlowItems.clear();
                     mFlowItems.addAll(FlowItemHelper.fromJson(items));
-                    setItemsDataAndSendNotifyDataChanged();
+                    updateUI();
                 });
                 break;
             case R.id.menu_clear:
                 mFlowItems.clear();
-                setItemsDataAndSendNotifyDataChanged();
+                updateUI();
                 break;
             case R.id.menu_deep:
                 mFlowItems.clear();
-                setItemsDataAndSendNotifyDataChanged();
-                updateDbTask.run();
+                updateUI();
+                updateDb(true);
                 break;
         }
 
@@ -338,12 +379,6 @@ public class FlowActivity extends AppCompatActivity {
         consumer.accept(cursor);
         cursor.close();
         sd.close();
-    }
-
-    private void setItemsDataAndSendNotifyDataChanged() {
-        mFlowDay.setItems(mFlowItems);
-        mAdapter.setList(mFlowItems);
-        notifyDataChanged();
     }
 
     @NonNull
