@@ -363,9 +363,9 @@ public class FlowActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void consumeCursorByDay(Consumer<Cursor> consumer) {
+    private void consumeCursorByDay(String day, Consumer<Cursor> consumer) {
         SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
-        Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where day = ?", new String[]{mFlowDay.getDay()});
+        Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where day = ?", new String[]{day});
         cursor.moveToFirst();
         consumer.accept(cursor);
         cursor.close();

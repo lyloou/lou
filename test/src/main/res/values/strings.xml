@@ -30,4 +30,5 @@
     <string name="bustv_chelaile">公交 - 车来了</string>
     <string name="man">Man - 巨人的肩膀</string>
     <string name="flow_time">Flow - 时间流</string>
+    <string name="flow_time_list">Flow - 时间流列表</string>
 </resources>
