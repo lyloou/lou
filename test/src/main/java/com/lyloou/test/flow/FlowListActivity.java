@@ -41,6 +41,7 @@ import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -77,6 +78,7 @@ public class FlowListActivity extends AppCompatActivity {
             fd.setDay(day);
             mFlowDays.add(fd);
         });
+        Collections.sort(mFlowDays, (o1, o2) -> -o1.getDay().compareTo(o2.getDay()));
     }
 
     private void consumeCursorByDay(Consumer<Cursor> consumer) {
