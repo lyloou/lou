@@ -71,8 +71,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="等你来FIGHT" />
+
+            <TextView
+                android:id="@+id/tv_to_list"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:background="@color/colorAccentTransparent"
+                android:gravity="center"
                 android:padding="16dp"
-                android:text="这是一个地方" />
+                android:text="列表"
+                android:textColor="@color/gray" />
 
             <TextView
                 android:id="@+id/tv_add_item"
@@ -85,6 +97,17 @@
                 android:padding="16dp"
                 android:text="添加"
                 android:textColor="@color/gray" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/tv_to_list"
+                android:background="@color/colorAccentTransparent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorAccentTransparent" />
 
         </RelativeLayout>
 

@@ -119,15 +119,21 @@ public class FlowActivity extends AppCompatActivity {
         initTopPart();
         EmptyRecyclerView recyclerView = initRecycleView();
         initFabBottom(recyclerView);
-        Uview.registerHideSoftKeyboardListener(this, getRootView(this));
+        Uview.registerHideSoftKeyboardListener(this, Uview.getRootView(this));
         initAttachView();
     }
 
     private void initAttachView() {
-        View tvAddItem = findViewById(R.id.tv_add_item);
-        tvAddItem.setOnClickListener(v -> {
-            addNewItem();
-        });
+        findViewById(R.id.tv_add_item).setOnClickListener(v -> addNewItem());
+        findViewById(R.id.tv_to_list).setOnClickListener(v -> toList());
+    }
+
+    private void toList() {
+        Intent intent = new Intent(this, FlowListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        startActivity(intent);
     }
 
     private void addNewItem() {
@@ -153,7 +159,7 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     private void showTips(String text) {
-        Snackbar.make(getRootView(mContext), text, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(Uview.getRootView(mContext), text, Snackbar.LENGTH_SHORT).show();
     }
 
     @NonNull
@@ -447,7 +453,5 @@ public class FlowActivity extends AppCompatActivity {
         return contentValues;
     }
 
-    private View getRootView(Activity activity) {
-        return activity.findViewById(android.R.id.content);
-    }
+
 }

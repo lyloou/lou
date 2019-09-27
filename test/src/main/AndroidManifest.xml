@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lyloou.test">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -88,11 +91,18 @@
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".flow.FlowActivity"
+            android:exported="true"
             android:label="@string/flow_time"
-            android:theme="@style/AppTheme.TranslucentStatus" />
+            android:theme="@style/AppTheme.TranslucentStatus">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".flow.FlowListActivity"
             android:label="@string/flow_time_list"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.TranslucentStatus" />
     </application>
 

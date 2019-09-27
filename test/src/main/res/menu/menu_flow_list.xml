@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_add_shortcut"
+        android:title="添加到桌面"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_test_permission"
+        android:title="测试动态权限"
+        app:showAsAction="never" />
+
+
+</menu>

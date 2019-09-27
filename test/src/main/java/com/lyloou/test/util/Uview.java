@@ -52,6 +52,10 @@ public class Uview {
         return bitmap;
     }
 
+    public static View getRootView(Activity activity) {
+        return activity.findViewById(android.R.id.content);
+    }
+
     /**
      * [How to hide soft keyboard on android after clicking outside EditText? - Stack Overflow](https://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext)
      *

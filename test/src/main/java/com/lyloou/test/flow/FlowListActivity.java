@@ -16,6 +16,7 @@
 
 package com.lyloou.test.flow;
 
+import android.Manifest;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -23,11 +24,15 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -37,8 +42,12 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.common.webview.WebActivity;
+import com.lyloou.test.util.PermissionListener;
 import com.lyloou.test.util.Uanimation;
+import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Uview;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -107,7 +116,9 @@ public class FlowListActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.mipmap.back_white);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(this, toolbar);
 
@@ -186,4 +197,44 @@ public class FlowListActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_flow_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add_shortcut:
+                Uapp.addShortCutCompat(this, FlowActivity.class.getCanonicalName(), "flow_time_day", R.mipmap.ic_favorite, R.string.flow_time_day);
+                Snackbar snackbar = Snackbar.make(Uview.getRootView(this), "已添加到桌面", Snackbar.LENGTH_LONG);
+                snackbar.setAction("了解详情",
+                        v -> WebActivity.newInstance(this, "https://kf.qq.com/touch/sappfaq/180705A3IB3Y1807056fMr6V.html", "want_to_know_why"));
+                snackbar.show();
+                break;
+            case R.id.menu_test_permission:
+                Uapp.requestPermission(this, new PermissionListener() {
+                    @Override
+                    public String name() {
+                        return Manifest.permission.RECORD_AUDIO;
+                    }
+
+                    @Override
+                    public Runnable whenShouldShowRequest() {
+                        return () -> {
+                            Log.e("TTAG", "whenShouldShowRequest");
+                        };
+                    }
+
+                    @Override
+                    public Runnable whenGranted() {
+                        return () -> {
+                            Log.e("TTAG", "whenGranted");
+                        };
+                    }
+                });
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
