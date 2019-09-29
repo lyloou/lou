@@ -40,7 +40,7 @@
                 android:id="@+id/iv_header"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:background="@mipmap/bg"
+                tools:background="@mipmap/bg"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.7"/>
 

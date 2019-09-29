@@ -32,6 +32,7 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Usystem;
 import com.lyloou.test.util.Utime;
@@ -39,6 +40,7 @@ import com.lyloou.test.util.Uview;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,7 +52,9 @@ public class FlowActivity extends AppCompatActivity {
     private Activity mContext;
     private FlowAdapter mAdapter;
     private FlowDay mFlowDay;
-    private List<FlowItem> mFlowItems = new ArrayList<>();
+
+    // 每次都是插入到第一个，用 LinkedList 效率应该会更好（https://snailclimb.top/JavaGuide/#/java/collection/Java集合框架常见面试题?id=arraylist-与-linkedlist-区别）
+    private List<FlowItem> mFlowItems = new LinkedList<>();
 
     public static void start(Context context, int id) {
         Intent intent = new Intent(context, FlowActivity.class);
@@ -105,9 +109,9 @@ public class FlowActivity extends AppCompatActivity {
 
     private void fillData(Cursor cursor) {
         int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
+        String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
         String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
         mFlowItems.addAll(FlowItemHelper.fromJsonArray(items));
-        String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
         mFlowDay = new FlowDay();
         mFlowDay.setId(id);
         mFlowDay.setDay(day);
@@ -380,18 +384,19 @@ public class FlowActivity extends AppCompatActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         String content = FlowItemHelper.toPrettyText(mFlowDay.getItems());
+        String day = mFlowDay.getDay();
 
         switch (item.getItemId()) {
             case R.id.menu_copy:
-                Usystem.copyString(mContext, content);
-                showTips("复制成功");
+                doCopy(day.concat("\n").concat(content));
                 break;
             case R.id.menu_share:
-                Usystem.shareText(mContext, mFlowDay.getDay(), content);
+                Usystem.shareText(mContext, day, content);
             case R.id.menu_save:
                 updateDb(true);
                 break;
@@ -415,6 +420,22 @@ public class FlowActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void doCopy(String content) {
+        Usystem.copyString(mContext, content);
+        Snackbar snackbar = Snackbar.make(Uview.getRootView(mContext), "复制成功", Snackbar.LENGTH_LONG);
+        snackbar.setAction("跳转到便签", v -> {
+            String packageName = "cn.wps.note";
+            Uapp.handlePackageIntent(mContext, packageName, intent -> {
+                if (intent == null) {
+                    Toast.makeText(mContext, "没有安装" + packageName, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                startActivity(intent);
+            });
+        });
+        snackbar.show();
     }
 
     private long insertFlowDayToDb(FlowDay flowDay) {

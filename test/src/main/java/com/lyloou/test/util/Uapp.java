@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ProxyInfo;
 import android.net.wifi.WifiConfiguration;
@@ -18,12 +19,39 @@ import android.support.v4.content.pm.ShortcutInfoCompat;
 import android.support.v4.content.pm.ShortcutManagerCompat;
 import android.support.v4.graphics.drawable.IconCompat;
 
+import com.lyloou.test.flow.Consumer;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
 public class Uapp {
+    /**
+     * 检查包是否存在
+     *
+     * @param packname
+     * @return
+     */
+    public static boolean checkPackInfo(Context context, String packname) {
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(packname, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return packageInfo != null;
+    }
+
+    public static void handlePackageIntent(Context context, String packageName, Consumer<Intent> intentConsumer) {
+        PackageManager packageManager = context.getPackageManager();
+        if (Uapp.checkPackInfo(context, packageName)) {
+            Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+            intentConsumer.accept(intent);
+        } else {
+            intentConsumer.accept(null);
+        }
+    }
 
     // 原文链接：https://blog.csdn.net/htwhtw123/article/details/76032997
     public static void requestPermission(Activity context, PermissionListener listener) {
