@@ -44,7 +44,7 @@
         <item name="android:dropDownVerticalOffset">-4.0dip</item>
     </style>
 
-    <style name="FlowThem" parent="AppTheme.TranslucentStatus">
+    <style name="FastEnterTheme" parent="AppTheme.TranslucentStatus">
         <item name="android:windowIsTranslucent">true</item>
     </style>
 </resources>

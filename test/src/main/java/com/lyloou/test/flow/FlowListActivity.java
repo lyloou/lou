@@ -207,7 +207,7 @@ public class FlowListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add_shortcut:
-                Uapp.addShortCutCompat(this, FlowActivity.class.getCanonicalName(), "flow_time_day", R.mipmap.ic_favorite, R.string.flow_time_day);
+                Uapp.addShortCutCompat(this, FlowActivity.class.getCanonicalName(), "flow_time_day", R.mipmap.lyloou, R.string.flow_time_day);
                 Snackbar snackbar = Snackbar.make(Uview.getRootView(this), "已添加到桌面", Snackbar.LENGTH_LONG);
                 snackbar.setAction("了解详情",
                         v -> WebActivity.newInstance(this, "https://kf.qq.com/touch/sappfaq/180705A3IB3Y1807056fMr6V.html", "want_to_know_why"));
