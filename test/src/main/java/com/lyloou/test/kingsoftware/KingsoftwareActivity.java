@@ -17,6 +17,7 @@
 package com.lyloou.test.kingsoftware;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +51,7 @@ public class KingsoftwareActivity extends AppCompatActivity {
 
     private void initView() {
         mImageView = (ImageView) findViewById(R.id.iv_kingsoftware);
-        Uscreen.setWallpaper(mImageView);
+        Uscreen.setWallpaperByImageView(mImageView, Color.parseColor("#009edc"));
     }
 
     private void loadData() {

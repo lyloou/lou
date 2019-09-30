@@ -22,6 +22,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.Snackbar;
@@ -33,7 +34,9 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 
 import java.io.IOException;
 
@@ -138,47 +141,69 @@ public class Uscreen {
         return statusBarHeight;
     }
 
+    private static Bitmap returnBitmap(Bitmap originalImage, int width, int height, int color) {
+        Bitmap background = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.ARGB_8888);
 
-    public static void setBackgroundViaBitmap(Context context, final Bitmap sourceBitmap) {
+        float originalWidth = originalImage.getWidth();
+        float originalHeight = originalImage.getHeight();
 
-        WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
-        final int sourceWidth = sourceBitmap.getWidth();
-        final int sourceHeight = sourceBitmap.getHeight();
-        final int letterboxedWidth = Uscreen.getScreenWidth(context);
-        final int letterboxedHeight = Uscreen.getScreenHeight(context) - Uscreen.getStatusBarHeight(context);
+        Canvas canvas = new Canvas(background);
 
-        final float resizeRatioX = (float) letterboxedWidth / sourceWidth;
-        final float resizeRatioY = (float) letterboxedHeight / sourceHeight;
-        final float resizeRatio = resizeRatioX - resizeRatioY > 0 ? resizeRatioX : resizeRatioY;
+        float scale = width / originalWidth;
 
-        final Bitmap letterboxedBitmap = Bitmap.createBitmap(letterboxedWidth, letterboxedHeight, Bitmap.Config.ARGB_8888);
+        float xTranslation = 0.0f;
+        float yTranslation = (height - originalHeight * scale) / 2.0f;
 
-        final Canvas canvas = new Canvas(letterboxedBitmap);
-        canvas.drawRGB(0, 0, 0);
+        Matrix transformation = new Matrix();
+        transformation.postTranslate(xTranslation, yTranslation);
+        transformation.preScale(scale, scale);
 
-        final Matrix transformations = new Matrix();
-        transformations.postScale(resizeRatio, resizeRatio);
-        transformations.postTranslate(0, Uscreen.getStatusBarHeight(context));
-        canvas.drawBitmap(sourceBitmap, transformations, null);
+        Paint paint = new Paint();
+        paint.setFilterBitmap(true);
+        canvas.drawColor(color);
+        canvas.drawBitmap(originalImage, transformation, paint);
 
-        try {
-            wallpaperManager.setBitmap(letterboxedBitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return background;
     }
 
-    public static void setWallpaper(ImageView imageView) {
-        imageView.setOnLongClickListener(v -> {
 
-            Bitmap bitmap = Uview.getBitmapFromImageView(imageView);
+    public static void setWallpaperByBitmap(Context context, final Bitmap bitmap, int color) throws IOException {
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
+        wallpaperManager.setBitmap(returnBitmap(bitmap, getScreenWidth(context), getScreenHeight(context), color));
+    }
+
+    /**
+     * @param imageView view
+     * @param color     图片外的颜色
+     */
+    public static void setWallpaperByImageView(ImageView imageView, int color) {
+        imageView.setOnLongClickListener(v -> {
+            Bitmap bitmap = null;
+            Object tag = imageView.getTag();
+            if (tag instanceof String) {
+                String url = (String) tag;
+                try {
+                    bitmap = Glide.with(v.getContext()).load(url).asBitmap().into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
+                } catch (Exception e) {
+                    bitmap = null;
+                }
+            }
 
             if (bitmap == null) {
-                Snackbar.make(imageView,"无法设壁纸" , Snackbar.LENGTH_SHORT).show();
-            } else {
-                Uscreen.setBackgroundViaBitmap(imageView.getContext(), bitmap);
-                Snackbar.make(imageView,"已设壁纸" , Snackbar.LENGTH_SHORT).show();
+                bitmap = Uview.getBitmapFromImageView(imageView);
             }
+
+            if (bitmap != null) {
+                try {
+                    setWallpaperByBitmap(imageView.getContext(), bitmap, color);
+                    Snackbar.make(imageView, "已设壁纸", Snackbar.LENGTH_SHORT).show();
+                    return false;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Snackbar.make(imageView, "无法设壁纸", Snackbar.LENGTH_SHORT).show();
             return false;
         });
     }

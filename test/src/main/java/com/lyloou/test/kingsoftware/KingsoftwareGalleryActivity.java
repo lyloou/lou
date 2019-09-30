@@ -16,6 +16,7 @@
 
 package com.lyloou.test.kingsoftware;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -72,7 +73,7 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
         adapter.setClickListener(view -> toggleScreenStatus());
         adapter.setLongClickListener(view -> {
             if (view instanceof ImageView) {
-                Uscreen.setWallpaper((ImageView) view);
+                Uscreen.setWallpaperByImageView((ImageView) view, COLOR_BLUE);
                 return true;
             }
             return false;
@@ -123,14 +124,19 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
         return null;
     }
 
+    @SuppressLint("CheckResult")
     private void loadDataAndRenderView(String day, ImageView view) {
         NetWork.getKingsoftwareApi()
                 .getDaily(day)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(daily -> Glide
-                                .with(mContext)
-                                .load(daily.getFenxiang_img()).into(view),
+                .subscribe(daily -> {
+                            String url = daily.getFenxiang_img();
+                            Glide
+                                    .with(mContext)
+                                    .load(url).into(view);
+                            view.setTag(url);
+                        },
                         Throwable::printStackTrace);
 
     }

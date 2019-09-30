@@ -18,6 +18,7 @@ package com.lyloou.test.gank;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -222,7 +223,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(s -> {
-                                    Uscreen.setBackgroundViaBitmap(mContext, s);
+                                    Uscreen.setWallpaperByBitmap(mContext, s, Color.parseColor("#009edc"));
                                     progressTips.hide();
                                     Snackbar.make(view, "已设壁纸", Snackbar.LENGTH_SHORT).show();
                                 }, throwable -> {
