@@ -16,7 +16,6 @@
 
 package com.lyloou.test.gank;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -24,7 +23,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
-import android.text.TextUtils;
 
 import com.lyloou.test.common.NetWork;
 
@@ -174,36 +172,21 @@ public class Ushare {
         }
     }
 
-    public static void sharePicsToWechat(Context context, String description, List<String> paths, String shareType, Runnable runnable) {
-
+    public static void sharePicsToWechat(Context context, List<String> paths) {
         Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
+        intent.setType("image/jpeg"); /* This example is sharing jpeg images. */
 
-        String packageName = "com.tencent.mm";
-        intent.setComponent(new ComponentName(packageName, shareType));
-        intent.setAction("android.intent.action.SEND_MULTIPLE");
-        ArrayList<Uri> imageList = new ArrayList<>();
-        for (String picPath : paths) {
-            if (TextUtils.isEmpty(picPath)) {
-                continue;
-            }
-            File f = new File(picPath);
-            if (f.exists()) {
-                Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", f);
-                imageList.add(uri);
-            }
+        ArrayList<Uri> files = new ArrayList<Uri>();
+
+        for (String path : paths /* List of the files you want to send */) {
+            File file = new File(path);
+            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", file);
+            files.add(uri);
         }
-        if (imageList.size() == 0) {
-            System.out.println("图片不存在");
-            return;
-        }
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_STREAM, imageList); //图片数据（支持本地图片的Uri形式）
-        intent.putExtra("Kdescription", description); //微信分享页面，图片上边的描述
-        Intent launchIntentForPackage = context.getPackageManager().getLaunchIntentForPackage(packageName);
-        if (launchIntentForPackage != null) {
-            context.startActivity(intent);
-        } else {
-            runnable.run();
-        }
+
+        intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
+        context.startActivity(intent);
     }
 }

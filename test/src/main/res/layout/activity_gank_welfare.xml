@@ -34,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/item_gank_welfare_empty" />
+        <include layout="@layout/item_empty" />
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/srl_gank_welfare"

@@ -57,16 +57,12 @@
             android:label="@string/media_audio" />
         <activity
             android:name=".kingsoftware.KingsoftwareActivity"
-            android:label="@string/kingsoftware_daily_sentence"
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".bus.BusActivity"
-            android:label="@string/bus_chelaile"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
 
-        <activity
-            android:name=".common.webview.WebActivity"
-            android:label="@string/my_web" />
+        <activity android:name=".common.webview.WebActivity" />
         <activity
             android:name=".laifudao.TuPianActivity"
             android:label="@string/laifudao_tupian"
@@ -81,7 +77,7 @@
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".douban.DouBanActivity"
-            android:label="@string/douban_top250" />
+            android:label="@string/douban_movie" />
         <activity
             android:name=".onearticle.OneArticleActivity"
             android:label="@string/meiriyiwen_random"

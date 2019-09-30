@@ -31,9 +31,15 @@ import retrofit2.http.Query;
  * Description:
  */
 public interface DouBanApi {
-    @GET("top250")
+    // [豆瓣api报错：invalid_apikey - kfgauss的博客 - CSDN博客](https://blog.csdn.net/kfgauss/article/details/91492643)
+    String API_KEY = "?apikey=0df993c66c0c636e29ecbb5344252a4a";
+
+    @GET("top250" + API_KEY)
     Observable<HttpResult<List<Subject>>> getTopMovie(@Query("start") int start, @Query("count") int count);
 
-    @GET("subject/{id}")
+    @GET("top250" + API_KEY)
+    Observable<HttpResult<List<Subject>>> getNewMovie(@Query("start") int start, @Query("count") int count);
+
+    @GET("subject/{id}" + API_KEY)
     Observable<MovieDetail> getMovieDetail(@Path("id") String id);
 }

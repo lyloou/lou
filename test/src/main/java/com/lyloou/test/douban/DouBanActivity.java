@@ -24,10 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
-import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
@@ -38,11 +35,9 @@ import com.lyloou.test.util.Utoast;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class DouBanActivity extends AppCompatActivity {
@@ -80,12 +75,9 @@ public class DouBanActivity extends AppCompatActivity {
 
             } else if (totalItemCount >= TOTAL_ITEM_SIZE) {
                 if (!mSubjectAdapter.isMaxed()) {
-                    mContext.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 控制footer的显示情况
-                            mSubjectAdapter.setMaxed(true);
-                        }
+                    mContext.runOnUiThread(() -> {
+                        // 控制footer的显示情况
+                        mSubjectAdapter.setMaxed(true);
                     });
                 }
             }
@@ -106,17 +98,14 @@ public class DouBanActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.erv_douban);
-        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_douban);
+        EmptyRecyclerView recyclerView = findViewById(R.id.erv_douban);
+        mRefreshLayout = findViewById(R.id.srl_douban);
 
         mSubjectAdapter = new SubjectAdapter(this);
-        mSubjectAdapter.setOnItemClickListener(new SubjectAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(Subject subject) {
-                Intent intent = new Intent(mContext, WebActivity.class);
-                intent.putExtra(WebActivity.EXTRA_DATA_URL, subject.getAlt());
-                startActivity(intent);
-            }
+        mSubjectAdapter.setOnItemClickListener(subject -> {
+            Intent intent = new Intent(mContext, WebActivity.class);
+            intent.putExtra(WebActivity.EXTRA_DATA_URL, subject.getAlt());
+            startActivity(intent);
         });
         recyclerView.setAdapter(mSubjectAdapter);
         recyclerView.setItemTypeCount(mSubjectAdapter.getItemTypeCount());
@@ -127,18 +116,10 @@ public class DouBanActivity extends AppCompatActivity {
         recyclerView.addOnScrollListener(mListener);
 
 
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSubjectAdapter.setMaxed(false);
-                    }
-                });
-                mSubjectAdapter.clearAll();
-                loadDatas();
-            }
+        mRefreshLayout.setOnRefreshListener(() -> {
+            runOnUiThread(() -> mSubjectAdapter.setMaxed(false));
+            mSubjectAdapter.clearAll();
+            loadDatas();
         });
 
         // 开始加载数据
@@ -165,34 +146,27 @@ public class DouBanActivity extends AppCompatActivity {
         unSubscribe();
 
         mIsLoading = true;
-        mDisposable = NetWork.getDouBanApi()
-                .getTopMovie(mSubjectAdapter.getListSize(), 20)
-                .map(new Function<HttpResult<List<Subject>>, List<Subject>>() {
-                    @Override
-                    public List<Subject> apply(@NonNull HttpResult<List<Subject>> listHttpResult) throws Exception {
-                        mSubjectAdapter.setTitle(listHttpResult.getTitle());
-                        return listHttpResult.getSubjects();
-                    }
+        Observable<HttpResult<List<Subject>>> movie = NetWork.getDouBanApi()
+                .getTopMovie(mSubjectAdapter.getListSize(), 20);
+
+        mDisposable = movie
+                .map(listHttpResult -> {
+                    mSubjectAdapter.setTitle(listHttpResult.getTitle());
+                    return listHttpResult.getSubjects();
                 })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<Subject>>() {
-                    @Override
-                    public void accept(@NonNull List<Subject> subjects) throws Exception {
-                        mSubjectAdapter.addAll(subjects);
-                        mRefreshLayout.setRefreshing(false);
-                        mIsLoading = false;
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        Log.e(TAG, "call: error", throwable);
-                        mRefreshLayout.setRefreshing(false);
-                        mIsLoading = false;
+                .subscribe(subjects -> {
+                    mSubjectAdapter.addAll(subjects);
+                    mRefreshLayout.setRefreshing(false);
+                    mIsLoading = false;
+                }, throwable -> {
+                    Log.e(TAG, "call: error", throwable);
+                    mRefreshLayout.setRefreshing(false);
+                    mIsLoading = false;
 
-                        Utoast.show(DouBanActivity.this, "网络异常:" + throwable.getMessage());
-                    }
+                    Utoast.show(DouBanActivity.this, "网络异常:" + throwable.getMessage());
                 });
     }
 

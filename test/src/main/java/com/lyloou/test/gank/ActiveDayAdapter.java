@@ -184,11 +184,13 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             String welfareUrl = welfare.getString("url");
 
                             Context applicationContext = mContext.getApplicationContext();
-                            Glide.with(applicationContext)
+                            Glide
+                                    .with(applicationContext)
                                     .load(welfareUrl)
-                                    .asBitmap()
-                                    .placeholder(R.mipmap.bg)
+                                    .centerCrop()
+                                    .thumbnail(0.1f)
                                     .into(ivPic);
+
                             ivPic.setTag(ivPic.getId(), welfareUrl);
                         } catch (IOException | JSONException e) {
                             e.printStackTrace();

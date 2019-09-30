@@ -274,14 +274,14 @@ public class GankWelfareActivity extends AppCompatActivity {
         }
 
         TextView tvCount = view.findViewById(R.id.tv_gank_bottom_count);
-        TextView tvFriend = view.findViewById(R.id.tv_gank_bottom_friend);
-        TextView tvTimeline = view.findViewById(R.id.tv_gank_bottom_timeline);
+        TextView tvFriend = view.findViewById(R.id.tv_share);
+        TextView tvTimeline = view.findViewById(R.id.tv_share2);
 
         String caption = String.valueOf(checkedActiveDays.size());
         tvCount.setText(caption);
 
         LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
-        tvTimeline.setOnClickListener(view1 -> {
+        View.OnClickListener onClickListener = view1 -> {
             progressTips.show("福利准备中");
             new Thread(() -> {
                 Ushare.clearImageDir(mContext);
@@ -294,42 +294,13 @@ public class GankWelfareActivity extends AppCompatActivity {
                     String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
                     paths.add(imageFilePathFromImageUrl);
                 }
-                Ushare.sharePicsToWechat(mContext, "这些天的福利了", paths, Ushare.SHARE_TYPE_TIMELINE, getTipsRunnable(view1));
+                Ushare.sharePicsToWechat(mContext, paths);
                 progressTips.hide();
             }).start();
 
-        });
-        tvFriend.setOnClickListener(view12 -> {
-            progressTips.show("福利准备中");
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Ushare.clearImageDir(mContext);
-                    List<String> paths = new ArrayList<String>();
-                    for (ActiveDay day : checkedActiveDays) {
-                        String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
-                        if (TextUtils.isEmpty(welfareUrl)) {
-                            continue;
-                        }
-                        String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
-                        paths.add(imageFilePathFromImageUrl);
-                    }
-                    Ushare.sharePicsToWechat(mContext, "", paths, Ushare.SHARE_TYPE_FRIEND, getTipsRunnable(view12));
-                    progressTips.hide();
-                }
-            }).start();
-
-        });
-    }
-
-    @android.support.annotation.NonNull
-    private Runnable getTipsRunnable(final View view) {
-        return () -> view.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(view.getContext(), "没有安装微信", Toast.LENGTH_SHORT).show();
-            }
-        });
+        };
+        tvFriend.setOnClickListener(onClickListener);
+        tvTimeline.setOnClickListener(onClickListener);
     }
 
     @Override

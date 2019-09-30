@@ -17,22 +17,12 @@
 package com.lyloou.test;
 
 import com.lyloou.test.common.NetWork;
-import com.lyloou.test.douban.HttpResult;
-import com.lyloou.test.douban.MovieDetail;
-import com.lyloou.test.douban.Subject;
-import com.lyloou.test.onearticle.OneArticle;
 
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -74,27 +64,16 @@ public class NetWorkTest {
         CountDownLatch latch = new CountDownLatch(1);
         NetWork.getDouBanApi()
                 .getTopMovie(0, 20)
-                .map(new Function<HttpResult<List<Subject>>, List<Subject>>() {
-                    @Override
-                    public List<Subject> apply(@NonNull HttpResult<List<Subject>> listHttpResult) throws Exception {
-                        return listHttpResult.getSubjects();
-                    }
-                })
+                .map(listHttpResult -> listHttpResult.getSubjects())
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
-                .subscribe(new Consumer<List<Subject>>() {
-                    @Override
-                    public void accept(@NonNull List<Subject> subjects) throws Exception {
-                        subjects.forEach(System.out::println);
-                        latch.countDown();
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        throwable.printStackTrace();
-                        latch.countDown();
-                    }
+                .subscribe(subjects -> {
+                    subjects.forEach(System.out::println);
+                    latch.countDown();
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    latch.countDown();
                 });
 
         try {
@@ -111,19 +90,13 @@ public class NetWorkTest {
                 .getMovieDetail("1295644")
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
-                .subscribe(new Consumer<MovieDetail>() {
-                               @Override
-                               public void accept(@NonNull MovieDetail movie) throws Exception {
-                                   System.out.println(movie.getTitle());
-                                   latch.countDown();
-                               }
-                           }
-                        , new Consumer<Throwable>() {
-                            @Override
-                            public void accept(@NonNull Throwable throwable) throws Exception {
-                                throwable.printStackTrace();
-                                latch.countDown();
-                            }
+                .subscribe(movie -> {
+                            System.out.println(movie.getTitle());
+                            latch.countDown();
+                        }
+                        , throwable -> {
+                            throwable.printStackTrace();
+                            latch.countDown();
                         });
         try {
             latch.await();
@@ -140,19 +113,13 @@ public class NetWorkTest {
                 .getOneArticle(1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
-                .subscribe(new Consumer<OneArticle>() {
-                               @Override
-                               public void accept(@NonNull OneArticle article) throws Exception {
-                                   System.out.println(article.getData().getTitle());
-                                   latch.countDown();
-                               }
-                           }
-                        , new Consumer<Throwable>() {
-                            @Override
-                            public void accept(@NonNull Throwable throwable) throws Exception {
-                                throwable.printStackTrace();
-                                latch.countDown();
-                            }
+                .subscribe(article -> {
+                            System.out.println(article.getData().getTitle());
+                            latch.countDown();
+                        }
+                        , throwable -> {
+                            throwable.printStackTrace();
+                            latch.countDown();
                         });
         try {
             latch.await();
@@ -168,19 +135,13 @@ public class NetWorkTest {
                 .getSpecialArticle(1, "20170917")
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
-                .subscribe(new Consumer<OneArticle>() {
-                               @Override
-                               public void accept(@NonNull OneArticle article) throws Exception {
-                                   System.out.println(article.getData().getTitle());
-                                   latch.countDown();
-                               }
-                           }
-                        , new Consumer<Throwable>() {
-                            @Override
-                            public void accept(@NonNull Throwable throwable) throws Exception {
-                                throwable.printStackTrace();
-                                latch.countDown();
-                            }
+                .subscribe(article -> {
+                            System.out.println(article.getData().getTitle());
+                            latch.countDown();
+                        }
+                        , throwable -> {
+                            throwable.printStackTrace();
+                            latch.countDown();
                         });
         try {
             latch.await();

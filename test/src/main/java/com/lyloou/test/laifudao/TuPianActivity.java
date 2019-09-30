@@ -16,6 +16,7 @@
 
 package com.lyloou.test.laifudao;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
@@ -30,7 +31,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
@@ -48,10 +48,8 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class TuPianActivity extends AppCompatActivity {
@@ -85,12 +83,9 @@ public class TuPianActivity extends AppCompatActivity {
         Observable<List<TuPian>> observable = NetWork.getLaiFuDaoApi().getTuPian();
         Disposable disposable = observable
                 .subscribeOn(Schedulers.io())
-                .doOnNext(new Consumer<List<TuPian>>() {
-                    @Override
-                    public void accept(@NonNull List<TuPian> tuPien) throws Exception {
-                        // 模拟网络延迟
-                        SystemClock.sleep(1000);
-                    }
+                .doOnNext(tuPien -> {
+                    // 模拟网络延迟
+                    SystemClock.sleep(1000);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(tupian -> {
@@ -112,19 +107,20 @@ public class TuPianActivity extends AppCompatActivity {
         mCompositeDisposable.add(disposable);
     }
 
+    @SuppressLint("CheckResult")
     private void initView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_laifudao);
+        Toolbar toolbar = findViewById(R.id.toolbar_laifudao);
         toolbar.setTitle("来福岛上的笑话图片");
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(mContext, toolbar);
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.coolapsing_toolbar_layout_xiaohua);
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.coolapsing_toolbar_layout_xiaohua);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
-        ImageView ivHeader = (ImageView) findViewById(R.id.iv_header);
+        ImageView ivHeader = findViewById(R.id.iv_header);
         NetWork.getKingsoftwareApi()
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
@@ -136,7 +132,7 @@ public class TuPianActivity extends AppCompatActivity {
                                 .into(ivHeader)
                         , Throwable::printStackTrace);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_laifudao);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview_laifudao);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mTuPianAdapter = new TuPianAdapter();
         mTuPianAdapter.setOnItemTuPianClickListener(new TuPianAdapter.OnItemTuPianClickListener() {
@@ -172,12 +168,9 @@ public class TuPianActivity extends AppCompatActivity {
 
                 }
 
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (view.getScale() <= 1) {
-                            louDialog.dismiss();
-                        }
+                view.setOnClickListener(v -> {
+                    if (view.getScale() <= 1) {
+                        louDialog.dismiss();
                     }
                 });
                 louDialog.show();
@@ -187,37 +180,19 @@ public class TuPianActivity extends AppCompatActivity {
             public void onLongClick(TuPian tuPian) {
                 LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
                 progressTips.show("图片准备中");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Ushare.clearImageDir(mContext);
-                        List<String> paths = new ArrayList<String>();
-                        String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, tuPian.getThumburl());
-                        paths.add(imageFilePathFromImageUrl);
-                        Ushare.sharePicsToWechat(mContext, "", paths, Ushare.SHARE_TYPE_FRIEND, getTipsRunnable());
-                        progressTips.hide();
-                    }
+                new Thread(() -> {
+                    Ushare.clearImageDir(mContext);
+                    List<String> paths = new ArrayList<>();
+                    String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, tuPian.getThumburl());
+                    paths.add(imageFilePathFromImageUrl);
+                    Ushare.sharePicsToWechat(mContext, paths);
+                    progressTips.hide();
                 }).start();
             }
         });
         recyclerView.setAdapter(mTuPianAdapter);
         recyclerView.addItemDecoration(new DoubleItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
 
-    }
-
-    @android.support.annotation.NonNull
-    private Runnable getTipsRunnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Utoast.show(mContext, "没有安装微信");
-                    }
-                });
-            }
-        };
     }
 
     @Override

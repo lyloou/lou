@@ -55,6 +55,7 @@ public class ManActivity extends AppCompatActivity {
     private static final Map<String, String> stringMap = new LinkedHashMap<>();
 
     static {
+        stringMap.put("木子楼", "http://lyloou.com/");
         stringMap.put("阮一峰 - ECMAScript 6 入门", "http://es6.ruanyifeng.com/");
         stringMap.put("阮一峰 - 未来世界的幸存者", "http://survivor.ruanyifeng.com/index.html");
         stringMap.put("阮一峰 - 前方的路", "http://road.ruanyifeng.com/index.html");

@@ -32,6 +32,7 @@ public class WelcomeActivity extends Activity {
     @SuppressLint("CheckResult")
     private void initView() {
         ImageView ivWelcome = findViewById(R.id.iv_welcome);
+        ivWelcome.setOnClickListener(v -> toNext());
         NetWork.getKingsoftwareApi()
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
@@ -47,7 +48,6 @@ public class WelcomeActivity extends Activity {
                                             ivWelcome.setVisibility(View.VISIBLE);
                                         }
                                     });
-
                             ivWelcome.postDelayed(this::toNext, 3000);
                         }
                         , Throwable::printStackTrace);
