@@ -188,7 +188,6 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     .load(welfareUrl)
                                     .asBitmap()
                                     .placeholder(R.mipmap.bg)
-                                    .centerCrop()
                                     .into(ivPic);
                             ivPic.setTag(ivPic.getId(), welfareUrl);
                         } catch (IOException | JSONException e) {

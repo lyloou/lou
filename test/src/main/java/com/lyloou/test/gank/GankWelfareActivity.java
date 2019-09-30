@@ -16,8 +16,8 @@
 
 package com.lyloou.test.gank;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -52,13 +52,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
@@ -68,7 +65,7 @@ import retrofit2.Response;
 
 
 public class GankWelfareActivity extends AppCompatActivity {
-    private static final String TAG = "GankWelfareActivity";
+    private static final String TAG = GankWelfareActivity.class.getSimpleName();
     private final List<ActiveDay> mActiveDays = new ArrayList<>();
     LinearLayout mLlytBottom;
     private SwipeRefreshLayout mRefreshLayout;
@@ -167,16 +164,17 @@ public class GankWelfareActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_gank);
-        toolbar.setTitle("GANK.IO");
+        Toolbar toolbar = findViewById(R.id.toolbar_gank);
+        toolbar.setTitle("看，有流星");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.mipmap.back_black);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(mContext, toolbar);
 
-        EmptyRecyclerView recyclerView = (EmptyRecyclerView) findViewById(R.id.erv_gank_welfare);
-        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_gank_welfare);
-        mLlytBottom = (LinearLayout) findViewById(R.id.llyt_bottom);
+        EmptyRecyclerView recyclerView = findViewById(R.id.erv_gank_welfare);
+        mRefreshLayout = findViewById(R.id.srl_gank_welfare);
+        mLlytBottom = findViewById(R.id.llyt_bottom);
 
         mActiveDayAdapter = new ActiveDayAdapter(this);
         mActiveDayAdapter.setTitle("福利岛");
@@ -197,43 +195,33 @@ public class GankWelfareActivity extends AppCompatActivity {
                 }
             }
 
+            @SuppressLint("CheckResult")
             @Override
             public void onLongClick(ImageView view) {
 
 
                 Object tag = view.getTag(view.getId());
-                if (tag != null && tag instanceof String) {
+                if (tag instanceof String) {
                     String url = String.valueOf(tag);
                     if (!TextUtils.isEmpty(url)) {
                         LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
                         progressTips.show("正在设置壁纸");
 
                         Observable
-                                .fromCallable(new Callable<Bitmap>() {
-                                    @Override
-                                    public Bitmap call() throws Exception {
-                                        return Glide.with(mContext)
-                                                .load(url)
-                                                .asBitmap()
-                                                .into(Uscreen.getScreenWidth(mContext), Uscreen.getScreenHeight(mContext))
-                                                .get();
-                                    }
-                                })
+                                .fromCallable(() -> Glide.with(mContext)
+                                        .load(url)
+                                        .asBitmap()
+                                        .into(Uscreen.getScreenWidth(mContext), Uscreen.getScreenHeight(mContext))
+                                        .get())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Consumer<Bitmap>() {
-                                    @Override
-                                    public void accept(@NonNull Bitmap s) throws Exception {
-                                        Uscreen.setBackgroundViaBitmap(mContext, s);
-                                        progressTips.hide();
-                                        Snackbar.make(view, "已设壁纸", Snackbar.LENGTH_SHORT).show();
-                                    }
-                                }, new Consumer<Throwable>() {
-                                    @Override
-                                    public void accept(@NonNull Throwable throwable) throws Exception {
-                                        progressTips.hide();
-                                        Snackbar.make(view, "设置壁纸失败", Snackbar.LENGTH_SHORT).show();
-                                    }
+                                .subscribe(s -> {
+                                    Uscreen.setBackgroundViaBitmap(mContext, s);
+                                    progressTips.hide();
+                                    Snackbar.make(view, "已设壁纸", Snackbar.LENGTH_SHORT).show();
+                                }, throwable -> {
+                                    progressTips.hide();
+                                    Snackbar.make(view, "设置壁纸失败", Snackbar.LENGTH_SHORT).show();
                                 });
                     }
                 } else {
@@ -259,20 +247,17 @@ public class GankWelfareActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DoubleItemWithOneHeaderOffsetDecoration(Uscreen.dp2Px(mContext, 16)));
         recyclerView.addOnScrollListener(mListener);
 
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mActiveDayAdapter.setMaxed(false);
-                    }
-                });
-                mLlytBottom.setVisibility(View.GONE);
-                mActiveDayAdapter.clearAll();
-                mActiveDays.clear();
-                loadDatas();
-            }
+        mRefreshLayout.setOnRefreshListener(() -> {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mActiveDayAdapter.setMaxed(false);
+                }
+            });
+            mLlytBottom.setVisibility(View.GONE);
+            mActiveDayAdapter.clearAll();
+            mActiveDays.clear();
+            loadDatas();
         });
 
         // 开始加载数据
@@ -296,69 +281,55 @@ public class GankWelfareActivity extends AppCompatActivity {
         tvCount.setText(caption);
 
         LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
-        tvTimeline.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                progressTips.show("福利准备中");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Ushare.clearImageDir(mContext);
-                        List<String> paths = new ArrayList<String>();
-                        for (ActiveDay day : checkedActiveDays) {
-                            String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
-                            if (TextUtils.isEmpty(welfareUrl)) {
-                                continue;
-                            }
-                            String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
-                            paths.add(imageFilePathFromImageUrl);
-                        }
-                        Ushare.sharePicsToWechat(mContext, "这些天的福利了", paths, Ushare.SHARE_TYPE_TIMELINE, getTipsRunnable(view));
-                        progressTips.hide();
+        tvTimeline.setOnClickListener(view1 -> {
+            progressTips.show("福利准备中");
+            new Thread(() -> {
+                Ushare.clearImageDir(mContext);
+                List<String> paths = new ArrayList<>();
+                for (ActiveDay day : checkedActiveDays) {
+                    String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
+                    if (TextUtils.isEmpty(welfareUrl)) {
+                        continue;
                     }
-                }).start();
+                    String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
+                    paths.add(imageFilePathFromImageUrl);
+                }
+                Ushare.sharePicsToWechat(mContext, "这些天的福利了", paths, Ushare.SHARE_TYPE_TIMELINE, getTipsRunnable(view1));
+                progressTips.hide();
+            }).start();
 
-            }
         });
-        tvFriend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                progressTips.show("福利准备中");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Ushare.clearImageDir(mContext);
-                        List<String> paths = new ArrayList<String>();
-                        for (ActiveDay day : checkedActiveDays) {
-                            String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
-                            if (TextUtils.isEmpty(welfareUrl)) {
-                                continue;
-                            }
-                            String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
-                            paths.add(imageFilePathFromImageUrl);
+        tvFriend.setOnClickListener(view12 -> {
+            progressTips.show("福利准备中");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Ushare.clearImageDir(mContext);
+                    List<String> paths = new ArrayList<String>();
+                    for (ActiveDay day : checkedActiveDays) {
+                        String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
+                        if (TextUtils.isEmpty(welfareUrl)) {
+                            continue;
                         }
-                        Ushare.sharePicsToWechat(mContext, "", paths, Ushare.SHARE_TYPE_FRIEND, getTipsRunnable(view));
-                        progressTips.hide();
+                        String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
+                        paths.add(imageFilePathFromImageUrl);
                     }
-                }).start();
+                    Ushare.sharePicsToWechat(mContext, "", paths, Ushare.SHARE_TYPE_FRIEND, getTipsRunnable(view12));
+                    progressTips.hide();
+                }
+            }).start();
 
-            }
         });
     }
 
     @android.support.annotation.NonNull
     private Runnable getTipsRunnable(final View view) {
-        return new Runnable() {
+        return () -> view.post(new Runnable() {
             @Override
             public void run() {
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(view.getContext(), "没有安装微信", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                Toast.makeText(view.getContext(), "没有安装微信", Toast.LENGTH_SHORT).show();
             }
-        };
+        });
     }
 
     @Override
@@ -382,44 +353,32 @@ public class GankWelfareActivity extends AppCompatActivity {
 
         mDisposable = NetWork.getGankApi().getActiveDays()
 
-                .map(new Function<ActiveDayResult, List<String>>() {
-                    @Override
-                    public List<String> apply(@NonNull ActiveDayResult activeDayResult) throws Exception {
-                        if (activeDayResult.isError()) {
-                            return new ArrayList<>();
-                        }
-                        return activeDayResult.getResults();
+                .map((Function<ActiveDayResult, List<String>>) activeDayResult -> {
+                    if (activeDayResult.isError()) {
+                        return new ArrayList<>();
                     }
+                    return activeDayResult.getResults();
                 })
-                .map(new Function<List<String>, List<ActiveDay>>() {
-                    @Override
-                    public List<ActiveDay> apply(@NonNull List<String> list) throws Exception {
-                        List<ActiveDay> activeDays = new ArrayList<ActiveDay>();
-                        for (String day : list) {
-                            activeDays.add(new ActiveDay(day));
-                        }
-                        return activeDays;
+                .map(list -> {
+                    List<ActiveDay> activeDays = new ArrayList<>();
+                    for (String day : list) {
+                        activeDays.add(new ActiveDay(day));
                     }
+                    return activeDays;
                 })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<ActiveDay>>() {
-                    @Override
-                    public void accept(@NonNull List<ActiveDay> activeDays) throws Exception {
-                        mActiveDays.addAll(activeDays);
-                        loadMore();
+                .subscribe(activeDays -> {
+                    mActiveDays.addAll(activeDays);
+                    loadMore();
 
-                        mRefreshLayout.setRefreshing(false);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        throwable.printStackTrace();
-                        mRefreshLayout.setRefreshing(false);
+                    mRefreshLayout.setRefreshing(false);
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    mRefreshLayout.setRefreshing(false);
 
-                        Utoast.show(mContext, "网络异常:" + throwable.getMessage());
-                    }
+                    Utoast.show(mContext, "网络异常:" + throwable.getMessage());
                 });
     }
 
@@ -431,19 +390,16 @@ public class GankWelfareActivity extends AppCompatActivity {
         }
 
         mIsLoading = true;
-        mRefreshLayout.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                int loadedSize = Math.min(maxSize, listSize + 20);
-                mActiveDayAdapter.addAll(mActiveDays.subList(listSize, loadedSize));
-                if (maxSize == loadedSize) {
-                    if (!mActiveDayAdapter.isMaxed()) {
-                        mActiveDayAdapter.setMaxed(true);
-                        mActiveDayAdapter.notifyDataSetChanged();
-                    }
+        mRefreshLayout.postDelayed(() -> {
+            int loadedSize = Math.min(maxSize, listSize + 20);
+            mActiveDayAdapter.addAll(mActiveDays.subList(listSize, loadedSize));
+            if (maxSize == loadedSize) {
+                if (!mActiveDayAdapter.isMaxed()) {
+                    mActiveDayAdapter.setMaxed(true);
+                    mActiveDayAdapter.notifyDataSetChanged();
                 }
-                mIsLoading = false;
             }
+            mIsLoading = false;
         }, 1600);
 
     }

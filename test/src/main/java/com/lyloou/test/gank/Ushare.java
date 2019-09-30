@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
 import com.lyloou.test.common.NetWork;
@@ -187,7 +188,8 @@ public class Ushare {
             }
             File f = new File(picPath);
             if (f.exists()) {
-                imageList.add(Uri.fromFile(f));
+                Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", f);
+                imageList.add(uri);
             }
         }
         if (imageList.size() == 0) {
