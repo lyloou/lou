@@ -16,8 +16,8 @@
 
 package com.lyloou.test.man;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -56,10 +56,10 @@ public class ManActivity extends AppCompatActivity {
 
     static {
         stringMap.put("木子楼", "http://lyloou.com/");
-        stringMap.put("阮一峰 - ECMAScript 6 入门", "http://es6.ruanyifeng.com/");
-        stringMap.put("阮一峰 - 未来世界的幸存者", "http://survivor.ruanyifeng.com/index.html");
-        stringMap.put("阮一峰 - 前方的路", "http://road.ruanyifeng.com/index.html");
         stringMap.put("阮一峰", "http://ruanyifeng.com/blog/");
+        stringMap.put("阮一峰 - ES6", "http://es6.ruanyifeng.com/");
+        stringMap.put("阮一峰 - 幸存者", "http://survivor.ruanyifeng.com/index.html");
+        stringMap.put("阮一峰 - 前方的路", "http://road.ruanyifeng.com/index.html");
         stringMap.put("陈 皓", "https://coolshell.cn/");
         stringMap.put("刘未鹏", "http://mindhacks.cn/");
         stringMap.put("廖雪峰", "https://www.liaoxuefeng.com/");
@@ -75,15 +75,16 @@ public class ManActivity extends AppCompatActivity {
         initView();
     }
 
+    @SuppressLint("CheckResult")
     private void initView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(this, toolbar);
 
-        ImageView ivHeader = (ImageView) findViewById(R.id.iv_header);
+        ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
         NetWork.getKingsoftwareApi()
                 .getDaily("")
@@ -105,7 +106,7 @@ public class ManActivity extends AppCompatActivity {
         fab.startAnimation(Uanimation.getRotateAnimation(3600));
         fab.setOnClickListener(view -> {
             Object tag = tvHeader.getTag();
-            if (tag != null && tag instanceof String) {
+            if (tag instanceof String) {
                 String newStr = (String) tag;
                 String oldStr = tvHeader.getText().toString();
                 tvHeader.setText(newStr);
@@ -113,11 +114,11 @@ public class ManActivity extends AppCompatActivity {
             }
         });
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_main);
+        RecyclerView recyclerView = findViewById(R.id.rv_main);
 
 
         recyclerView.setAdapter(new MainAdapter(stringMap));
@@ -142,7 +143,7 @@ public class ManActivity extends AppCompatActivity {
 
         @Override
         public MainAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_main, null);
+            @SuppressLint("InflateParams") View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_main, null);
             return new MainAdapter.ViewHolder(view);
         }
 
@@ -152,26 +153,20 @@ public class ManActivity extends AppCompatActivity {
             holder.tvTitle.setText(label);
             holder.view.setOnClickListener(v ->
                     WebActivity.newInstance(holder.view.getContext(), stringMap.get(label), label));
-            holder.view.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    final Context context = v.getContext();
-                    Usp.init(context);
-                    new AlertDialog
-                            .Builder(context)
-                            .setTitle("清除它的历史记录：" + label)
-                            .setCancelable(true)
-                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String key = context.getClass().getSimpleName().toUpperCase() + "_" + label;
-                                    Usp.getInstance().remove(key).commit();
-                                }
-                            })
-                            .create()
-                            .show();
-                    return true;
-                }
+            holder.view.setOnLongClickListener(v -> {
+                final Context context = v.getContext();
+                Usp.init(context);
+                new AlertDialog
+                        .Builder(context)
+                        .setTitle("清除它的历史记录：" + label)
+                        .setCancelable(true)
+                        .setPositiveButton("确定", (dialog, which) -> {
+                            String key = context.getClass().getSimpleName().toUpperCase() + "_" + label;
+                            Usp.getInstance().remove(key).commit();
+                        })
+                        .create()
+                        .show();
+                return true;
             });
         }
 
@@ -187,7 +182,7 @@ public class ManActivity extends AppCompatActivity {
             ViewHolder(View itemView) {
                 super(itemView);
                 view = itemView;
-                tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
+                tvTitle = itemView.findViewById(R.id.tv_title);
             }
         }
     }

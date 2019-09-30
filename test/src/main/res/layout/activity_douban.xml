@@ -23,7 +23,7 @@
     tools:context=".douban.DouBanActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_gank"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:actionBarSize"
         android:background="@color/colorAccent"

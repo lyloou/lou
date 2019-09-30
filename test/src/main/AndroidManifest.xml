@@ -73,7 +73,7 @@
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".kingsoftware.KingsoftwareGalleryActivity"
-            android:label="@string/kingsoftware_daily_sentence_gallery"
+            android:label="@string/kingsoftware_daily"
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".douban.DouBanActivity"

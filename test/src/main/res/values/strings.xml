@@ -18,9 +18,9 @@
     <string name="app_name">加点料</string>
     <string name="laifudao_tupian">来福岛 - 图</string>
     <string name="laifudao_xiaohua">来福岛 - 文</string>
-    <string name="kingsoftware_daily_sentence_gallery">金山 - 每日一句</string>
     <string name="media_audio">多媒体 - 音频</string>
     <string name="douban_movie">豆瓣 - 电影</string>
+    <string name="kingsoftware_daily">每日一句</string>
     <string name="meiriyiwen_random">每日一文</string>
     <string name="gank_welfare">Gank - 福利</string>
     <string name="bustv_chelaile">公交 - 车来了</string>

@@ -108,7 +108,7 @@ public class DouBanActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        Toolbar toolbar = findViewById(R.id.toolbar_gank);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("看流星");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

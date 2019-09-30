@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -39,6 +40,7 @@ import com.gyf.immersionbar.ImmersionBar;
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.WebChromeClient;
 import com.lyloou.test.R;
+import com.lyloou.test.util.Usp;
 
 import org.json.JSONObject;
 
@@ -54,8 +56,11 @@ public class NormalWebViewActivity extends AppCompatActivity {
     public static final String TEST_AUTHORITY = "com.lyloou.test";
     private static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE2 = 1;
     public static final String EXTRA_URL = "url";
+    public static final String EXTRA_IS_DOWNLOAD = "isDownload";
+    public static final String EXTRA_DESC = "desc";
 
     private AgentWeb mAgentWeb;
+    private WebView mWebView;
     private Activity mContext;
     private DownloadManager downloadManager;
     private long downloadId;
@@ -71,50 +76,45 @@ public class NormalWebViewActivity extends AppCompatActivity {
     public static void newInstance(Context context, JSONObject jsonObject) {
         Intent intent = new Intent(context, NormalWebViewActivity.class);
         if (jsonObject != null) {
-            intent.putExtra("url", jsonObject.optString("url"));
-            intent.putExtra("isDownload", jsonObject.optBoolean("isDownload"));
-            intent.putExtra("desc", jsonObject.optString("desc"));
+            intent.putExtra(NormalWebViewActivity.EXTRA_URL, jsonObject.optString(EXTRA_URL));
+            intent.putExtra(EXTRA_IS_DOWNLOAD, jsonObject.optBoolean(EXTRA_IS_DOWNLOAD));
+            intent.putExtra(EXTRA_DESC, jsonObject.optString(EXTRA_DESC));
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
     private Toolbar mToolbar;
+    private boolean isScrolled;
+    private String mUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
         super.onCreate(savedInstanceState);
-        ImmersionBar.with(this).statusBarDarkFont(true).navigationBarColor(R.color.white).init();
-
         setContentView(R.layout.activity_normal_web);
-        mToolbar = findViewById(R.id.toolbar_gank);
-        mToolbar.setTitle("");
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        ImmersionBar.with(this)
-                .statusBarDarkFont(true)
-                .navigationBarDarkIcon(true)
-                .statusBarColor(R.color.colorAccent)
-                .statusBarAlpha(0.1f)
-                .init();
 
-        View view = findViewById(R.id.llyt_container);
+        initData();
+        initViewForTop();
+        initViewForDownload();
+        initViewForWeb();
+
+        // 竖屏
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    private void initData() {
+        Usp.init(this);
         Intent data = getIntent();
-        String url = data.getStringExtra(EXTRA_URL);
-        if (TextUtils.isEmpty(url)) {
-            url = "http://lyloou.com";
+        mUrl = data.getStringExtra(EXTRA_URL);
+        if (TextUtils.isEmpty(mUrl)) {
+            mUrl = "http://lyloou.com";
         }
+    }
 
-        boolean isDownload = data.getBooleanExtra("isDownload", false);
-        String desc = data.getStringExtra("desc");
-        if (url.endsWith(".apk") && isDownload && !TextUtils.isEmpty(desc)) {
-            TextView tvDesc = findViewById(R.id.tv_desc);
-            tvDesc.setText(desc);
-            tvDesc.setVisibility(View.VISIBLE);
-        }
+    private void initViewForWeb() {
+        View view = findViewById(R.id.llyt_container);
         mAgentWeb = AgentWeb.with(this)
                 .setAgentWebParent((LinearLayout) view, new LinearLayout.LayoutParams(-1, -1))
                 .useDefaultIndicator(getResources().getColor(R.color.colorAccent), 2)
@@ -124,10 +124,23 @@ public class NormalWebViewActivity extends AppCompatActivity {
                         super.onReceivedTitle(view, title);
                         mToolbar.setTitle(title);
                     }
+
+                    @Override
+                    public void onProgressChanged(WebView view, int newProgress) {
+                        super.onProgressChanged(view, newProgress);
+
+                        // 记录历史
+                        if (!isScrolled && newProgress > 90) {
+                            int lastPosition = Usp.getInstance().getInt(mUrl, 0);
+                            view.scrollTo(0, lastPosition);
+                            isScrolled = true;
+                        }
+                    }
                 })
                 .createAgentWeb()
                 .ready()
-                .go(url);
+                .go(mUrl);
+        mWebView = mAgentWeb.getWebCreator().getWebView();
 
         // https://www.jianshu.com/p/14ca454ab3d1
         WebSettings webSettings = mAgentWeb.getAgentWebSettings().getWebSettings();
@@ -135,7 +148,8 @@ public class NormalWebViewActivity extends AppCompatActivity {
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
 
-        mAgentWeb.getWebCreator().getWebView()
+        mAgentWeb.getWebCreator()
+                .getWebView()
                 .setDownloadListener((url1, userAgent, contentDisposition, mimeType, contentLength) ->
                         runOnUiThread(() -> {
                             //使用前先判断是否有读取、写入内存卡权限
@@ -160,10 +174,49 @@ public class NormalWebViewActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "正在下载文件", Toast.LENGTH_LONG).show();
                             }
                         }));
+    }
 
-        // 竖屏
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    private int count = 0;
+    private Handler handler = new Handler();
+    private Runnable resetCount = () -> count = 0;
+
+    // 双击 View 回到顶部
+    private void doubleClickToolbar(View view, Runnable task) {
+        view.setOnClickListener(v -> {
+            if (++count >= 2) {
+                task.run();
+            }
+            handler.postDelayed(resetCount, 500);
+        });
+    }
+
+    private void initViewForTop() {
+
+        mToolbar = findViewById(R.id.toolbar);
+        mToolbar.setTitle("");
+        // doubleClickToolbar scrollToTop
+        doubleClickToolbar(mToolbar, () -> mWebView.scrollTo(0, 0));
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .navigationBarDarkIcon(true)
+                .statusBarColor(R.color.colorAccent)
+                .statusBarAlpha(0.1f)
+                .init();
+    }
+
+    private void initViewForDownload() {
+        Intent data = getIntent();
+        boolean isDownload = data.getBooleanExtra(EXTRA_IS_DOWNLOAD, false);
+        String desc = data.getStringExtra(EXTRA_DESC);
+        if (mUrl.endsWith(".apk") && isDownload && !TextUtils.isEmpty(desc)) {
+            TextView tvDesc = findViewById(R.id.tv_desc);
+            tvDesc.setText(desc);
+            tvDesc.setVisibility(View.VISIBLE);
+        }
     }
 
     //检查下载状态
@@ -314,5 +367,16 @@ public class NormalWebViewActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        savePosition();
+    }
+
+    private void savePosition() {
+        int scrollY = mWebView.getScrollY();
+        Usp.getInstance().putInt(mUrl, scrollY).commit();
     }
 }
