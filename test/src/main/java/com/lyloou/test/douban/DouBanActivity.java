@@ -17,21 +17,27 @@
 package com.lyloou.test.douban;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
-import com.lyloou.test.common.webview.WebActivity;
+import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -50,7 +56,14 @@ public class DouBanActivity extends AppCompatActivity {
     private SubjectAdapter mSubjectAdapter;
     private Disposable mDisposable;
     private Activity mContext;
-    private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
+    private Type type = Type.TOP_250;
+
+    enum Type {
+        NEW,
+        TOP_250
+    }
+
+    private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
@@ -70,7 +83,7 @@ public class DouBanActivity extends AppCompatActivity {
                     Log.i(TAG, "加载中...");
                 } else {
                     Log.i(TAG, "加载更多了.");
-                    loadDatas();
+                    loadData();
                 }
 
             } else if (totalItemCount >= TOTAL_ITEM_SIZE) {
@@ -81,9 +94,6 @@ public class DouBanActivity extends AppCompatActivity {
                     });
                 }
             }
-
-            Log.d(TAG, "lastVisibleItem=" + lastVisibleItem);
-            Log.d(TAG, "totalItemCount=" + totalItemCount);
 
         }
     };
@@ -98,14 +108,31 @@ public class DouBanActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        Toolbar toolbar = findViewById(R.id.toolbar_gank);
+        toolbar.setTitle("看流星");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .navigationBarDarkIcon(true)
+                .statusBarColor(R.color.colorAccent)
+                .statusBarAlpha(0.1f)
+                .init();
+
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_douban);
         mRefreshLayout = findViewById(R.id.srl_douban);
 
         mSubjectAdapter = new SubjectAdapter(this);
         mSubjectAdapter.setOnItemClickListener(subject -> {
-            Intent intent = new Intent(mContext, WebActivity.class);
-            intent.putExtra(WebActivity.EXTRA_DATA_URL, subject.getAlt());
-            startActivity(intent);
+            NormalWebViewActivity.newInstance(mContext, new JSONObject() {{
+                try {
+                    putOpt("url", subject.getAlt());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }});
         });
         recyclerView.setAdapter(mSubjectAdapter);
         recyclerView.setItemTypeCount(mSubjectAdapter.getItemTypeCount());
@@ -113,24 +140,26 @@ public class DouBanActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(mContext, 16)));
-        recyclerView.addOnScrollListener(mListener);
+        recyclerView.addOnScrollListener(mOnScrollListener);
 
 
-        mRefreshLayout.setOnRefreshListener(() -> {
-            runOnUiThread(() -> mSubjectAdapter.setMaxed(false));
-            mSubjectAdapter.clearAll();
-            loadDatas();
-        });
+        mRefreshLayout.setOnRefreshListener(this::reloadData);
 
         // 开始加载数据
-        loadDatas();
+        loadData();
+    }
+
+    private void reloadData() {
+        runOnUiThread(() -> mSubjectAdapter.setMaxed(false));
+        mSubjectAdapter.clearAll();
+        loadData();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (mSubjectAdapter.getListSize() == 0) {
-            loadDatas();
+            loadData();
         }
     }
 
@@ -140,14 +169,22 @@ public class DouBanActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void loadDatas() {
+
+    public void loadData() {
 
         // 通过取消上次加载，来防止出现加载数据混淆的问题（）
         unSubscribe();
 
+        Observable<HttpResult<List<Subject>>> movie;
         mIsLoading = true;
-        Observable<HttpResult<List<Subject>>> movie = NetWork.getDouBanApi()
-                .getTopMovie(mSubjectAdapter.getListSize(), 20);
+        switch (type) {
+            case TOP_250:
+                movie = getTopMovie();
+                break;
+            case NEW:
+            default:
+                movie = getNewMovie();
+        }
 
         mDisposable = movie
                 .map(listHttpResult -> {
@@ -170,6 +207,16 @@ public class DouBanActivity extends AppCompatActivity {
                 });
     }
 
+    private Observable<HttpResult<List<Subject>>> getTopMovie() {
+        return NetWork.getDouBanApi()
+                .getTopMovie(mSubjectAdapter.getListSize(), 20);
+    }
+
+    private Observable<HttpResult<List<Subject>>> getNewMovie() {
+        return NetWork.getDouBanApi()
+                .getNewMovie(mSubjectAdapter.getListSize(), 20);
+    }
+
     private void unSubscribe() {
         if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
@@ -177,4 +224,24 @@ public class DouBanActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_douban_movie, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_new:
+                type = Type.NEW;
+                break;
+            case R.id.menu_top500:
+                type = Type.TOP_250;
+                break;
+        }
+
+        reloadData();
+        return super.onOptionsItemSelected(item);
+    }
 }

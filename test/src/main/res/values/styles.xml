@@ -43,4 +43,9 @@
     <style name="FastEnterTheme" parent="AppTheme.TranslucentStatus">
         <item name="android:windowIsTranslucent">true</item>
     </style>
+
+    <style name="pop_add">
+        <item name="android:windowEnterAnimation">@anim/pop_add_show</item>
+        <item name="android:windowExitAnimation">@anim/pop_add_hide</item>
+    </style>
 </resources>

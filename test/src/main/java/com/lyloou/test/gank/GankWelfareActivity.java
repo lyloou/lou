@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemWithOneHeaderOffsetDecoration;
 import com.lyloou.test.common.EmptyRecyclerView;
@@ -170,7 +171,12 @@ public class GankWelfareActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        Uscreen.setToolbarMarginTop(mContext, toolbar);
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .navigationBarDarkIcon(true)
+                .statusBarColor(R.color.colorAccent)
+                .statusBarAlpha(0.1f)
+                .init();
 
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_gank_welfare);
         mRefreshLayout = findViewById(R.id.srl_gank_welfare);

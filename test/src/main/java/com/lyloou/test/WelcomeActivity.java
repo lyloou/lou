@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -48,12 +49,14 @@ public class WelcomeActivity extends Activity {
                                             ivWelcome.setVisibility(View.VISIBLE);
                                         }
                                     });
-                            ivWelcome.postDelayed(this::toNext, 3000);
+
+                            handler.postDelayed(toNext, 3000);
                         }
                         , Throwable::printStackTrace);
     }
 
     private void toNext() {
+        handler.removeCallbacks(toNext);
         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -68,4 +71,7 @@ public class WelcomeActivity extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return true;
     }
+
+    Handler handler = new Handler();
+    Runnable toNext = this::toNext;
 }

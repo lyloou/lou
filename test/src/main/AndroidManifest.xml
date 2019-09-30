@@ -110,6 +110,9 @@
             android:label="@string/flow_time"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.TranslucentStatus" />
+        <activity
+            android:name=".common.webview.NormalWebViewActivity"
+            android:theme="@style/AppTheme.TranslucentStatus" />
     </application>
 
 </manifest>
