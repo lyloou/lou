@@ -94,7 +94,7 @@
             android:exported="true"
             android:label="@string/flow_time"
             android:theme="@style/FastEnterTheme"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
                 <category android:name="android.intent.category.DEFAULT" />

@@ -33,12 +33,10 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uapp;
-import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Usystem;
 import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Uview;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -123,7 +121,6 @@ public class FlowActivity extends AppCompatActivity {
         initTopPart();
         EmptyRecyclerView recyclerView = initRecycleView();
         initFabBottom(recyclerView);
-        Uview.registerHideSoftKeyboardListener(this, Uview.getRootView(this));
         initAttachView();
     }
 
@@ -135,7 +132,6 @@ public class FlowActivity extends AppCompatActivity {
     private void toList() {
         Intent intent = new Intent(this, FlowListActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         startActivity(intent);
     }
@@ -271,43 +267,6 @@ public class FlowActivity extends AppCompatActivity {
         new TimePickerDialog(mContext, 0, listener, time[0], time[1], true).show();
     }
 
-    @NonNull
-    private List<FlowItem> getFlowItems() {
-        List<FlowItem> items = new ArrayList<>();
-        FlowItem e1 = new FlowItem();
-        e1.setTimeStart("08:20");
-        e1.setTimeSep("~");
-        e1.setTimeEnd("12:00");
-        e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
-        items.add(e1);
-
-        e1 = new FlowItem();
-        e1.setTimeStart("07:20");
-        e1.setTimeSep("~");
-        e1.setTimeEnd("12:00");
-        e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
-        items.add(e1);
-
-        e1 = new FlowItem();
-        e1.setTimeStart("12:20");
-        e1.setTimeSep("~");
-        e1.setTimeEnd("12:00");
-        e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
-        items.add(e1);
-
-        e1 = new FlowItem();
-        e1.setTimeStart("13:20");
-        e1.setTimeSep("~");
-        e1.setTimeEnd("15:00");
-        e1.setContent("多么美好的一天 大太阳晒伤我的脸 我担心干旱持续好久水库会缺水 多么美好的一天 又接近末日一点点 我独自坚强稀释寂寞无聊的时间");
-        items.add(e1);
-
-        sortItems(items);
-
-
-        return items;
-    }
-
     private void sortItems(List<FlowItem> items) {
         Collections.sort(items, (o1, o2) -> {
             if (o1 == null || o2 == null) {
@@ -331,7 +290,6 @@ public class FlowActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        Uscreen.setToolbarMarginTop(this, toolbar);
 
         ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);

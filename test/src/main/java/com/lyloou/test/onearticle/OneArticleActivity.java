@@ -154,7 +154,7 @@ public class OneArticleActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        Uscreen.setToolbarMarginTop(mContext, toolbar);
+        // Uscreen.setToolbarMarginTop(mContext, toolbar);
 
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.coolapsing_toolbar_layout_onearticle);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
