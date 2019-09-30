@@ -40,7 +40,7 @@
             android:name=".WelcomeActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/WelcomeAppTheme" />
+            android:theme="@style/FastEnterTheme" />
 
         <activity
             android:name=".media.MediaRecorderActivity"
@@ -92,7 +92,6 @@
         <activity
             android:name=".flow.FlowActivity"
             android:exported="true"
-            android:label="@string/flow_time"
             android:theme="@style/FastEnterTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -102,7 +101,7 @@
         </activity>
         <activity
             android:name=".flow.FlowListActivity"
-            android:label="@string/flow_time_list"
+            android:label="@string/flow_time"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.TranslucentStatus" />
     </application>

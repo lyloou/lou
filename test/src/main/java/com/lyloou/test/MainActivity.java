@@ -16,6 +16,7 @@
 
 package com.lyloou.test;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // toNext();
+        toNext();
 
         setContentView(R.layout.activity_main);
         CrashHandler.getInstance().init(this.getApplicationContext());
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         initTopPart();
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_main);
+        RecyclerView recyclerView = findViewById(R.id.rv_main);
         Map<String, Class> stringClassMap = Uactivity.getActivitiesMapFromManifest(this, this.getPackageName());
 
         recyclerView.setAdapter(new MainAdapter(stringClassMap));
@@ -75,15 +76,17 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
     }
 
+    @SuppressLint("CheckResult")
     private void initTopPart() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.mipmap.back_white);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(this, toolbar);
 
-        ImageView ivHeader = (ImageView) findViewById(R.id.iv_header);
+        ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
         NetWork.getKingsoftwareApi()
                 .getDaily("")
@@ -105,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         fab.startAnimation(Uanimation.getRotateAnimation(3600));
         fab.setOnClickListener(view -> {
             Object tag = tvHeader.getTag();
-            if (tag != null && tag instanceof String) {
+            if (tag instanceof String) {
                 String newStr = (String) tag;
                 String oldStr = tvHeader.getText().toString();
                 tvHeader.setText(newStr);
@@ -113,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
     }
@@ -159,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             ViewHolder(View itemView) {
                 super(itemView);
                 view = itemView;
-                tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
+                tvTitle = itemView.findViewById(R.id.tv_title);
             }
         }
     }

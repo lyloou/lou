@@ -152,9 +152,10 @@ public class OneArticleActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar_onearticle);
         toolbar.setTitle("每日一文");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.mipmap.back_white);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        // Uscreen.setToolbarMarginTop(mContext, toolbar);
+        Uscreen.setToolbarMarginTop(mContext, toolbar);
 
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.coolapsing_toolbar_layout_onearticle);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
