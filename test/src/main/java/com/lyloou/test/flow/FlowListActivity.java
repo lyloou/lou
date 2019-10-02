@@ -19,6 +19,7 @@ package com.lyloou.test.flow;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -64,8 +65,10 @@ import io.reactivex.schedulers.Schedulers;
  * Description: 时间流列表
  */
 public class FlowListActivity extends AppCompatActivity {
+    public static final int REQUEST_CODE = 100;
     private List<FlowDay> mFlowDays = new ArrayList<>();
     private Activity mContext;
+    private Adapter mAdapter;
 
 
     @Override
@@ -108,8 +111,8 @@ public class FlowListActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.rv_main);
 
-        Adapter adapter = new Adapter(this, mFlowDays);
-        adapter.setListener(new Listener() {
+        mAdapter = new Adapter(this, mFlowDays);
+        mAdapter.setListener(new Listener() {
             @Override
             public void onItemClicked(FlowDay flowDay) {
                 FlowActivity.start(mContext, flowDay.getDay());
@@ -117,21 +120,21 @@ public class FlowListActivity extends AppCompatActivity {
 
             @Override
             public void onItemLongClicked(FlowDay flowDay) {
-                showDeleteAlert(flowDay, adapter);
+                showDeleteAlert(flowDay);
             }
         });
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
     }
 
-    private void showDeleteAlert(FlowDay flowDay, Adapter adapter) {
+    private void showDeleteAlert(FlowDay flowDay) {
         new AlertDialog.Builder(mContext)
                 .setMessage("确认删除：\n"
                         .concat(flowDay.getDay()))
                 .setPositiveButton("是的", (dialog, which) -> {
-                    consumeCursorByDayForDelete(flowDay.getDay(), count -> adapter.remove(flowDay));
-                    adapter.notifyDataSetChanged();
+                    consumeCursorByDayForDelete(flowDay.getDay(), count -> mAdapter.remove(flowDay));
+                    mAdapter.notifyDataSetChanged();
                 })
                 .setNegativeButton("再想想", (dialog, which) -> {
                 })
@@ -279,8 +282,19 @@ public class FlowListActivity extends AppCompatActivity {
                 snackbar.show();
                 break;
             case R.id.menu_today_flow_time:
-                FlowActivity.start(this, null);
+                Intent intent = new Intent(mContext, FlowActivity.class);
+                mContext.startActivityForResult(intent, REQUEST_CODE);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            FlowDay flowDay = (FlowDay) data.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
+            mFlowDays.add(flowDay);
+            mAdapter.notifyDataSetChanged();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

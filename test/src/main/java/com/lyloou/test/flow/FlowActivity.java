@@ -433,5 +433,11 @@ public class FlowActivity extends AppCompatActivity {
         return contentValues;
     }
 
-
+    @Override
+    public void onBackPressed() {
+        Intent data = new Intent();
+        data.putExtra(Intent.ACTION_ATTACH_DATA, mFlowDay);
+        setResult(Activity.RESULT_OK, data);
+        super.onBackPressed();
+    }
 }
