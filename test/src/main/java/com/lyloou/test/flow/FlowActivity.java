@@ -98,6 +98,7 @@ public class FlowActivity extends AppCompatActivity {
                 long lId = insertFlowDayToDb(flowDay);
                 flowDay.setId((int) lId);
                 mFlowDay = flowDay;
+                mFlowDay.setItems(mFlowItems);
             } else {
                 fillData(cursor);
             }
