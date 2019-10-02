@@ -16,7 +16,8 @@
 
 package com.lyloou.test.flow;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -25,11 +26,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,7 +44,6 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebActivity;
-import com.lyloou.test.util.PermissionListener;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Uscreen;
@@ -65,16 +65,17 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class FlowListActivity extends AppCompatActivity {
     private List<FlowDay> mFlowDays = new ArrayList<>();
+    private Activity mContext;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         setContentView(R.layout.activity_flow_list);
 
         initData();
         initView();
-
     }
 
 
@@ -107,11 +108,39 @@ public class FlowListActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.rv_main);
 
-        recyclerView.setAdapter(new Adapter(this, mFlowDays));
+        Adapter adapter = new Adapter(this, mFlowDays);
+        adapter.setListener(new Listener() {
+            @Override
+            public void onItemClicked(FlowDay flowDay) {
+                FlowActivity.start(mContext, flowDay.getDay());
+            }
+
+            @Override
+            public void onItemLongClicked(FlowDay flowDay) {
+                showDeleteAlert(flowDay, adapter);
+            }
+        });
+        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
     }
 
+    private void showDeleteAlert(FlowDay flowDay, Adapter adapter) {
+        new AlertDialog.Builder(mContext)
+                .setMessage("确认删除：\n"
+                        .concat(flowDay.getDay()))
+                .setPositiveButton("是的", (dialog, which) -> {
+                    consumeCursorByDayForDelete(flowDay.getDay(), count -> adapter.remove(flowDay));
+                    adapter.notifyDataSetChanged();
+                })
+                .setNegativeButton("再想想", (dialog, which) -> {
+                })
+                .setCancelable(true)
+                .create()
+                .show();
+    }
+
+    @SuppressLint("CheckResult")
     private void initTopPart() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -157,13 +186,31 @@ public class FlowListActivity extends AppCompatActivity {
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
     }
 
+    interface Listener {
+        void onItemClicked(FlowDay flowDay);
+
+        void onItemLongClicked(FlowDay flowDay);
+    }
+
     static class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         final List<FlowDay> list;
         final Context context;
+        Listener mListener;
+
+        public void setListener(Listener mListener) {
+            this.mListener = mListener;
+        }
 
         Adapter(Context context, List<FlowDay> list) {
             this.context = context;
             this.list = list;
+        }
+
+        public void remove(FlowDay flowDay) {
+            if (list == null) {
+                return;
+            }
+            list.remove(flowDay);
         }
 
         @Override
@@ -176,7 +223,19 @@ public class FlowListActivity extends AppCompatActivity {
         public void onBindViewHolder(ViewHolder holder, int position) {
             FlowDay flowDay = list.get(position);
             holder.tvTitle.setText(flowDay.getDay());
-            holder.view.setOnClickListener(v -> FlowActivity.start(context, flowDay.getDay()));
+            holder.view.setOnClickListener(v -> {
+                if (mListener == null) {
+                    return;
+                }
+                mListener.onItemClicked(flowDay);
+            });
+            holder.view.setOnLongClickListener(view -> {
+                if (mListener == null) {
+                    return false;
+                }
+                mListener.onItemLongClicked(flowDay);
+                return false;
+            });
         }
 
         @Override
@@ -196,6 +255,12 @@ public class FlowListActivity extends AppCompatActivity {
         }
     }
 
+    private void consumeCursorByDayForDelete(String day, Consumer<Integer> consumer) {
+        SQLiteDatabase sd = new DbHelper(this).getReadableDatabase();
+        int delete = sd.delete(DbHelper.TABLE_NAME, "day = ?", new String[]{day});
+        consumer.accept(delete);
+        sd.close();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -213,27 +278,8 @@ public class FlowListActivity extends AppCompatActivity {
                         v -> WebActivity.newInstance(this, "https://kf.qq.com/touch/sappfaq/180705A3IB3Y1807056fMr6V.html", "want_to_know_why"));
                 snackbar.show();
                 break;
-            case R.id.menu_test_permission:
-                Uapp.requestPermission(this, new PermissionListener() {
-                    @Override
-                    public String name() {
-                        return Manifest.permission.RECORD_AUDIO;
-                    }
-
-                    @Override
-                    public Runnable whenShouldShowRequest() {
-                        return () -> {
-                            Log.e("TTAG", "whenShouldShowRequest");
-                        };
-                    }
-
-                    @Override
-                    public Runnable whenGranted() {
-                        return () -> {
-                            Log.e("TTAG", "whenGranted");
-                        };
-                    }
-                });
+            case R.id.menu_today_flow_time:
+                FlowActivity.start(this, null);
         }
         return super.onOptionsItemSelected(item);
     }
