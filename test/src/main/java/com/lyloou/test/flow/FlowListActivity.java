@@ -16,7 +16,6 @@
 
 package com.lyloou.test.flow;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -37,13 +36,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.ItemOffsetDecoration;
-import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebActivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uapp;
@@ -53,9 +49,6 @@ import com.lyloou.test.util.Uview;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Author:    Lou
@@ -143,7 +136,6 @@ public class FlowListActivity extends AppCompatActivity {
                 .show();
     }
 
-    @SuppressLint("CheckResult")
     private void initTopPart() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -154,34 +146,13 @@ public class FlowListActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(this, toolbar);
 
-        ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
-        NetWork.getKingsoftwareApi()
-                .getDaily("")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(daily -> {
-                            Glide
-                                    .with(ivHeader.getContext().getApplicationContext())
-                                    .load(daily.getPicture2())
-                                    .centerCrop()
-                                    .into(ivHeader);
-                            tvHeader.setText(daily.getContent());
-                            tvHeader.setTag(daily.getNote());
-                            tvHeader.setVisibility(View.VISIBLE);
-                        }
-                        , Throwable::printStackTrace);
+        tvHeader.setText("大写的时间");
 
         View fab = findViewById(R.id.fab);
         fab.startAnimation(Uanimation.getRotateAnimation(3600));
         fab.setOnClickListener(view -> {
-            Object tag = tvHeader.getTag();
-            if (tag instanceof String) {
-                String newStr = (String) tag;
-                String oldStr = tvHeader.getText().toString();
-                tvHeader.setText(newStr);
-                tvHeader.setTag(oldStr);
-            }
+            toFlowActivity();
         });
 
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
@@ -282,19 +253,34 @@ public class FlowListActivity extends AppCompatActivity {
                 snackbar.show();
                 break;
             case R.id.menu_today_flow_time:
-                Intent intent = new Intent(mContext, FlowActivity.class);
-                mContext.startActivityForResult(intent, REQUEST_CODE);
+                toFlowActivity();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void toFlowActivity() {
+        Intent intent = new Intent(mContext, FlowActivity.class);
+        mContext.startActivityForResult(intent, REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             FlowDay flowDay = (FlowDay) data.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
-            mFlowDays.add(flowDay);
-            mAdapter.notifyDataSetChanged();
+            if (isNotContain(flowDay)) {
+                mFlowDays.add(flowDay);
+                mAdapter.notifyDataSetChanged();
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private boolean isNotContain(FlowDay flowDay) {
+        for (FlowDay day : mFlowDays) {
+            if (flowDay != null && flowDay.getDay().equals(day.getDay())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

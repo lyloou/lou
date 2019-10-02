@@ -10,53 +10,22 @@
     android:focusableInTouchMode="true"
     tools:context=".flow.FlowActivity">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar_layout"
-            android:layout_width="match_parent"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_bottom"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:contentScrim="@color/colorAccent"
-            app:expandedTitleGravity="center"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-            <ImageView
-                android:id="@+id/iv_header"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.7"
-                tools:background="@mipmap/bg" />
-
-            <TextView
-                android:id="@+id/tv_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_horizontal"
-                android:background="@color/colorAccentTransparent"
-                android:gravity="center"
-                android:padding="8dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:textStyle="italic"
-                android:visibility="invisible" />
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?android:actionBarSize"
-                app:contentInsetEnd="0dp"
-                app:contentInsetStart="0dp"
-                app:layout_collapseMode="pin" />
-        </android.support.design.widget.CollapsingToolbarLayout>
-
-
-    </android.support.design.widget.AppBarLayout>
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:alpha="0.7"
+            android:rotation="135"
+            android:src="@mipmap/airplane"
+            app:layout_anchor="@id/app_bar"
+            app:layout_anchorGravity="bottom|right|end" />
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -120,21 +89,52 @@
             tools:listitem="@layout/item_flow" />
     </RelativeLayout>
 
-    <FrameLayout
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_bottom"
-            android:layout_width="wrap_content"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:alpha="0.7"
-            android:rotation="135"
-            android:src="@mipmap/airplane"
-            app:layout_anchor="@id/app_bar"
-            app:layout_anchorGravity="bottom|right|end" />
-    </FrameLayout>
+            app:contentScrim="@color/colorAccent"
+            app:expandedTitleGravity="center"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <ImageView
+                android:id="@+id/iv_header"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.7"
+                tools:background="@mipmap/bg" />
+
+            <TextView
+                android:id="@+id/tv_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:background="@color/colorAccentTransparent"
+                android:gravity="center"
+                android:padding="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:visibility="invisible" />
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:actionBarSize"
+                app:contentInsetEnd="0dp"
+                app:contentInsetStart="0dp"
+                app:layout_collapseMode="pin" />
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+
+    </android.support.design.widget.AppBarLayout>
 
 </android.support.design.widget.CoordinatorLayout>

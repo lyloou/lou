@@ -50,6 +50,7 @@ public class FlowActivity extends AppCompatActivity {
     private Activity mContext;
     private FlowAdapter mAdapter;
     private FlowDay mFlowDay;
+    private AppBarLayout mAppBarLayout;
 
     // 每次都是插入到第一个，用 LinkedList 效率应该会更好（https://snailclimb.top/JavaGuide/#/java/collection/Java集合框架常见面试题?id=arraylist-与-linkedlist-区别）
     private List<FlowItem> mFlowItems = new LinkedList<>();
@@ -223,6 +224,13 @@ public class FlowActivity extends AppCompatActivity {
                 item.setContent(String.valueOf(s));
                 updateDb();
             }
+
+            @Override
+            public void onFocusChange(boolean hasFocus) {
+                if (hasFocus) {
+                    mAppBarLayout.setExpanded(false, true);
+                }
+            }
         };
     }
 
@@ -328,8 +336,8 @@ public class FlowActivity extends AppCompatActivity {
     private void initFabBottom(EmptyRecyclerView recyclerView) {
         View fabBottom = findViewById(R.id.fab_bottom);
         fabBottom.setOnClickListener(view -> recyclerView.smoothScrollToPosition(0));
-        AppBarLayout appBarLayout = findViewById(R.id.app_bar);
-        appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
+        mAppBarLayout = findViewById(R.id.app_bar);
+        mAppBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
             int totalScrollRange = appBarLayout1.getTotalScrollRange();
             float offset = verticalOffset * 1.0f / totalScrollRange;
             fabBottom.setScaleX(offset);
