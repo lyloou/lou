@@ -194,13 +194,19 @@ public class Uscreen {
             }
 
             if (bitmap != null) {
-                try {
-                    setWallpaperByBitmap(imageView.getContext(), bitmap, color);
-                    Snackbar.make(imageView, "已设壁纸", Snackbar.LENGTH_SHORT).show();
-                    return false;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Context context = imageView.getContext();
+                Bitmap finalBitmap = bitmap;
+                Udialog.alert(context, "设置成壁纸？", ok -> {
+                    if (ok) {
+                        try {
+                            setWallpaperByBitmap(context, finalBitmap, color);
+                            Snackbar.make(imageView, "已设壁纸", Snackbar.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                return false;
             }
 
             Snackbar.make(imageView, "无法设壁纸", Snackbar.LENGTH_SHORT).show();

@@ -19,6 +19,7 @@ package com.lyloou.test.util;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -26,6 +27,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import com.lyloou.test.flow.Consumer;
 
 /**
  * Author:    Lou
@@ -87,5 +90,16 @@ public class Uview {
                         Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(
                 context.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    public static void doWhenSoftKeyboardChanged(Activity activity, Consumer<Boolean> consumer) {
+        final View activityRootView = activity.findViewById(android.R.id.content);
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            activityRootView.getWindowVisibleDisplayFrame(r);
+            int heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
+            boolean hide = heightDiff > 100;
+            consumer.accept(!hide);
+        });
     }
 }

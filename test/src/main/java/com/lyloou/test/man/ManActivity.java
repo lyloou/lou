@@ -23,7 +23,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,6 +41,7 @@ import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebActivity;
 import com.lyloou.test.util.Uanimation;
+import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Usp;
 
@@ -156,16 +156,12 @@ public class ManActivity extends AppCompatActivity {
             holder.view.setOnLongClickListener(v -> {
                 final Context context = v.getContext();
                 Usp.init(context);
-                new AlertDialog
-                        .Builder(context)
-                        .setTitle("清除它的历史记录：" + label)
-                        .setCancelable(true)
-                        .setPositiveButton("确定", (dialog, which) -> {
-                            String key = context.getClass().getSimpleName().toUpperCase() + "_" + label;
-                            Usp.getInstance().remove(key).commit();
-                        })
-                        .create()
-                        .show();
+                Udialog.alert(context, "清除它的历史记录：" + label, ok -> {
+                    if (ok) {
+                        String key = context.getClass().getSimpleName().toUpperCase() + "_" + label;
+                        Usp.getInstance().remove(key).commit();
+                    }
+                });
                 return true;
             });
         }

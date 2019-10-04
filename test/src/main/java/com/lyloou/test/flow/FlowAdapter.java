@@ -104,9 +104,6 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         };
         editText.setOnFocusChangeListener((v, hasFocus) -> {
-            // [android - CollapsingToolbarLayout not collapsing when EditText get focused - Stack Overflow](https://stackoverflow.com/questions/33255556/collapsingtoolbarlayout-not-collapsing-when-edittext-get-focused)
-            mItemListener.onFocusChange(hasFocus);
-
             if (hasFocus) {
                 editText.addTextChangedListener(watcher);
             } else {
@@ -145,8 +142,6 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onClickTimeEnd(FlowItem item);
 
         void onTextChanged(FlowItem item, CharSequence s);
-
-        void onFocusChange(boolean hasFocus);
     }
 
     private static class FlowHolder extends RecyclerView.ViewHolder {

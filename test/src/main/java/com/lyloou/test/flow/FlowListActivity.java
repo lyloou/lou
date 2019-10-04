@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -43,6 +42,7 @@ import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.webview.WebActivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uapp;
+import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Uview;
 
@@ -122,18 +122,13 @@ public class FlowListActivity extends AppCompatActivity {
     }
 
     private void showDeleteAlert(FlowDay flowDay) {
-        new AlertDialog.Builder(mContext)
-                .setMessage("确认删除：\n"
-                        .concat(flowDay.getDay()))
-                .setPositiveButton("是的", (dialog, which) -> {
-                    consumeCursorByDayForDelete(flowDay.getDay(), count -> mAdapter.remove(flowDay));
-                    mAdapter.notifyDataSetChanged();
-                })
-                .setNegativeButton("再想想", (dialog, which) -> {
-                })
-                .setCancelable(true)
-                .create()
-                .show();
+        String message = "确认删除：\n".concat(flowDay.getDay());
+        Udialog.alert(mContext, message, ok -> {
+            if (ok) {
+                consumeCursorByDayForDelete(flowDay.getDay(), count -> mAdapter.remove(flowDay));
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void initTopPart() {

@@ -16,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -33,6 +32,8 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uapp;
+import com.lyloou.test.util.Udialog;
+import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Usystem;
 import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Uview;
@@ -51,6 +52,8 @@ public class FlowActivity extends AppCompatActivity {
     private FlowAdapter mAdapter;
     private FlowDay mFlowDay;
     private AppBarLayout mAppBarLayout;
+    private static final int COLOR_BLUE = Color.parseColor("#009edc");
+
 
     // 每次都是插入到第一个，用 LinkedList 效率应该会更好（https://snailclimb.top/JavaGuide/#/java/collection/Java集合框架常见面试题?id=arraylist-与-linkedlist-区别）
     private List<FlowItem> mFlowItems = new LinkedList<>();
@@ -129,6 +132,11 @@ public class FlowActivity extends AppCompatActivity {
     private void initAttachView() {
         findViewById(R.id.tv_add_item).setOnClickListener(v -> addNewItem());
         findViewById(R.id.tv_to_list).setOnClickListener(v -> toList());
+        Uview.doWhenSoftKeyboardChanged(this, show -> {
+            if (show) {
+                mAppBarLayout.setExpanded(false, true);
+            }
+        });
     }
 
     private void toList() {
@@ -195,7 +203,16 @@ public class FlowActivity extends AppCompatActivity {
         return new FlowAdapter.OnItemListener() {
             @Override
             public void onLongClickItem(FlowItem item) {
-                removeItem(item);
+                String message = "确认删除时间段：\n"
+                        .concat(Utime.getFormatTime(item.getTimeStart()))
+                        .concat(item.getTimeSep())
+                        .concat(Utime.getFormatTime(item.getTimeEnd()));
+                Udialog.alert(mContext, message, ok -> {
+                    if (ok) {
+                        mFlowItems.remove(item);
+                        updateDbAndUI();
+                    }
+                });
             }
 
             @Override
@@ -224,31 +241,7 @@ public class FlowActivity extends AppCompatActivity {
                 item.setContent(String.valueOf(s));
                 updateDb();
             }
-
-            @Override
-            public void onFocusChange(boolean hasFocus) {
-                if (hasFocus) {
-                    mAppBarLayout.setExpanded(false, true);
-                }
-            }
         };
-    }
-
-    private void removeItem(FlowItem item) {
-        new AlertDialog.Builder(mContext)
-                .setMessage("确认删除时间段：\n"
-                        .concat(Utime.getFormatTime(item.getTimeStart()))
-                        .concat(item.getTimeSep())
-                        .concat(Utime.getFormatTime(item.getTimeEnd())))
-                .setPositiveButton("是的", (dialog, which) -> {
-                    mFlowItems.remove(item);
-                    updateDbAndUI();
-                })
-                .setNegativeButton("再想想", (dialog, which) -> {
-                })
-                .setCancelable(true)
-                .create()
-                .show();
     }
 
     private void updateDb(boolean... now) {
@@ -311,6 +304,8 @@ public class FlowActivity extends AppCompatActivity {
                                     .load(daily.getPicture2())
                                     .centerCrop()
                                     .into(ivHeader);
+                            ivHeader.setTag(daily.getPicture());
+                            Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE);
                             tvHeader.setText(daily.getContent());
                             tvHeader.setTag(daily.getNote());
                             tvHeader.setVisibility(View.VISIBLE);
