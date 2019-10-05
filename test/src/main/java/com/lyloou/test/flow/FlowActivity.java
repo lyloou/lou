@@ -304,7 +304,7 @@ public class FlowActivity extends AppCompatActivity {
                                     .load(daily.getPicture2())
                                     .centerCrop()
                                     .into(ivHeader);
-                            ivHeader.setTag(daily.getPicture());
+                            ivHeader.setTag(daily.getFenxiang_img());
                             Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE);
                             tvHeader.setText(daily.getContent());
                             tvHeader.setTag(daily.getNote());

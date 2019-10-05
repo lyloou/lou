@@ -177,41 +177,45 @@ public class Uscreen {
      * @param color     图片外的颜色
      */
     public static void setWallpaperByImageView(ImageView imageView, int color) {
+        Context context = imageView.getContext();
+
         imageView.setOnLongClickListener(v -> {
-            Bitmap bitmap = null;
-            Object tag = imageView.getTag();
-            if (tag instanceof String) {
-                String url = (String) tag;
-                try {
-                    bitmap = Glide.with(v.getContext()).load(url).asBitmap().into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
-                } catch (Exception e) {
-                    bitmap = null;
-                }
-            }
-
-            if (bitmap == null) {
-                bitmap = Uview.getBitmapFromImageView(imageView);
-            }
-
-            if (bitmap != null) {
-                Context context = imageView.getContext();
-                Bitmap finalBitmap = bitmap;
-                Udialog.alert(context, "设置成壁纸？", ok -> {
-                    if (ok) {
-                        try {
-                            setWallpaperByBitmap(context, finalBitmap, color);
-                            Snackbar.make(imageView, "已设壁纸", Snackbar.LENGTH_SHORT).show();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            Udialog.alert(context, "设置成壁纸？", ok -> {
+                if (ok) {
+                    new Thread(() -> {
+                        Bitmap bitmap = null;
+                        Object tag = imageView.getTag();
+                        if (tag instanceof String) {
+                            String url = (String) tag;
+                            try {
+                                bitmap = Glide.with(context).load(url).asBitmap().into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
+                            } catch (Exception e) {
+                                bitmap = null;
+                            }
                         }
-                    }
-                });
-                return false;
-            }
 
-            Snackbar.make(imageView, "无法设壁纸", Snackbar.LENGTH_SHORT).show();
+                        if (bitmap == null) {
+                            bitmap = Uview.getBitmapFromImageView(imageView);
+                        }
+
+                        if (bitmap != null) {
+                            try {
+                                setWallpaperByBitmap(context, bitmap, color);
+                                Snackbar.make(imageView, "已设壁纸", Snackbar.LENGTH_SHORT).show();
+                                return;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Snackbar.make(imageView, "无法设壁纸", Snackbar.LENGTH_SHORT).show();
+                    }).start();
+
+                }
+            });
+
             return false;
         });
+
     }
 
 }
