@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.StringSignature;
 import com.lyloou.test.R;
 import com.lyloou.test.common.NetWork;
 
@@ -123,23 +124,14 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder.cbItem.setVisibility(View.VISIBLE);
                 holder.cbItem.setChecked(activeDay.isSelected());
             }
+
             holder.tvItem.setText(activeDay.getDay());
 
-            ImageView ivItem = holder.ivItem;
-            ivItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mItemClickListener.onClick(holder.getAdapterPosition(), activeDay);
-                }
-            });
-            ivItem.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    mItemClickListener.onLongClick(ivItem);
-                    return true;
-                }
-            });
-            loadWelfareToImageView(activeDay.getDay(), ivItem);
+            holder.view.setOnClickListener(view -> mItemClickListener.onClick(holder.getAdapterPosition(), activeDay));
+
+            holder.ivItem.setOnLongClickListener(view -> mItemClickListener.onLongClick(holder.ivItem));
+            holder.ivItem.setImageDrawable(null);
+            loadWelfareToImageView(activeDay.getDay(), holder.ivItem);
 
         } else if (viewHolder instanceof HeaderHolder) {
             HeaderHolder holder = (HeaderHolder) viewHolder;
@@ -184,11 +176,11 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             String welfareUrl = welfare.getString("url");
 
                             Context applicationContext = mContext.getApplicationContext();
-                            Glide
-                                    .with(applicationContext)
+                            Glide.with(applicationContext)
                                     .load(welfareUrl)
-                                    .centerCrop()
-                                    .thumbnail(0.1f)
+                                    .placeholder(R.mipmap.lyloou)
+                                    .signature(new StringSignature(welfareUrl))
+                                    .fitCenter()
                                     .into(ivPic);
 
                             ivPic.setTag(ivPic.getId(), welfareUrl);
@@ -247,7 +239,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     interface OnItemClickListener {
         void onClick(int realPosition, ActiveDay activeDay);
 
-        void onLongClick(ImageView view);
+        boolean onLongClick(ImageView view);
     }
 
     private static class ActiveDayHolder extends RecyclerView.ViewHolder {

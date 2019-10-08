@@ -25,6 +25,7 @@ import android.os.Environment;
 import android.support.v4.content.FileProvider;
 
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.util.Utoast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -172,6 +173,7 @@ public class Ushare {
         }
     }
 
+    // [android - Share image with action send - Stack Overflow](https://stackoverflow.com/questions/46932949/share-image-with-action-send)
     public static void sharePicsToWechat(Context context, List<String> paths) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
@@ -188,5 +190,20 @@ public class Ushare {
 
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
         context.startActivity(intent);
+    }
+
+    public static void sharePicUrl(Context context, String picUrl) {
+
+        String path = Ushare.getImageFilePathFromImageUrl(context, picUrl);
+        if (path == null) {
+            Utoast.show(context, "获取不到图片");
+            return;
+        }
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("image/jepg");
+        Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", new File(path));
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        context.startActivity(Intent.createChooser(shareIntent, "Share image"));
     }
 }

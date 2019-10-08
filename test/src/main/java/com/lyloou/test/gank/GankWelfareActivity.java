@@ -18,9 +18,7 @@ package com.lyloou.test.gank;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -36,7 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemWithOneHeaderOffsetDecoration;
@@ -204,8 +201,7 @@ public class GankWelfareActivity extends AppCompatActivity {
 
             @SuppressLint("CheckResult")
             @Override
-            public void onLongClick(ImageView view) {
-
+            public boolean onLongClick(ImageView view) {
 
                 Object tag = view.getTag(view.getId());
                 if (tag instanceof String) {
@@ -213,28 +209,20 @@ public class GankWelfareActivity extends AppCompatActivity {
                     if (!TextUtils.isEmpty(url)) {
                         LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
                         progressTips.show("正在设置壁纸");
-
-                        Observable
-                                .fromCallable(() -> Glide.with(mContext)
-                                        .load(url)
-                                        .asBitmap()
-                                        .into(Uscreen.getScreenWidth(mContext), Uscreen.getScreenHeight(mContext))
-                                        .get())
+                        Observable.fromCallable(() -> url)
                                 .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(s -> {
-                                    Uscreen.setWallpaperByBitmap(mContext, s, Color.parseColor("#009edc"));
+                                    Ushare.sharePicUrl(mContext, url);
                                     progressTips.hide();
-                                    Snackbar.make(view, "已设壁纸", Snackbar.LENGTH_SHORT).show();
                                 }, throwable -> {
                                     progressTips.hide();
-                                    Snackbar.make(view, "设置壁纸失败", Snackbar.LENGTH_SHORT).show();
                                 });
                     }
                 } else {
                     Utoast.show(mContext, "URL不存在");
                 }
 
+                return false;
             }
         });
         recyclerView.setAdapter(mActiveDayAdapter);

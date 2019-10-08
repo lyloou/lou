@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright  (c) 2017 Lyloou
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +13,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foreground="?android:selectableItemBackground"
@@ -31,7 +30,7 @@
         android:layout_height="200dp"
         android:layout_gravity="center"
         android:scaleType="centerCrop"
-        android:src="@mipmap/bg"/>
+        tools:src="@mipmap/bg" />
 
     <TextView
         android:id="@+id/tv_item"
@@ -39,11 +38,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|left"
         android:padding="8dp"
-        android:text="2017/02/03"/>
+        android:text="2017/02/03" />
 
     <CheckBox
         android:id="@+id/cb_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"/>
+        android:layout_gravity="top|right" />
 </android.support.v7.widget.CardView>
