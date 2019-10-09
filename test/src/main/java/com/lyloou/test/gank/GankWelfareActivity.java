@@ -39,7 +39,7 @@ import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemWithOneHeaderOffsetDecoration;
 import com.lyloou.test.common.EmptyRecyclerView;
-import com.lyloou.test.common.LouDialogProgressTips;
+import com.lyloou.test.common.LouProgressBar;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebContentActivity;
 import com.lyloou.test.util.Uscreen;
@@ -211,7 +211,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                 if (tag instanceof String) {
                     String url = String.valueOf(tag);
                     if (!TextUtils.isEmpty(url)) {
-                        LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
+                        LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
                         progressTips.show("正在设置壁纸");
                         Observable.fromCallable(() -> url)
                                 .subscribeOn(Schedulers.io())
@@ -279,7 +279,7 @@ public class GankWelfareActivity extends AppCompatActivity {
         String caption = String.valueOf(checkedActiveDays.size());
         tvCount.setText(caption);
 
-        LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
+        LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
         View.OnClickListener onClickListener = view1 -> {
             progressTips.show("福利准备中");
             new Thread(() -> {
@@ -293,7 +293,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                     String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, welfareUrl);
                     paths.add(imageFilePathFromImageUrl);
                 }
-                Ushare.sharePicsToWechat(mContext, paths);
+                Ushare.sharePicUrls(mContext, paths);
                 progressTips.hide();
             }).start();
 

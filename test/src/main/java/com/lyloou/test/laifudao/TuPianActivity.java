@@ -37,13 +37,12 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
 import com.lyloou.test.common.LouDialog;
-import com.lyloou.test.common.LouDialogProgressTips;
+import com.lyloou.test.common.LouProgressBar;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.gank.Ushare;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -178,14 +177,10 @@ public class TuPianActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(TuPian tuPian) {
-                LouDialogProgressTips progressTips = LouDialogProgressTips.getInstance(mContext);
-                progressTips.show("图片准备中");
+                LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
+                progressTips.show("图片打包中");
                 new Thread(() -> {
-                    Ushare.clearImageDir(mContext);
-                    List<String> paths = new ArrayList<>();
-                    String imageFilePathFromImageUrl = Ushare.getImageFilePathFromImageUrl(mContext, tuPian.getThumburl());
-                    paths.add(imageFilePathFromImageUrl);
-                    Ushare.sharePicsToWechat(mContext, paths);
+                    Ushare.sharePicUrl(mContext, tuPian.getThumburl());
                     progressTips.hide();
                 }).start();
             }

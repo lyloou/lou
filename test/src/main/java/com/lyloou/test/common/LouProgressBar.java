@@ -30,23 +30,22 @@ import android.widget.TextView;
 import com.lyloou.test.util.Uscreen;
 
 
-public class LouDialogProgressTips {
+public class LouProgressBar {
 
-    private static LouDialogProgressTips sLouDialogProgressTips;
-    private static Activity sContext;
+    private Activity mContext;
 
-    private final LouDialog mProgressDialog;
-    private static final LinearLayout.LayoutParams LAYOUT_PARAM_WRAP_CONTENT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+    private final LouDialog mDialog;
+    private static final LinearLayout.LayoutParams WRAP_CONTENT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
 
     private final TextView mTvTips;
 
-    private LouDialogProgressTips(Activity context) {
-        sContext = context;
+    private LouProgressBar(Activity context) {
+        mContext = context;
         int PADDING = Uscreen.dp2Px(context, 16);
         int MARGIN_6DP = Uscreen.dp2Px(context, 6);
         LinearLayout layout = new LinearLayout(context);
-        layout.setLayoutParams(LAYOUT_PARAM_WRAP_CONTENT);
+        layout.setLayoutParams(WRAP_CONTENT);
         layout.setOrientation(LinearLayout.HORIZONTAL);
         layout.setGravity(Gravity.CENTER);
         layout.setPadding(PADDING, PADDING, PADDING, PADDING);
@@ -57,7 +56,7 @@ public class LouDialogProgressTips {
 
         // add ProgressBar
         ProgressBar bar = new ProgressBar(context);
-        layout.addView(bar, LAYOUT_PARAM_WRAP_CONTENT);
+        layout.addView(bar, WRAP_CONTENT);
 
         space = new Space(context);
         layout.addView(space, SPACE_MARGIN);
@@ -66,59 +65,36 @@ public class LouDialogProgressTips {
         mTvTips = new TextView(context);
         mTvTips.setTextColor(Color.WHITE);
         mTvTips.setTextSize(16);
-        layout.addView(mTvTips, LAYOUT_PARAM_WRAP_CONTENT);
+        layout.addView(mTvTips, WRAP_CONTENT);
 
-        mProgressDialog = LouDialog.newInstance(context, layout, android.R.style.Theme_Holo_Dialog_NoActionBar)
-                .setDimAmount(0.3f).setCancelable(false);
+        mDialog = LouDialog.newInstance(context, layout, android.R.style.Theme_Holo_Dialog_NoActionBar)
+                .setDimAmount(0.3f)
+                .setCancelable(false);
     }
 
     // 创建 Dialog 需要在主线程中运行；
     @MainThread
-    public static LouDialogProgressTips getInstance(Activity context) {
+    public static LouProgressBar buildDialog(Activity context) {
         if (context == null) {
             throw new NullPointerException("The context can't be null");
         }
 
-        if (sContext == context && sLouDialogProgressTips != null) {
-            return sLouDialogProgressTips;
-        }
-        return sLouDialogProgressTips = new LouDialogProgressTips(context);
-    }
-
-    public static void dismiss() {
-        if (sLouDialogProgressTips != null)
-            sLouDialogProgressTips.hide();
+        return new LouProgressBar(context);
     }
 
 
     public void show(final String tips) {
-        if (sContext != null && mProgressDialog != null) {
-            if (!mProgressDialog.isShowing()) {
-                mProgressDialog.show();
-            }
-
-            if (!TextUtils.isEmpty(tips))
-                sContext.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setTips(tips);
-                    }
-                });
+        if (!TextUtils.isEmpty(tips)) {
+            mContext.runOnUiThread(() -> mTvTips.setText(tips));
         }
+
+        if (!mDialog.isShowing()) {
+            mDialog.show();
+        }
+
     }
 
     public void hide() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-    }
-
-    // 更改视图需要在主线程中运行
-    @MainThread
-    private void setTips(String tips) {
-        if (mProgressDialog != null) {
-            if (mTvTips != null)
-                mTvTips.setText(tips);
-        }
+        mDialog.dismiss();
     }
 }
