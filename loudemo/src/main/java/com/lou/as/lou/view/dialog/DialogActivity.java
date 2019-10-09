@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.lou.as.lou.R;
 import com.lyloou.lou.dialog.LouDialogAtBottom;
-import com.lyloou.lou.dialog.LouDialogToast;
 import com.lyloou.lou.dialog.LouProgressBar;
+import com.lyloou.lou.util.Utoast;
 import com.lyloou.lou.util.Uview;
 
 public class DialogActivity extends AppCompatActivity {
@@ -35,7 +35,7 @@ public class DialogActivity extends AppCompatActivity {
                             break;
                         case R.id.btn_show_toastDialog:
                             // 使用自定义的Toast
-                            LouDialogToast.show(mContext, "欢迎您！");
+                            Utoast.show(mContext, "欢迎您！");
                             break;
                         case R.id.btn_show_LouDialogAtBottom:
                             // 使用自定义的自底而上的Dialog
