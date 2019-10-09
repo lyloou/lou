@@ -97,6 +97,7 @@
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".flow.FlowActivity"
+            android:launchMode="singleTask"
             android:exported="true"
             android:theme="@style/FastEnterTheme"
             android:windowSoftInputMode="adjustResize">
