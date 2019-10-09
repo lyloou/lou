@@ -19,6 +19,7 @@ package com.lyloou.test.gank;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -101,6 +102,9 @@ public class GankWelfareActivity extends AppCompatActivity {
         mContext = this;
 
         setContentView(R.layout.activity_gank_welfare);
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
 
         initView();
     }

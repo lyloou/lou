@@ -113,6 +113,14 @@
         <activity
             android:name=".common.webview.NormalWebViewActivity"
             android:theme="@style/AppTheme.TranslucentStatus" />
+
+        <activity android:name=".show.ShowIntentActivity">
+            <intent-filter>
+                <data android:mimeType="text/plain" />
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
