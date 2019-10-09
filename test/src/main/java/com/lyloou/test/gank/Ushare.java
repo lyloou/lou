@@ -174,7 +174,7 @@ public class Ushare {
     }
 
     // [android - Share image with action send - Stack Overflow](https://stackoverflow.com/questions/46932949/share-image-with-action-send)
-    public static void sharePicsToWechat(Context context, List<String> paths) {
+    public static void sharePicUrls(Context context, List<String> paths) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
