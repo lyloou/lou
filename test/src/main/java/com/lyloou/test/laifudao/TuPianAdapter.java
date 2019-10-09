@@ -64,11 +64,8 @@ class TuPianAdapter extends RecyclerView.Adapter<TuPianAdapter.TuPianViewHolder>
         TuPian tupian = mList.get(position);
 
         ImageView ivPoster = viewHolder.ivTuPian;
-        Glide
-                .with(ivPoster.getContext())
+        Glide.with(ivPoster.getContext())
                 .load(tupian.getSourceurl())
-                .centerCrop()
-                .thumbnail(0.1f)
                 .into(ivPoster);
         viewHolder.view.setOnClickListener(v -> {
             if (mOnItemTuPianClickListener != null) {
