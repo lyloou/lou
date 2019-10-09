@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.lou.as.lou.R;
 import com.lyloou.lou.dialog.LouDialogAtBottom;
-import com.lyloou.lou.dialog.LouDialogProgressTips;
 import com.lyloou.lou.dialog.LouDialogToast;
+import com.lyloou.lou.dialog.LouProgressBar;
 import com.lyloou.lou.util.Uview;
 
 public class DialogActivity extends AppCompatActivity {
@@ -29,14 +29,9 @@ public class DialogActivity extends AppCompatActivity {
                     switch (v.getId()) {
                         case R.id.btn_show_progressDialog:
                             // 使用自定义的ProgressBar
-                            LouDialogProgressTips.getInstance(mContext).show("扫描中...");
-                            v.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    LouDialogProgressTips.dismiss();
-                                }
-                            }, 2000);
-
+                            LouProgressBar dialog = LouProgressBar.buildDialog(mContext);
+                            dialog.show("扫描中...");
+                            v.postDelayed(dialog::hide, 2000);
                             break;
                         case R.id.btn_show_toastDialog:
                             // 使用自定义的Toast
