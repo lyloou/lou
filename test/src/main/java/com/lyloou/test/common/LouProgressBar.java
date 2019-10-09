@@ -17,8 +17,8 @@
 package com.lyloou.test.common;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.support.annotation.MainThread;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -27,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.Space;
 import android.widget.TextView;
 
+import com.lyloou.test.R;
 import com.lyloou.test.util.Uscreen;
 
 
@@ -63,11 +64,11 @@ public class LouProgressBar {
 
         // add TextView
         mTvTips = new TextView(context);
-        mTvTips.setTextColor(Color.WHITE);
+        mTvTips.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
         mTvTips.setTextSize(16);
         layout.addView(mTvTips, WRAP_CONTENT);
 
-        mDialog = LouDialog.newInstance(context, layout, android.R.style.Theme_Holo_Dialog_NoActionBar)
+        mDialog = LouDialog.newInstance(context, layout, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar)
                 .setDimAmount(0.3f)
                 .setCancelable(false);
     }
@@ -92,6 +93,10 @@ public class LouProgressBar {
             mDialog.show();
         }
 
+    }
+
+    public void setCancelble(boolean cancelble) {
+        mDialog.setCancelable(cancelble);
     }
 
     public void hide() {
