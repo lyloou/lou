@@ -1,1 +1,2 @@
-include ':demo', ':test', ':java', ':smoothlayout', ':loudemo', ':loulib', ':sdkdemo', ':weex'
+//include ':demo', ':test', ':java', ':smoothlayout', ':loudemo', ':loulib', ':sdkdemo', ':weex'
+include ':test'
