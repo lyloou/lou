@@ -19,6 +19,7 @@ package com.lyloou.test.bus;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -92,8 +93,23 @@ public class BusTvActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        setMyTitle("车来了");
         setContentView(R.layout.activity_bustv);
         initView();
+    }
+
+    private void setMyTitle(String title) {
+        ActionBar supportActionBar = getSupportActionBar();
+        if (null != supportActionBar) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setTitle(title);
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void initView() {
