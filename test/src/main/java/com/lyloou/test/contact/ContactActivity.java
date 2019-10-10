@@ -18,22 +18,28 @@ package com.lyloou.test.contact;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.lyloou.test.R;
 import com.lyloou.test.common.LouAdapter;
+import com.lyloou.test.util.Utoast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ContactActivity extends AppCompatActivity {
 
@@ -49,17 +55,36 @@ public class ContactActivity extends AppCompatActivity {
         setContentView(R.layout.activity_contact);
         setMyTitle("联系人");
 
+        initView();
         initListView();
-        loadData();
+        reloadData();
+    }
+
+
+    private void initView() {
+        EditText etContent = findViewById(R.id.et_content);
+
+        findViewById(R.id.iv_search).setOnClickListener(v -> {
+            String content = etContent.getText().toString();
+            if (TextUtils.isEmpty(content)) {
+                Utoast.show(mContext, "请输入名称或电话");
+                reloadData();
+                return;
+            }
+            mAdapter.clear();
+            List<LinkMan> manList = readLinkMans();
+            for (LinkMan man : manList) {
+                if (man.getNumber().contains(content) || man.getName().contains(content)) {
+                    mAdapter.addItem(man, true);
+                }
+            }
+        });
     }
 
     private void initListView() {
         mRefreshLayout = findViewById(R.id.srl_contact);
         mRefreshLayout.setEnabled(true);
-        mRefreshLayout.setOnRefreshListener(() -> {
-            mAdapter.clear();
-            loadData();
-        });
+        mRefreshLayout.setOnRefreshListener(this::reloadData);
 
         ListView listView = findViewById(R.id.lv_contact);
         mAdapter = new LouAdapter<LinkMan>(listView, android.R.layout.simple_list_item_2) {
@@ -75,12 +100,27 @@ public class ContactActivity extends AppCompatActivity {
             }
         };
         mAdapter.initList(new ArrayList<>());
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            LinkMan item = mAdapter.getItem(position);
+            String number = item.getNumber();
+            startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:".concat(number))));
+        });
     }
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 
-    private void loadData() {
+    private void reloadData() {
         mRefreshLayout.setRefreshing(true);
+        mAdapter.clear();
+        List<LinkMan> manList = readLinkMans();
+        for (LinkMan man : manList) {
+            mAdapter.addItem(man, true);
+        }
+        mRefreshLayout.setRefreshing(false);
+    }
+
+    private List<LinkMan> readLinkMans() {
+        List<LinkMan> manList = new ArrayList<>();
         // [Permission Denial: opening provider com.android.providers.contacts.ContactsProvider2 from ProcessRecord in Android Studio - Stack Overflow](https://stackoverflow.com/questions/29915919/permission-denial-opening-provider-com-android-providers-contacts-contactsprovi)
         // Check the SDK version and whether the permission is already granted or not.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
@@ -92,13 +132,13 @@ public class ContactActivity extends AppCompatActivity {
                 while (cursor != null && cursor.moveToNext()) {
                     String displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    mAdapter.addItem(new LinkMan(displayName, number), true);
+                    manList.add(new LinkMan(displayName, number));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        mRefreshLayout.setRefreshing(false);
+        return manList;
     }
 
     @Override
@@ -107,7 +147,7 @@ public class ContactActivity extends AppCompatActivity {
         if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
-                loadData();
+                reloadData();
             } else {
                 Toast.makeText(this, "Until you grant the permission, we cannot display the names", Toast.LENGTH_SHORT).show();
             }
