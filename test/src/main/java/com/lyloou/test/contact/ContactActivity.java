@@ -123,7 +123,7 @@ public class ContactActivity extends AppCompatActivity {
         List<LinkMan> manList = new ArrayList<>();
         // [Permission Denial: opening provider com.android.providers.contacts.ContactsProvider2 from ProcessRecord in Android Studio - Stack Overflow](https://stackoverflow.com/questions/29915919/permission-denial-opening-provider-com-android-providers-contacts-contactsprovi)
         // Check the SDK version and whether the permission is already granted or not.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (isNotGranted()) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
             //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
         } else {
@@ -139,6 +139,11 @@ public class ContactActivity extends AppCompatActivity {
             }
         }
         return manList;
+    }
+
+    private boolean isNotGranted() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
