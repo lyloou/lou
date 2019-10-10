@@ -26,5 +26,6 @@
     <string name="bustv_chelaile">公交 - 车来了</string>
     <string name="man">Man - 这个人</string>
     <string name="flow_time">Flow - 时分流</string>
+    <string name="link_man">Man - 联系人</string>
     <string name="flow_time_day">时分流</string>
 </resources>
