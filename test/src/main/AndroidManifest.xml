@@ -100,7 +100,6 @@
         <activity
             android:name=".flow.FlowActivity"
             android:exported="true"
-            android:launchMode="singleTask"
             android:theme="@style/FastEnterTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

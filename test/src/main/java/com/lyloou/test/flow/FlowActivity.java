@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,7 +54,7 @@ public class FlowActivity extends AppCompatActivity {
     private FlowDay mFlowDay;
     private AppBarLayout mAppBarLayout;
     private static final int COLOR_BLUE = Color.parseColor("#009edc");
-
+    private static final String TAG = FlowActivity.class.getSimpleName();
 
     // 每次都是插入到第一个，用 LinkedList 效率应该会更好（https://snailclimb.top/JavaGuide/#/java/collection/Java集合框架常见面试题?id=arraylist-与-linkedlist-区别）
     private List<FlowItem> mFlowItems = new LinkedList<>();
@@ -77,6 +78,7 @@ public class FlowActivity extends AppCompatActivity {
         setContentView(R.layout.activity_flow);
         initData();
         initView();
+        Log.i(TAG, "onCreate: day=" + getIntent().getStringExtra(EXTRA_DAY));
     }
 
     private void initData() {
@@ -141,8 +143,6 @@ public class FlowActivity extends AppCompatActivity {
 
     private void toList() {
         Intent intent = new Intent(this, FlowListActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
         startActivity(intent);
     }
 
