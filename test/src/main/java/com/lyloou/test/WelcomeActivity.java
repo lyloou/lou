@@ -50,7 +50,7 @@ public class WelcomeActivity extends Activity {
                                         }
                                     });
 
-                            handler.postDelayed(toNext, 3000);
+                            handler.postDelayed(toNext, 800);
                         }
                         , Throwable::printStackTrace);
     }

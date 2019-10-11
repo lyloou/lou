@@ -22,9 +22,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.content.FileProvider;
 
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.util.Ufile;
 import com.lyloou.test.util.Utoast;
 
 import org.json.JSONArray;
@@ -184,13 +184,14 @@ public class Ushare {
 
         for (String path : paths /* List of the files you want to send */) {
             File file = new File(path);
-            Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", file);
+            Uri uri = Ufile.getUriForFile(context, file);
             files.add(uri);
         }
 
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
         context.startActivity(intent);
     }
+
 
     public static void sharePicUrl(Context context, String picUrl) {
 
@@ -202,7 +203,7 @@ public class Ushare {
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("image/jepg");
-        Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", new File(path));
+        Uri uri = Ufile.getUriForFile(context, new File(path));
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
         context.startActivity(Intent.createChooser(shareIntent, "Share image"));
     }

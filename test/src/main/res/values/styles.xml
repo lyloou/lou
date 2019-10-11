@@ -26,7 +26,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
-        <item name="android:tint">#ffffff</item>
+
+        <!--[java - How to change color of the back arrow in the new material theme? - Stack Overflow](https://stackoverflow.com/questions/26788464/how-to-change-color-of-the-back-arrow-in-the-new-material-theme/27517878)-->
+        <item name="colorControlNormal">@color/white</item>
     </style>
 
     <style name="Animation_Alpha" parent="android:Animation">
@@ -47,5 +49,12 @@
     <style name="pop_add">
         <item name="android:windowEnterAnimation">@anim/pop_add_show</item>
         <item name="android:windowExitAnimation">@anim/pop_add_hide</item>
+    </style>
+
+    <style name="MyTransparent" parent="AppTheme.TranslucentStatus">
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
     </style>
 </resources>

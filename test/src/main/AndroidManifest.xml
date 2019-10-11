@@ -14,6 +14,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
 
     <application
         android:name=".MyApplication"
@@ -56,7 +58,7 @@
 
         <activity
             android:name=".media.MediaRecorderActivity"
-            android:label="@string/media_audio" />
+            android:theme="@style/FastEnterTheme" />
         <activity
             android:name=".kingsoftware.KingsoftwareActivity"
             android:theme="@style/AppTheme.TranslucentStatus" />
@@ -125,8 +127,17 @@
         </activity>
         <activity
             android:name=".contact.ContactActivity"
-            android:label="@string/link_man"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+        <activity
+            android:name=".ClassOneActivity"
+            android:label="@string/class_one"
+            android:theme="@style/FastEnterTheme" />
+        <activity
+            android:name=".media.PictureActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".media.pic.CropImageActivity"
+            android:theme="@style/MyTransparent" />
     </application>
 
 </manifest>

@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
+<paths>
+
+    <files-path
+        name="Pictures"
+        path="/" />
+    <files-path
+        name="Movies"
+        path="/" />
+    <external-path
+        name="files_root"
+        path="Android/data/${APP_ID}/" />
+    <root-path
+        name="root"
+        path="/" />
     <external-path
         name="external_files"
         path="." />
 </paths>
-

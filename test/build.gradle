@@ -74,4 +74,7 @@ dependencies {
     api 'com.just.agentweb:filechooser:4.0.3-alpha@aar'// (可选)
     api 'com.github.Justson:Downloader:v4.0.3'// (可选)
 //    api 'com.just.agentweb:download:4.0.3-alpha@aar' // (可选)
+
+    implementation "com.squareup.okhttp3:okhttp:$okhttp3Version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp3LoggingVersion"
 }
