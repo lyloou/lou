@@ -237,7 +237,14 @@ public class BusActivity extends AppCompatActivity {
     private void setMyTitle(String m355) {
         ActionBar supportActionBar = getSupportActionBar();
         if (null != supportActionBar) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
             supportActionBar.setTitle(m355);
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

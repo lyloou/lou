@@ -73,10 +73,10 @@ public class ClassOneActivity extends AppCompatActivity {
         @SuppressWarnings("unchecked")
         Map<String, Class> stringClassMap = new HashMap() {{
             put("联系人", ContactActivity.class);
-            put("车", BusActivity.class);
-            put("多媒体 - 音频", RecorderActivity.class);
             put("多媒体 - 图片", PictureActivity.class);
+            put("多媒体 - 音频", RecorderActivity.class);
             put("多媒体 - 视频", VideoActivity.class);
+            put("车来了 - 菜单式", BusActivity.class);
         }};
 
         recyclerView.setAdapter(new MainAdapter(stringClassMap));
