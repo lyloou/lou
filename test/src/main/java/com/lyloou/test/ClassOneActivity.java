@@ -36,8 +36,8 @@ import com.lyloou.test.bus.BusActivity;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.contact.ContactActivity;
-import com.lyloou.test.media.MediaRecorderActivity;
 import com.lyloou.test.media.pic.PictureActivity;
+import com.lyloou.test.media.recoder.RecorderActivity;
 import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
@@ -73,7 +73,7 @@ public class ClassOneActivity extends AppCompatActivity {
         Map<String, Class> stringClassMap = new HashMap() {{
             put("联系人", ContactActivity.class);
             put("车", BusActivity.class);
-            put("多媒体 - 音频", MediaRecorderActivity.class);
+            put("多媒体 - 音频", RecorderActivity.class);
             put("多媒体 - 图片", PictureActivity.class);
         }};
 

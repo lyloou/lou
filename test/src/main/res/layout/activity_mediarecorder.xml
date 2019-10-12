@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright  (c) 2017 Lyloou
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,29 +15,62 @@
   -->
 
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <ToggleButton
-        android:id="@+id/tbtn_record"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textOn="Record On"
-        android:textOff="Record Off"/>
+        android:layout_height="?android:actionBarSize"
+        android:background="@color/colorAccent"
+        app:titleTextColor="@color/white" />
 
-    <ToggleButton
-        android:id="@+id/tbtn_play"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textOn="Play On"
-        android:textOff="Play Off"/>
+        android:orientation="horizontal">
+
+        <ToggleButton
+            android:id="@+id/tbtn_record"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:drawableLeft="@drawable/toggle_selector"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textOff="Record Off"
+            android:textOn="Record On" />
+
+        <ToggleButton
+            android:id="@+id/tbtn_play"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="?selectableItemBackground"
+            android:drawableLeft="@drawable/toggle_selector"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textOff="Play Off"
+            android:textOn="Play On" />
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/btn_grant"
-        android:text="Grant Permission"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:layout_gravity="center"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="Grant Permission" />
 </LinearLayout>

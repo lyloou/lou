@@ -57,7 +57,7 @@
             android:theme="@style/FastEnterTheme" />
 
         <activity
-            android:name=".media.MediaRecorderActivity"
+            android:name=".media.recoder.RecorderActivity"
             android:theme="@style/FastEnterTheme" />
         <activity
             android:name=".kingsoftware.KingsoftwareActivity"

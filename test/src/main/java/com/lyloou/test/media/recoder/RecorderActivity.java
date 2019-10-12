@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.media;
+package com.lyloou.test.media.recoder;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -25,16 +24,19 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 
 import java.io.IOException;
 
 // [MediaRecorder | Android Developers](https://developer.android.com/guide/topics/media/mediarecorder.html)
 
-public class MediaRecorderActivity extends Activity {
+public class RecorderActivity extends AppCompatActivity {
 
     private static final int REQUEST_PERMISION_RECORD_AUDIO = 868;
     private String[] permission = {Manifest.permission.RECORD_AUDIO};
@@ -51,7 +53,25 @@ public class MediaRecorderActivity extends Activity {
 
         requestPermission();
         initStorageEnv();
+        initToolbar();
         initView();
+
+    }
+
+    private void initToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("录音和播放");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
+        ImmersionBar.with(this)
+                .statusBarDarkFont(true)
+                .navigationBarDarkIcon(true)
+                .statusBarColor(R.color.colorAccent)
+                .statusBarAlpha(0.1f)
+                .init();
     }
 
     private void requestPermission() {
@@ -76,7 +96,6 @@ public class MediaRecorderActivity extends Activity {
     private void initStorageEnv() {
         mFileName = getExternalCacheDir().getAbsolutePath();
         mFileName += "/audiorecordtest.3gp";
-        System.out.println(mFileName);
     }
 
     private void initView() {
