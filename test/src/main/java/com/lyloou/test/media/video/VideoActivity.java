@@ -40,7 +40,7 @@ import com.lyloou.test.R;
 public class VideoActivity extends AppCompatActivity {
     private static final String TAG = VideoActivity.class.getSimpleName();
 
-    public static final String[] URLS = {"http://7xjmzj.com1.z0.glb.clouddn.com/20171026175005_JObCxCE2.mp4", "https://demovideos.oss-cn-shanghai.aliyuncs.com//时尚美妆/qiuqiu美妆/qiuqiu美妆/qiuqiu makeup/20180730/娃娃妆.mp4"};
+    public static final String[] URLS = DataUtil.getVideos();
     private VideoView videoView;
     private static int currentUrlPosition = 0;
 
@@ -50,7 +50,7 @@ public class VideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_media_video);
 
         initToolbar();
-        initView();
+        initVideoView();
     }
 
     private void initToolbar() {
@@ -69,7 +69,7 @@ public class VideoActivity extends AppCompatActivity {
                 .init();
     }
 
-    private void initView() {
+    private void initVideoView() {
         videoView = findViewById(R.id.player);
         videoView.setUrl(URLS[getCurrentPosition()]); //设置视频地址
         VideoViewManager.setConfig(VideoViewConfig.newBuilder()
@@ -87,7 +87,7 @@ public class VideoActivity extends AppCompatActivity {
         tvNext.setOnClickListener(v -> {
             videoView.release();
             int current = getCurrentPosition();
-            Log.i(TAG, "initView: currentPosition:" + current);
+            Log.i(TAG, "initVideoView: currentPosition:" + current);
             videoView.setUrl(URLS[current]);
             videoView.start();
         });

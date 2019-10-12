@@ -15,39 +15,49 @@
   -->
 
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?android:actionBarSize"
-        android:background="@color/colorAccent"
-        app:titleTextColor="@color/white" />
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
 
-        <com.dueeeke.videoplayer.player.VideoView
-            android:id="@+id/player"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="?android:actionBarSize"
+            android:background="@color/colorAccent"
+            app:titleTextColor="@color/white" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.dueeeke.videoplayer.player.VideoView
+                android:id="@+id/player"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/btn_next"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="?selectableItemBackground"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Next Video" />
     </LinearLayout>
 
-
-    <Button
-        android:id="@+id/btn_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="?selectableItemBackground"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:text="Next" />
-</LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_list"
+        android:layout_width="400dp"
+        android:layout_height="match_parent" />
+</RelativeLayout>
