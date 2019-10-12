@@ -79,9 +79,9 @@ public class VideoActivity extends AppCompatActivity {
 
         StandardVideoController controller = new StandardVideoController(this);
         controller.setTitle("视频标题"); //设置视频标题
-        controller.show();
         videoView.setVideoController(controller); //设置控制器，如需定制可继承BaseVideoController
         videoView.start(); //开始播放，不调用则不自动播放
+        controller.show();
 
         TextView tvNext = findViewById(R.id.btn_next);
         tvNext.setOnClickListener(v -> {
