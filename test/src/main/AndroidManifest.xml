@@ -138,6 +138,9 @@
         <activity
             android:name=".media.pic.CropImageActivity"
             android:theme="@style/MyTransparent" />
+        <activity
+            android:name=".media.video.VideoActivity"
+            android:theme="@style/FastEnterTheme" />
     </application>
 
 </manifest>
