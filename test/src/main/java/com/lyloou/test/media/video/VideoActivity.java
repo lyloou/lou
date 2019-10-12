@@ -42,7 +42,7 @@ public class VideoActivity extends AppCompatActivity {
 
     public static final String[] URLS = {"http://7xjmzj.com1.z0.glb.clouddn.com/20171026175005_JObCxCE2.mp4", "https://demovideos.oss-cn-shanghai.aliyuncs.com//时尚美妆/qiuqiu美妆/qiuqiu美妆/qiuqiu makeup/20180730/娃娃妆.mp4"};
     private VideoView videoView;
-    private static int currentUrlPosition = 1;
+    private static int currentUrlPosition = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,7 +71,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private void initView() {
         videoView = findViewById(R.id.player);
-        videoView.setUrl(URLS[currentUrlPosition]); //设置视频地址
+        videoView.setUrl(URLS[getCurrentPosition()]); //设置视频地址
         VideoViewManager.setConfig(VideoViewConfig.newBuilder()
                 //使用使用IjkPlayer解码
                 .setPlayerFactory(IjkPlayerFactory.create())
@@ -79,18 +79,22 @@ public class VideoActivity extends AppCompatActivity {
 
         StandardVideoController controller = new StandardVideoController(this);
         controller.setTitle("视频标题"); //设置视频标题
+        controller.showNetWarning();
         videoView.setVideoController(controller); //设置控制器，如需定制可继承BaseVideoController
         videoView.start(); //开始播放，不调用则不自动播放
-        controller.show();
 
         TextView tvNext = findViewById(R.id.btn_next);
         tvNext.setOnClickListener(v -> {
             videoView.release();
-            int current = (++currentUrlPosition) % URLS.length;
+            int current = getCurrentPosition();
             Log.i(TAG, "initView: currentPosition:" + current);
             videoView.setUrl(URLS[current]);
             videoView.start();
         });
+    }
+
+    private int getCurrentPosition() {
+        return (currentUrlPosition++) % URLS.length;
     }
 
     @Override
