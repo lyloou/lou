@@ -133,7 +133,7 @@
             android:label="@string/class_one"
             android:theme="@style/FastEnterTheme" />
         <activity
-            android:name=".media.PictureActivity"
+            android:name=".media.pic.PictureActivity"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".media.pic.CropImageActivity"

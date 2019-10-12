@@ -37,7 +37,7 @@ import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.contact.ContactActivity;
 import com.lyloou.test.media.MediaRecorderActivity;
-import com.lyloou.test.media.PictureActivity;
+import com.lyloou.test.media.pic.PictureActivity;
 import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;

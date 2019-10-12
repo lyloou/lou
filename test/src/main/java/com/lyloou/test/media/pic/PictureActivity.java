@@ -1,4 +1,4 @@
-package com.lyloou.test.media;
+package com.lyloou.test.media.pic;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
-import com.lyloou.test.media.pic.CropImageActivity;
 
 public class PictureActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 100;

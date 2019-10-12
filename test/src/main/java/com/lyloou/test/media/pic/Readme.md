@@ -1,0 +1,1 @@
+imagepicker - [jeasonlzy/ImagePicker: 完全仿微信的图片选择，并且提供了多种图片加载接口，选择图片后可以旋转，可以裁剪成矩形或圆形，可以配置各种其他的参数](https://github.com/jeasonlzy/ImagePicker)
