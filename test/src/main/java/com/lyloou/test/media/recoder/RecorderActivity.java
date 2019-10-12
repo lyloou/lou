@@ -49,7 +49,7 @@ public class RecorderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mediarecorder);
+        setContentView(R.layout.activity_media_recorder);
 
         requestPermission();
         initStorageEnv();
