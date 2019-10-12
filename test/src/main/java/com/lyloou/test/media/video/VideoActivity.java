@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.dueeeke.videocontroller.StandardVideoController;
@@ -42,7 +41,7 @@ public class VideoActivity extends AppCompatActivity {
 
     public static final String[] URLS = DataUtil.getVideos();
     private VideoView videoView;
-    private static int currentUrlPosition = 0;
+    private static int lastUrlPosition = -1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,7 +70,7 @@ public class VideoActivity extends AppCompatActivity {
 
     private void initVideoView() {
         videoView = findViewById(R.id.player);
-        videoView.setUrl(URLS[getCurrentPosition()]); //设置视频地址
+        videoView.setUrl(URLS[getCurrentPosition(false)]); //设置视频地址
         VideoViewManager.setConfig(VideoViewConfig.newBuilder()
                 //使用使用IjkPlayer解码
                 .setPlayerFactory(IjkPlayerFactory.create())
@@ -83,18 +82,27 @@ public class VideoActivity extends AppCompatActivity {
         videoView.setVideoController(controller); //设置控制器，如需定制可继承BaseVideoController
         videoView.start(); //开始播放，不调用则不自动播放
 
-        TextView tvNext = findViewById(R.id.btn_next);
-        tvNext.setOnClickListener(v -> {
-            videoView.release();
-            int current = getCurrentPosition();
-            Log.i(TAG, "initVideoView: currentPosition:" + current);
-            videoView.setUrl(URLS[current]);
-            videoView.start();
-        });
+        this.<TextView>findViewById(R.id.btn_preview).setOnClickListener(v -> toChangeVideo(true));
+        this.<TextView>findViewById(R.id.btn_next).setOnClickListener(v -> toChangeVideo(false));
     }
 
-    private int getCurrentPosition() {
-        return (currentUrlPosition++) % URLS.length;
+    private void toChangeVideo(boolean preview) {
+        videoView.release();
+        int current = getCurrentPosition(preview);
+        videoView.setUrl(URLS[current]);
+        videoView.start();
+    }
+
+    private int getCurrentPosition(boolean preview) {
+        if (preview) {
+            --lastUrlPosition;
+            if (lastUrlPosition < 0) {
+                lastUrlPosition = URLS.length - 1;
+            }
+            lastUrlPosition = lastUrlPosition % URLS.length;
+            return lastUrlPosition;
+        }
+        return (++lastUrlPosition) % URLS.length;
     }
 
     @Override
