@@ -40,7 +40,8 @@
                 android:id="@+id/iv_header"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:background="@mipmap/timeflow"
+                android:padding="32dp"
+                android:src="@drawable/ic_timer"
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.7" />
 
