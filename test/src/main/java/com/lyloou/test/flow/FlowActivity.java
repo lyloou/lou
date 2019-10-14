@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
@@ -292,7 +293,12 @@ public class FlowActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        Uscreen.setToolbarMarginTop(this, toolbar);
+        ImmersionBar.with(this)
+                .statusBarDarkFont(false)
+                .navigationBarDarkIcon(false)
+                .statusBarColor(R.color.colorAccent)
+                .statusBarAlpha(0.1f)
+                .init();
 
         ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
@@ -306,7 +312,7 @@ public class FlowActivity extends AppCompatActivity {
                                     .centerCrop()
                                     .into(ivHeader);
                             ivHeader.setTag(daily.getFenxiang_img());
-                            Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE);
+                            Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE, false);
                             tvHeader.setText(daily.getContent());
                             tvHeader.setTag(daily.getNote());
                             tvHeader.setVisibility(View.VISIBLE);

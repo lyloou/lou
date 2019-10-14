@@ -212,7 +212,7 @@ public class GankWelfareActivity extends AppCompatActivity {
                     String url = String.valueOf(tag);
                     if (!TextUtils.isEmpty(url)) {
                         LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
-                        progressTips.show("正在设置壁纸");
+                        progressTips.show("正在加载...");
                         Observable.fromCallable(() -> url)
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(s -> {

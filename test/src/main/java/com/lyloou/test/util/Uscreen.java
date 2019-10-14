@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.lyloou.test.common.LouProgressBar;
 
 import java.io.IOException;
 
@@ -177,45 +178,68 @@ public class Uscreen {
      * @param color     图片外的颜色
      */
     public static void setWallpaperByImageView(ImageView imageView, int color) {
-        Context context = imageView.getContext();
+        setWallpaperByImageView(imageView, color, true);
+    }
 
+    /**
+     * @param imageView view
+     * @param color     图片外的颜色
+     */
+    public static void setWallpaperByImageView(ImageView imageView, int color, boolean needShowDialog) {
+        Context context = imageView.getContext();
         imageView.setOnLongClickListener(v -> {
+            if (!needShowDialog) {
+                toSetWallpaperAsync(context, imageView, color);
+                return false;
+            }
             Udialog.alert(context, "设置成壁纸？", ok -> {
                 if (ok) {
-                    new Thread(() -> {
-                        Bitmap bitmap = null;
-                        Object tag = imageView.getTag();
-                        if (tag instanceof String) {
-                            String url = (String) tag;
-                            try {
-                                bitmap = Glide.with(context).load(url).asBitmap().into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
-                            } catch (Exception e) {
-                                bitmap = null;
-                            }
-                        }
-
-                        if (bitmap == null) {
-                            bitmap = Uview.getBitmapFromImageView(imageView);
-                        }
-
-                        if (bitmap != null) {
-                            try {
-                                setWallpaperByBitmap(context, bitmap, color);
-                                Snackbar.make(imageView, "已设壁纸", Snackbar.LENGTH_SHORT).show();
-                                return;
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        Snackbar.make(imageView, "无法设壁纸", Snackbar.LENGTH_SHORT).show();
-                    }).start();
-
+                    toSetWallpaperAsync(context, imageView, color);
                 }
             });
-
             return false;
         });
 
+    }
+
+
+    private static void toSetWallpaperAsync(Context context, ImageView imageView, int color) {
+        new Thread(() -> {
+            LouProgressBar progressBar = LouProgressBar.buildDialog(context);
+            progressBar.show("正在设置壁纸...");
+
+            Bitmap bitmap = null;
+            Object tag = imageView.getTag();
+            if (tag instanceof String) {
+                String url = (String) tag;
+                try {
+                    bitmap = Glide.with(context)
+                            .load(url)
+                            .asBitmap()
+                            .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                            .get();
+                } catch (Exception e) {
+                    bitmap = null;
+                }
+            }
+
+            if (bitmap == null) {
+                bitmap = Uview.getBitmapFromImageView(imageView);
+            }
+
+            if (bitmap != null) {
+                try {
+                    setWallpaperByBitmap(context, bitmap, color);
+                    progressBar.hide();
+                    Snackbar.make(imageView, "已设壁纸", Snackbar.LENGTH_SHORT).show();
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            progressBar.hide();
+            Snackbar.make(imageView, "无法设壁纸", Snackbar.LENGTH_SHORT).show();
+        }).start();
     }
 
 }

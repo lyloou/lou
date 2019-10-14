@@ -16,8 +16,8 @@
 
 package com.lyloou.test.common;
 
-import android.app.Activity;
-import android.support.annotation.MainThread;
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -29,77 +29,80 @@ import android.widget.TextView;
 
 import com.lyloou.test.R;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.http.Uthread;
 
 
 public class LouProgressBar {
 
-    private Activity mContext;
+    private Context mContext;
 
-    private final LouDialog mDialog;
-    private static final LinearLayout.LayoutParams WRAP_CONTENT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT);
+    private LouDialog mDialog;
+    private static final LinearLayout.LayoutParams WRAP_CONTENT =
+            new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
 
-    private final TextView mTvTips;
+    private TextView mTvTips;
+    private LinearLayout mLayout;
 
-    private LouProgressBar(Activity context) {
+    private LouProgressBar(Context context) {
         mContext = context;
+
+        // 创建 Dialog 需要在主线程中运行；
+        Uthread.runInMainThread(() -> initView(context));
+    }
+
+    private void initView(Context context) {
         int PADDING = Uscreen.dp2Px(context, 16);
         int MARGIN_6DP = Uscreen.dp2Px(context, 6);
-        LinearLayout layout = new LinearLayout(context);
-        layout.setLayoutParams(WRAP_CONTENT);
-        layout.setOrientation(LinearLayout.HORIZONTAL);
-        layout.setGravity(Gravity.CENTER);
-        layout.setPadding(PADDING, PADDING, PADDING, PADDING);
+        mLayout = new LinearLayout(context);
+        mLayout.setLayoutParams(WRAP_CONTENT);
+        mLayout.setOrientation(LinearLayout.HORIZONTAL);
+        mLayout.setGravity(Gravity.CENTER);
+        mLayout.setPadding(PADDING, PADDING, PADDING, PADDING);
 
         Space space = new Space(context);
         LinearLayout.LayoutParams SPACE_MARGIN = new LinearLayout.LayoutParams(MARGIN_6DP, MARGIN_6DP);
-        layout.addView(space, SPACE_MARGIN);
+        mLayout.addView(space, SPACE_MARGIN);
 
         // add ProgressBar
         ProgressBar bar = new ProgressBar(context);
-        layout.addView(bar, WRAP_CONTENT);
+        mLayout.addView(bar, WRAP_CONTENT);
 
         space = new Space(context);
-        layout.addView(space, SPACE_MARGIN);
+        mLayout.addView(space, SPACE_MARGIN);
 
         // add TextView
         mTvTips = new TextView(context);
         mTvTips.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
         mTvTips.setTextSize(16);
-        layout.addView(mTvTips, WRAP_CONTENT);
-
-        mDialog = LouDialog.newInstance(context, layout, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar)
+        mLayout.addView(mTvTips, WRAP_CONTENT);
+        mDialog = LouDialog.newInstance(mContext, mLayout, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar)
                 .setDimAmount(0.3f)
                 .setCancelable(false);
     }
 
-    // 创建 Dialog 需要在主线程中运行；
-    @MainThread
-    public static LouProgressBar buildDialog(Activity context) {
-        if (context == null) {
-            throw new NullPointerException("The context can't be null");
-        }
-
+    public static LouProgressBar buildDialog(@NonNull Context context) {
         return new LouProgressBar(context);
     }
 
 
     public void show(final String tips) {
-        if (!TextUtils.isEmpty(tips)) {
-            mContext.runOnUiThread(() -> mTvTips.setText(tips));
-        }
+        Uthread.runInMainThread(() -> {
+            if (!TextUtils.isEmpty(tips)) {
+                mTvTips.setText(tips);
+            }
 
-        if (!mDialog.isShowing()) {
-            mDialog.show();
-        }
-
+            if (!mDialog.isShowing()) {
+                mDialog.show();
+            }
+        });
     }
 
-    public void setCancelble(boolean cancelble) {
+    public void setCncelble(boolean cancelble) {
         mDialog.setCancelable(cancelble);
     }
 
     public void hide() {
-        mDialog.dismiss();
+        Uthread.runInMainThread(mDialog::dismiss);
     }
 }
