@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
+import com.lyloou.test.flow.Consumer;
 import com.lyloou.test.util.Ugson;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
@@ -189,12 +190,21 @@ public class BusTvActivity extends AppCompatActivity {
     }
 
     private void reloadData(BusParam bp) {
+        Disposable subscribe = ssss(bp, s -> {
+            bp.setResult(s);
+            mAdapter.notifyDataSetChanged();
+        });
+
+        mCompositeDisposable.add(subscribe);
+    }
+
+    private Disposable ssss(BusParam bp, Consumer<String> result) {
         Request request = new Request
                 .Builder()
                 .url(bp.getAddress())
                 .build();
         Call call = mOkHttpClient.newCall(request);
-        Disposable subscribe = Flowable
+        return Flowable
                 .fromCallable(() -> {
                     ResponseBody body = call.execute().body();
                     if (body != null) {
@@ -209,48 +219,23 @@ public class BusTvActivity extends AppCompatActivity {
                 .subscribe(buses -> {
                     StringBuilder sb = new StringBuilder();
                     for (Bus bus : buses) {
-                        sb.append("\n  ").append(bus);
+                        sb.append("\n").append(bus);
                     }
-                    bp.setResult(sb.toString());
-                    mAdapter.notifyDataSetChanged();
+                    result.accept(sb.toString());
+
                 }, throwable -> Toast.makeText(mContext, "异常了" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
-
-        mCompositeDisposable.add(subscribe);
-
     }
 
     private void reloadAllData() {
         List<Disposable> subscribes = new ArrayList<>();
         for (BusParam bp : mList) {
-            Request request = new Request
-                    .Builder()
-                    .url(bp.getAddress())
-                    .build();
-            Call call = mOkHttpClient.newCall(request);
-            Disposable subscribe = Flowable
-                    .fromCallable(() -> {
-                        ResponseBody body = call.execute().body();
-                        if (body != null) {
-                            return body.string();
-                        }
-                        return "";
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .map(this::getValidJsonString)
-                    .map(this::getBuses)
-                    .subscribe(buses -> {
-                        StringBuilder sb = new StringBuilder();
-                        for (Bus bus : buses) {
-                            sb.append("\n").append(bus);
-                        }
-                        bp.setResult(sb.toString());
-                        mAdapter.notifyDataSetChanged();
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }, throwable -> Toast.makeText(mContext, "异常了" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
+            Disposable subscribe = ssss(bp, s -> {
+                bp.setResult(s);
+                mAdapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+            });
             subscribes.add(subscribe);
         }
-
         mCompositeDisposable.addAll(subscribes.toArray(new Disposable[0]));
 
     }
