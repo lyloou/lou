@@ -16,6 +16,7 @@
 
 package com.lyloou.test.common;
 
+import com.lyloou.test.bus.weather.WeatherApi;
 import com.lyloou.test.douban.DouBanApi;
 import com.lyloou.test.gank.GankApi;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
@@ -40,6 +41,7 @@ public class NetWork {
     private static DouBanApi sDouBanApi;
     private static OneArticleApi sOneArticleApi;
     private static GankApi sGankApi;
+    private static WeatherApi sWeatherApi;
 
     public static KingsoftwareAPI getKingsoftwareApi() {
         if (sKingsoftwareAPI == null) {
@@ -101,5 +103,17 @@ public class NetWork {
             sGankApi = retrofit.create(GankApi.class);
         }
         return sGankApi;
+    }
+
+    public static WeatherApi getWeatherApi() {
+        if (sWeatherApi == null) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://t.weather.sojson.com/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+            sWeatherApi = retrofit.create(WeatherApi.class);
+        }
+        return sWeatherApi;
     }
 }

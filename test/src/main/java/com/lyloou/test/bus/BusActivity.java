@@ -44,8 +44,10 @@ import android.widget.Toast;
 
 import com.lyloou.test.R;
 import com.lyloou.test.bus.notification.AlarmReceiver;
+import com.lyloou.test.bus.weather.Weather;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
+import com.lyloou.test.common.NetWork;
 import com.lyloou.test.flow.Consumer;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Udialog;
@@ -83,7 +85,6 @@ import static com.lyloou.test.bus.notification.NotificationConstant.KEY_ALARM_CL
 public class BusActivity extends AppCompatActivity {
 
     private static final String TAG = BusActivity.class.getSimpleName();
-    public static final String PARAM_DATA = "PARAM_DATA";
 
 
     private List<BusParam> mList;
@@ -120,8 +121,8 @@ public class BusActivity extends AppCompatActivity {
             list = new ArrayList<>();
             list.add(new BusParam("上班-m395", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=iR6cZFa3lR1nNTpOSxgzIg%3D%3D&language=1&cityId=014&lineNo=06510&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574164&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.9007037650382&cryptoSign=4b66b21b6393a2b0191325143996b801&lng=113.927254&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M395&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E8%A3%95%E5%AE%89%E8%B7%AF%E5%8F%A3%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.573404716848184&direction=1&targetOrder=22&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-06510-1&userAgent=Mozilla%2F5.0+(Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv)+AppleWebKit%2F537.36+(KHTML%2C+like+Gecko)+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927254&geo_lat=22.574164&v=3.85.4&imei=862848046848866&stats_order=1-1"));
             list.add(new BusParam("上班-m378", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=wl50fDo3Fr8tTOKwXULO0w%3D%3D&language=1&cityId=014&lineNo=M3783&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574181&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.90117882310646&cryptoSign=cb1e6ab2b64c10fdbcb16359133f1f89&lng=113.927291&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M378&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E8%A3%95%E5%AE%89%E8%B7%AF%E5%8F%A3&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.57290849087809&direction=0&targetOrder=21&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-M3783-0&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927291&geo_lat=22.574181&v=3.85.4&imei=862848046848866&stats_order=1-1"));
-            list.add(new BusParam("回家-m378", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=rwS%2BCBeAfPaj5rdJajzMzg%3D%3D&language=1&cityId=014&lineNo=M3783&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574181&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.9246803751752&cryptoSign=d6a4f3fb35c6dba89865a808b7113ba4&lng=113.927291&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M378&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E6%96%B0%E7%A6%8F%E5%B8%82%E5%9C%BA%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.58697971490557&direction=1&targetOrder=39&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-M3783-1&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927291&geo_lat=22.574181&v=3.85.4&imei=862848046848866&stats_order=1-1"));
             list.add(new BusParam("回家-m395", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=Fm%2BW70el84%2B3hLN5ar7lQQ%3D%3D&language=1&cityId=014&lineNo=06510&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.57416&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.92468540887381&cryptoSign=246bbba6d14b73b0091e7c1a50f685a7&lng=113.927274&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchHistory&lineName=M395&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E6%96%B0%E7%A6%8F%E5%B8%82%E5%9C%BA%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.587014643396046&direction=0&targetOrder=38&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-06510-0&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927274&geo_lat=22.57416&v=3.85.4&imei=862848046848866&stats_order=1-2"));
+            list.add(new BusParam("回家-m378", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=rwS%2BCBeAfPaj5rdJajzMzg%3D%3D&language=1&cityId=014&lineNo=M3783&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574181&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.9246803751752&cryptoSign=d6a4f3fb35c6dba89865a808b7113ba4&lng=113.927291&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M378&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E6%96%B0%E7%A6%8F%E5%B8%82%E5%9C%BA%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.58697971490557&direction=1&targetOrder=39&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-M3783-1&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927291&geo_lat=22.574181&v=3.85.4&imei=862848046848866&stats_order=1-1"));
         }
 
         return list;
@@ -267,6 +268,11 @@ public class BusActivity extends AppCompatActivity {
 
     private void initView() {
         Uview.initStatusBar(this, R.color.colorAccent);
+
+        TextView tvWeather = findViewById(R.id.tv_weather);
+        tvWeather.setOnClickListener(v -> loadWeather(tvWeather));
+        loadWeather(tvWeather);
+
         EmptyRecyclerView erv = findViewById(R.id.erv_bus);
         erv.setLayoutManager(new LinearLayoutManager(this));
         erv.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
@@ -293,6 +299,40 @@ public class BusActivity extends AppCompatActivity {
 
         mSwipeRefreshLayout = findViewById(R.id.srl_bus);
         mSwipeRefreshLayout.setOnRefreshListener(this::reloadAllData);
+    }
+
+    private void loadWeather(TextView tvWeather) {
+        mCompositeDisposable.add(NetWork
+                .getWeatherApi()
+                .getWeather("101280601")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(weather -> {
+                    if (weather.getStatus() != 200) {
+                        return;
+                    }
+                    List<Weather.DataBean.ForecastBean> forecast = weather.getData().getForecast();
+                    if (forecast != null && forecast.size() > 0) {
+                        Weather.DataBean.ForecastBean fb = forecast.get(0);
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(fb.getWeek())
+                                .append("\t")
+                                .append(fb.getType())
+                                .append("\n")
+                                .append(fb.getLow())
+                                .append(" ~ ")
+                                .append(fb.getHigh())
+                                .append("\t")
+                                .append("\t(")
+                                .append(fb.getFx())
+                                .append(" ")
+                                .append(fb.getFl())
+                                .append(")\n")
+                                .append(fb.getNotice());
+                        tvWeather.setText(sb.toString());
+                    }
+                })
+        );
     }
 
     private void reloadData(BusParam bp) {
