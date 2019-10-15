@@ -1,8 +1,10 @@
 package com.lyloou.test.util;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.lyloou.test.flow.Consumer;
 
@@ -35,5 +37,13 @@ public class Udialog {
                 })
                 .setNegativeButton("再想想", (dialog, whichButton) -> consumer.accept(""))
                 .show();
+    }
+
+    public static void showTimePicker(Context context, TimePickerDialog.OnTimeSetListener listener, int[] time) {
+        if (time == null || time.length != 2) {
+            Toast.makeText(context, "程序异常", Toast.LENGTH_LONG).show();
+            return;
+        }
+        new TimePickerDialog(context, 0, listener, time[0], time[1], true).show();
     }
 }

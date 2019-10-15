@@ -16,6 +16,9 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".MyApplication"
@@ -142,6 +145,13 @@
             android:name=".media.video.VideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/FastEnterTheme" />
+
+        <receiver android:name=".bus.notification.DeviceBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".bus.notification.AlarmReceiver" />
     </application>
 
 </manifest>

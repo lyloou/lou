@@ -223,7 +223,7 @@ public class FlowActivity extends AppCompatActivity {
                     sortItems(mFlowItems);
                     updateDbAndUI();
                 };
-                showTimePicker(listener, Utime.getValidTime(item.getTimeStart()));
+                Udialog.showTimePicker(mContext, listener, Utime.getValidTime(item.getTimeStart()));
             }
 
             @Override
@@ -233,7 +233,7 @@ public class FlowActivity extends AppCompatActivity {
                     sortItems(mFlowItems);
                     updateDbAndUI();
                 };
-                showTimePicker(listener, Utime.getValidTime(item.getTimeEnd()));
+                Udialog.showTimePicker(mContext, listener, Utime.getValidTime(item.getTimeEnd()));
             }
 
             @Override
@@ -259,14 +259,6 @@ public class FlowActivity extends AppCompatActivity {
     private void updateDbAndUI() {
         updateUI();
         updateDb();
-    }
-
-    private void showTimePicker(TimePickerDialog.OnTimeSetListener listener, int[] time) {
-        if (time == null || time.length != 2) {
-            Toast.makeText(this, "程序异常", Toast.LENGTH_LONG).show();
-            return;
-        }
-        new TimePickerDialog(mContext, 0, listener, time[0], time[1], true).show();
     }
 
     private void sortItems(List<FlowItem> items) {

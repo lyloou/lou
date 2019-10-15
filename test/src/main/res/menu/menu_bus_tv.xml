@@ -24,7 +24,7 @@
 
     <item
         android:id="@+id/menu_bus_add"
-        android:title="添加"
+        android:title="添加车次"
         app:showAsAction="never" />
     <item
         android:id="@+id/menu_bus_default"
@@ -34,5 +34,12 @@
         android:id="@+id/menu_bus_shortcut"
         android:title="添加到桌面"
         app:showAsAction="never" />
-
+    <item
+        android:id="@+id/menu_bus_set_alarm_clock"
+        android:title="设置闹钟"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_bus_cancel_alarm_clock"
+        android:title="取消闹钟"
+        app:showAsAction="never" />
 </menu>

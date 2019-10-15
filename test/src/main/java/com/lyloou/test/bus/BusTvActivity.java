@@ -18,7 +18,11 @@ package com.lyloou.test.bus;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -39,12 +43,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lyloou.test.R;
+import com.lyloou.test.bus.notification.AlarmReceiver;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.flow.Consumer;
 import com.lyloou.test.util.Uapp;
+import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Ugson;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Usp;
+import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Utoast;
 import com.lyloou.test.util.Uview;
 
@@ -55,6 +63,7 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,6 +76,9 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
+
+import static com.lyloou.test.bus.notification.NotificationConstant.KEY_ALARM_CLOCK_BUS_HOUR_OF_DAY;
+import static com.lyloou.test.bus.notification.NotificationConstant.KEY_ALARM_CLOCK_BUS_MINUTE;
 
 public class BusTvActivity extends AppCompatActivity {
 
@@ -144,9 +156,59 @@ public class BusTvActivity extends AppCompatActivity {
                 break;
             case R.id.menu_bus_shortcut:
                 addShortcut();
+                break;
+            case R.id.menu_bus_set_alarm_clock:
+                setAlarmClock();
+                break;
+            case R.id.menu_bus_cancel_alarm_clock:
+                cancelAlarmClock();
             default:
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void cancelAlarmClock() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(getPendingIntent());
+        Utoast.show(mContext, "已经取消闹钟");
+    }
+
+    private void setAlarmClock() {
+        TimePickerDialog.OnTimeSetListener listener = (view, hourOfDay, minute) -> {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                    getCalendar(hourOfDay, minute).getTimeInMillis(),
+                    1000 * 60 * 60 * 24,
+                    getPendingIntent());
+
+            saveAlarmClockConfig(hourOfDay, minute);
+            Utoast.show(mContext, String.format("闹钟已设置为 %s:%s", hourOfDay, minute));
+        };
+        Udialog.showTimePicker(mContext, listener, Utime.getValidTime(null));
+    }
+
+    // 保存下来，以便开机启动闹钟
+    private void saveAlarmClockConfig(int hourOfDay, int minute) {
+        Usp.init(mContext)
+                .putInt(KEY_ALARM_CLOCK_BUS_HOUR_OF_DAY, hourOfDay)
+                .putInt(KEY_ALARM_CLOCK_BUS_MINUTE, minute)
+                .commit();
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent notifyIntent = new Intent(mContext, AlarmReceiver.class);
+        return PendingIntent.getBroadcast(mContext,
+                0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    @NonNull
+    private Calendar getCalendar(int hourOfDay, int minute) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        return calendar;
     }
 
     private void addShortcut() {
@@ -263,7 +325,7 @@ public class BusTvActivity extends AppCompatActivity {
                 .subscribe(buses -> {
                     StringBuilder sb = new StringBuilder();
                     for (Bus bus : buses) {
-                        sb.append("\n").append(bus);
+                        sb.append(bus).append("\n");
                     }
                     result.accept(sb.toString());
 
@@ -271,6 +333,7 @@ public class BusTvActivity extends AppCompatActivity {
     }
 
     private void reloadAllData() {
+        mSwipeRefreshLayout.setRefreshing(true);
         List<Disposable> subscribes = new ArrayList<>();
         for (BusParam bp : mList) {
             Disposable subscribe = sendRequest(bp, s -> {

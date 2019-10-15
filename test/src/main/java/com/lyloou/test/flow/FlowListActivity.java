@@ -17,10 +17,6 @@
 package com.lyloou.test.flow;
 
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,8 +26,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,15 +43,13 @@ import com.lyloou.test.common.webview.WebActivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Udialog;
+import com.lyloou.test.util.Unotification;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Uview;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Author:    Lou
@@ -267,37 +259,7 @@ public class FlowListActivity extends AppCompatActivity {
 
     // [Create a Notification  |  Android Developers](https://developer.android.com/training/notify-user/build-notification#java)
     private void sendNotice() {
-        notification(this, "title", "message", FlowActivity.class);
-    }
-
-    public void notification(Context context, String title, String message, Class<FlowActivity> cls) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = "channel-id";
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            String channelName = "Channel Name";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel = new NotificationChannel(
-                    channelId, channelName, importance);
-            notificationManager.createNotificationChannel(mChannel);
-        }
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.mipmap.lyloou)//R.mipmap.ic_launcher
-                .setContentTitle(title)
-                .setContentText(message)
-                .setVibrate(new long[]{100, 250})
-                .setLights(Color.YELLOW, 500, 5000)
-                .setAutoCancel(true)
-                .setColor(ContextCompat.getColor(context, R.color.colorPrimary));
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntent(new Intent(context, cls));
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
-
-        int id = Integer.parseInt(new SimpleDateFormat("ddHHmmss", Locale.FRENCH).format(new Date()));
-        notificationManager.notify(id, mBuilder.build());
+        Unotification.show(this, "title", "message", FlowActivity.class);
     }
 
     private void toFlowActivity() {
