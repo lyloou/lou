@@ -16,168 +16,376 @@
 
 package com.lyloou.test.bus;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.lyloou.test.R;
-import com.lyloou.test.common.LouAdapter;
+import com.lyloou.test.bus.notification.AlarmReceiver;
+import com.lyloou.test.common.EmptyRecyclerView;
+import com.lyloou.test.common.ItemOffsetDecoration;
+import com.lyloou.test.flow.Consumer;
+import com.lyloou.test.util.Uapp;
+import com.lyloou.test.util.Udialog;
+import com.lyloou.test.util.Ugson;
+import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Usp;
+import com.lyloou.test.util.Utime;
+import com.lyloou.test.util.Utoast;
+import com.lyloou.test.util.Uview;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
 
+import static com.lyloou.test.bus.notification.NotificationConstant.KEY_ALARM_CLOCK_BUS_HOUR_OF_DAY;
+import static com.lyloou.test.bus.notification.NotificationConstant.KEY_ALARM_CLOCK_BUS_MINUTE;
+
 public class BusActivity extends AppCompatActivity {
 
-    private static final String URL_323 = "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&modelVersion=0.0.8&last_src=app_360_sj&s=android&stats_referer=nearby&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&lorder=1&geo_lat=22.575608&vc=88&sv=5.1&v=3.39.0&targetOrder=6&gpstype=gcj&imei=866808025006643&lineId=0755-03230-1&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=lL2IimUqQSn8Vj2GdouR4A%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.867149&geo_lac=35.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575608&beforAds=&geo_lng=113.867149";
-    private static final String URL_M400 = "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&last_src=app_360_sj&s=android&stats_referer=searchResult&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&geo_lat=22.575624&vc=88&sv=5.1&v=3.39.0&targetOrder=37&gpstype=gcj&imei=866808025006643&lineId=0755-M4003-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=KJal%2Bc5LEI8kmS1Gz%2BekwA%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.867222&flpolicy=0&geo_lac=35.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575624&geo_lng=113.867222";
+    private static final String TAG = BusActivity.class.getSimpleName();
+    public static final String PARAM_DATA = "PARAM_DATA";
 
-    private static final String URL_GG1 = "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&last_src=app_meizhu_store&s=android&stats_referer=searchResult&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&geo_lat=22.544674&vc=83&sv=5.1&v=3.34.2&targetOrder=6&gpstype=gcj&imei=866808025006643&lineId=0755-0001B-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=mQalYbka%2BvjBXd9twBkaJA%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-3&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.947297&flpolicy=0&geo_lac=29.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043305+Safari%2F537.36&lat=22.544674&geo_lng=113.947297";
-    private static final String URL_M355 = "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&modelVersion=0.0.8&last_src=app_meizhu_store&s=android&stats_referer=nearby&push_open=1&stats_act=auto_refresh&userId=unknown&geo_lt=4&lorder=1&geo_lat=22.544675&vc=83&sv=5.1&v=3.34.2&targetOrder=35&gpstype=gcj&imei=866808025006643&lineId=0755-M3553-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=Bv52Ecvs79wuuZVTTRbzNQ%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.947299&geo_lac=35.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043305+Safari%2F537.36&lat=22.544675&beforAds=&geo_lng=113.947299";
 
-    private static final String URL_M433 = "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&last_src=app_360_sj&s=android&stats_referer=searchResult&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&geo_lat=22.575506&vc=88&sv=5.1&v=3.39.0&targetOrder=28&gpstype=gcj&imei=866808025006643&lineId=0755-M4333-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=13sMEf8ghnrxSb2OlI3WrQ%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.867054&flpolicy=0&geo_lac=38.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575506&geo_lng=113.867054";
-    private static final String URL_M380 = "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&last_src=app_360_sj&s=android&stats_referer=searchResult&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&geo_lat=22.575506&vc=88&sv=5.1&v=3.39.0&targetOrder=10&gpstype=gcj&imei=866808025006643&lineId=0755-M3803-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=BDs8W%2FbGxrr3aXeIDU29ag%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.867054&flpolicy=0&geo_lac=38.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575506&geo_lng=113.867054";
-    private static final String URL_GF30 = "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&last_src=app_360_sj&s=android&stats_referer=searchResult&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&geo_lat=22.575545&vc=88&sv=5.1&v=3.39.0&targetOrder=15&gpstype=gcj&imei=866808025006643&lineId=0755-00305-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=MLGcNMhmwuYUpQNioGkuwg%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.867094&flpolicy=0&geo_lac=38.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575545&geo_lng=113.867094";
-    private static final String URL_610 = "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&last_src=app_360_sj&s=android&stats_referer=transfer&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&geo_lat=22.575512&vc=88&sv=5.1&v=3.39.0&targetOrder=15&gpstype=gcj&imei=866808025006643&lineId=0755-06100-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=UN0ylhrjKfgS%2B8Ewz0ZFXQ%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.86706&flpolicy=0&geo_lac=38.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575512&geo_lng=113.86706";
-    Activity mContext;
-    CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-    LouAdapter<Bus> mAdapter;
-    OkHttpClient mOkHttpClient = new OkHttpClient();
-    private SwipeRefreshLayout mRefreshLayout;
+    private List<BusParam> mList;
+    private Activity mContext;
+    private OkHttpClient mOkHttpClient = new OkHttpClient();
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    private BusAdapter mAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private BusDatabase mBusDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        setMyTitle("车来了");
         setContentView(R.layout.activity_bus);
-        initListView();
-        whereIsBus(URL_323);
-        setMyTitle("323 回家咯");
+
+        initData();
+        initView();
+        reloadAllData();
     }
 
-    private void initListView() {
-        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.srl_bus);
-        mRefreshLayout.setEnabled(false);
+    private void initData() {
+        mBusDatabase = new BusDatabase(mContext);
+        mList = getList();
+    }
 
-        ListView listView = (ListView) findViewById(R.id.lv_bus);
-        mAdapter = new LouAdapter<Bus>(listView, android.R.layout.simple_list_item_1) {
-            @Override
-            protected void assign(ViewHolder holder, Bus s) {
-                // 用视图显示数据
-                holder.putText(android.R.id.text1, String.valueOf(s));
-            }
+
+    @NonNull
+    private List<BusParam> getList() {
+        List<BusParam> list = mBusDatabase.readData();
+        // 如果取不到，就取几个默认的
+        if (list == null || list.size() == 0) {
+            list = new ArrayList<>();
+            list.add(new BusParam("上班-m395", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=iR6cZFa3lR1nNTpOSxgzIg%3D%3D&language=1&cityId=014&lineNo=06510&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574164&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.9007037650382&cryptoSign=4b66b21b6393a2b0191325143996b801&lng=113.927254&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M395&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E8%A3%95%E5%AE%89%E8%B7%AF%E5%8F%A3%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.573404716848184&direction=1&targetOrder=22&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-06510-1&userAgent=Mozilla%2F5.0+(Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv)+AppleWebKit%2F537.36+(KHTML%2C+like+Gecko)+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927254&geo_lat=22.574164&v=3.85.4&imei=862848046848866&stats_order=1-1"));
+            list.add(new BusParam("上班-m378", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=wl50fDo3Fr8tTOKwXULO0w%3D%3D&language=1&cityId=014&lineNo=M3783&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574181&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.90117882310646&cryptoSign=cb1e6ab2b64c10fdbcb16359133f1f89&lng=113.927291&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M378&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E8%A3%95%E5%AE%89%E8%B7%AF%E5%8F%A3&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.57290849087809&direction=0&targetOrder=21&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-M3783-0&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927291&geo_lat=22.574181&v=3.85.4&imei=862848046848866&stats_order=1-1"));
+            list.add(new BusParam("回家-m378", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=rwS%2BCBeAfPaj5rdJajzMzg%3D%3D&language=1&cityId=014&lineNo=M3783&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574181&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.9246803751752&cryptoSign=d6a4f3fb35c6dba89865a808b7113ba4&lng=113.927291&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M378&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E6%96%B0%E7%A6%8F%E5%B8%82%E5%9C%BA%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.58697971490557&direction=1&targetOrder=39&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-M3783-1&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927291&geo_lat=22.574181&v=3.85.4&imei=862848046848866&stats_order=1-1"));
+            list.add(new BusParam("回家-m395", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=Fm%2BW70el84%2B3hLN5ar7lQQ%3D%3D&language=1&cityId=014&lineNo=06510&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.57416&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.92468540887381&cryptoSign=246bbba6d14b73b0091e7c1a50f685a7&lng=113.927274&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchHistory&lineName=M395&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E6%96%B0%E7%A6%8F%E5%B8%82%E5%9C%BA%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.587014643396046&direction=0&targetOrder=38&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-06510-0&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927274&geo_lat=22.57416&v=3.85.4&imei=862848046848866&stats_order=1-2"));
+        }
+
+        return list;
+    }
+
+    private void setMyTitle(String title) {
+        ActionBar supportActionBar = getSupportActionBar();
+        if (null != supportActionBar) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorAccent)));
+            supportActionBar.setTitle(title);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_bus, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_bus_add:
+                addBus();
+                break;
+            case R.id.menu_bus_default:
+                recoverData();
+                break;
+            case R.id.menu_bus_reload:
+                reloadAllDataAndUI();
+                break;
+            case R.id.menu_bus_shortcut:
+                addShortcut();
+                break;
+            case R.id.menu_bus_set_alarm_clock:
+                setAlarmClock();
+                break;
+            case R.id.menu_bus_cancel_alarm_clock:
+                cancelAlarmClock();
+            default:
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void cancelAlarmClock() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(getPendingIntent());
+        Utoast.show(mContext, "已经取消闹钟");
+    }
+
+    private void setAlarmClock() {
+        TimePickerDialog.OnTimeSetListener listener = (view, hourOfDay, minute) -> {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                    getCalendar(hourOfDay, minute).getTimeInMillis(),
+                    1000 * 60 * 60 * 24,
+                    getPendingIntent());
+
+            saveAlarmClockConfig(hourOfDay, minute);
+            Utoast.show(mContext, String.format("闹钟已设置为 %s:%s", hourOfDay, minute));
         };
-
+        Udialog.showTimePicker(mContext, listener, Utime.getValidTime(null));
     }
 
-    private void whereIsBus(String url) {
-        mRefreshLayout.setRefreshing(true);
+    // 保存下来，以便开机启动闹钟
+    private void saveAlarmClockConfig(int hourOfDay, int minute) {
+        Usp.init(mContext)
+                .putInt(KEY_ALARM_CLOCK_BUS_HOUR_OF_DAY, hourOfDay)
+                .putInt(KEY_ALARM_CLOCK_BUS_MINUTE, minute)
+                .commit();
+    }
 
+    private PendingIntent getPendingIntent() {
+        Intent notifyIntent = new Intent(mContext, AlarmReceiver.class);
+        return PendingIntent.getBroadcast(mContext,
+                0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    @NonNull
+    private Calendar getCalendar(int hourOfDay, int minute) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        return calendar;
+    }
+
+    private void addShortcut() {
+        Uapp.addShortCutCompat(this, BusActivity.class.getCanonicalName(), "bus", R.mipmap.airplane, R.string.bus_line);
+    }
+
+    private void reloadAllDataAndUI() {
+        mList.clear();
+        mList.addAll(getList());
+        mAdapter.notifyDataSetChanged();
+        reloadAllData();
+    }
+
+    private void recoverData() {
+        mBusDatabase.delete();
+        reloadAllDataAndUI();
+    }
+
+    @SuppressLint("InflateParams")
+    public void addBus() {
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_bus_line_add, null);
+
+        new AlertDialog.Builder(this)
+                .setTitle("添加更多公交")
+                .setView(view)
+                .setPositiveButton("是的", (dialog, whichButton) -> {
+                    EditText etName = view.findViewById(R.id.et_name);
+                    EditText etAddress = view.findViewById(R.id.et_address);
+
+                    String name = etName.getText().toString();
+                    if (TextUtils.isEmpty(name)) {
+                        Utoast.show(mContext, "无效的名称");
+                        return;
+                    }
+                    String address = etAddress.getText().toString();
+                    try {
+                        new URL(address);
+                        mList.add(0, new BusParam(name, address));
+                        mList.clear();
+                        mAdapter.notifyDataSetChanged();
+                        mBusDatabase.writeData(mList);
+                    } catch (MalformedURLException e) {
+                        Utoast.show(mContext, "无效的URL");
+                    }
+
+                })
+                .show();
+    }
+
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    private void initView() {
+        Uview.initStatusBar(this, R.color.colorAccent);
+        EmptyRecyclerView erv = findViewById(R.id.erv_bus);
+        erv.setLayoutManager(new LinearLayoutManager(this));
+        erv.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
+        mAdapter = new BusAdapter(this, mList);
+        erv.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(BusParam param) {
+                reloadData(param);
+            }
+
+            @Override
+            public void onItemLongClick(BusParam param) {
+                new AlertDialog.Builder(mContext)
+                        .setMessage("删除：" + param.getName() + "?")
+                        .setPositiveButton("是的", (dialog, whichButton) -> {
+                            mList.remove(param);
+                            mBusDatabase.writeData(mList);
+                            mAdapter.notifyDataSetChanged();
+                        })
+                        .show();
+            }
+        });
+
+        mSwipeRefreshLayout = findViewById(R.id.srl_bus);
+        mSwipeRefreshLayout.setOnRefreshListener(this::reloadAllData);
+    }
+
+    private void reloadData(BusParam bp) {
+        Disposable subscribe = sendRequest(bp, s -> {
+            bp.setResult(s);
+            mAdapter.notifyDataSetChanged();
+        });
+
+        mCompositeDisposable.add(subscribe);
+    }
+
+    private Disposable sendRequest(BusParam bp, Consumer<String> result) {
         Request request = new Request
                 .Builder()
-                .url(url)
+                .url(bp.getAddress())
                 .build();
         Call call = mOkHttpClient.newCall(request);
-
-        mCompositeDisposable.add(Flowable
-                .fromCallable(new Callable<String>() {
-                    @Override
-                    public String call() throws Exception {
-                        ResponseBody body = call.execute().body();
-                        if (body != null) {
-                            return body.string();
-                        }
-                        return "";
+        return Flowable
+                .fromCallable(() -> {
+                    ResponseBody body = call.execute().body();
+                    if (body != null) {
+                        return body.string();
                     }
+                    return "";
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(@NonNull String str) throws Exception {
-                        if (str.length() <= 12) {
-                            return "";
-                        }
-                        return str.substring(6, str.length() - 6);
+                .map(this::getValidJsonString)
+                .map(this::getBuses)
+                .subscribe(buses -> {
+                    StringBuilder sb = new StringBuilder();
+                    for (Bus bus : buses) {
+                        sb.append(bus).append("\n");
                     }
-                })
-                .map(new Function<String, List<Bus>>() {
-                    @Override
-                    public List<Bus> apply(@NonNull String s) throws Exception {
-                        List<Bus> busList = new ArrayList<>();
-                        try {
-                            JSONObject jsonObject = new JSONObject(s);
-                            if (jsonObject.has("jsonr")) {
-                                JSONObject jsonr = jsonObject.getJSONObject("jsonr");
-                                if (jsonr.has("data")) {
-                                    JSONObject data = jsonr.getJSONObject("data");
-                                    if (data.has("buses")) {
-                                        JSONArray buses = data.getJSONArray("buses");
-                                        Gson gson = new GsonBuilder().setLenient().create();
-                                        for (int i = 0; i < buses.length(); i++) {
-                                            Object o = buses.get(i);
-                                            String str = String.valueOf(o);
-                                            Bus bus = gson.fromJson(str, Bus.class);
-                                            if (bus.getTravels().size() > 0) {
-                                                busList.add(bus);
-                                            }
-                                            System.out.println(str);
-                                        }
-                                    }
-                                }
+                    result.accept(sb.toString());
+
+                }, throwable -> Toast.makeText(mContext, "异常了" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void reloadAllData() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        List<Disposable> subscribes = new ArrayList<>();
+        for (BusParam bp : mList) {
+            Disposable subscribe = sendRequest(bp, s -> {
+                bp.setResult(s);
+                mAdapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+            });
+            subscribes.add(subscribe);
+        }
+        mCompositeDisposable.addAll(subscribes.toArray(new Disposable[0]));
+
+    }
+
+    @NonNull
+    private String getValidJsonString(String str) {
+        if (str.length() <= 12) {
+            return "";
+        }
+        return str.substring(6, str.length() - 6);
+    }
+
+    @NonNull
+    private List<Bus> getBuses(String s) {
+        List<Bus> busList = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(s);
+            if (jsonObject.has("jsonr")) {
+                JSONObject jsonr = jsonObject.getJSONObject("jsonr");
+                if (jsonr.has("data")) {
+                    JSONObject data = jsonr.getJSONObject("data");
+                    if (data.has("buses")) {
+                        JSONArray buses = data.getJSONArray("buses");
+
+                        for (int i = 0; i < buses.length(); i++) {
+                            Object o = buses.get(i);
+                            String str = String.valueOf(o);
+                            Bus bus = Ugson.getGson().fromJson(str, Bus.class);
+                            if (bus.getTravels().size() > 0) {
+                                busList.add(bus);
                             }
-                            if (busList.size() > 1) {
-                                Collections.reverse(busList);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            System.out.println(str);
                         }
-                        return busList;
                     }
-                })
-                .subscribe(new Consumer<List<Bus>>() {
-                    @Override
-                    public void accept(@NonNull List<Bus> buses) throws Exception {
-                        String busss = Arrays.toString(buses.toArray());
-                        System.out.println(busss);
-                        if (mAdapter != null) {
-                            mAdapter.initList(buses);
-                        }
-                        mRefreshLayout.setRefreshing(false);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        Toast.makeText(mContext, "异常了" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                        mRefreshLayout.setRefreshing(false);
-                    }
-                }));
+                }
+            }
+            if (busList.size() > 1) {
+                Collections.reverse(busList);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return busList;
     }
 
     private void dispose() {
@@ -189,60 +397,71 @@ public class BusActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         dispose();
-
         super.onDestroy();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_bus, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+    private static class BusAdapter extends RecyclerView.Adapter<MyViewHolder> {
+        List<BusParam> mList;
+        Context mContext;
+        OnItemClickListener onItemClickListener;
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
+        public BusAdapter(Context context, List<BusParam> list) {
+            mContext = context;
+            mList = list;
+        }
+
+        @NonNull
+        @Override
+        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            @SuppressLint("InflateParams") View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_bus, null);
+            return new MyViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull MyViewHolder holder, int i) {
+            BusParam busParam = mList.get(i);
+            holder.tvName.setText(busParam.getName());
+            holder.tvResult.setText(busParam.getResult());
+            holder.itemView.setOnClickListener(v -> {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(busParam);
+                }
+            });
+
+            holder.itemView.setOnLongClickListener(v -> {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemLongClick(busParam);
+                }
                 return true;
-            case R.id.menu_bus_323:
-                whereIsBus(URL_323);
-                break;
-            case R.id.menu_bus_M400:
-                whereIsBus(URL_M400);
-                break;
-            case R.id.menu_bus_M355:
-                whereIsBus(URL_M355);
-                break;
-            case R.id.menu_bus_gg1:
-                whereIsBus(URL_GG1);
-                break;
-            case R.id.menu_bus_M433:
-                whereIsBus(URL_M433);
-                break;
-            case R.id.menu_bus_GF30:
-                whereIsBus(URL_GF30);
-                break;
-            case R.id.menu_bus_M380:
-                whereIsBus(URL_M380);
-                break;
-            case R.id.menu_bus_610:
-                whereIsBus(URL_610);
-                break;
+            });
         }
-        String title = String.valueOf(item.getTitle());
-        if (!title.startsWith("===")) {
-            this.setMyTitle(title);
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
-    private void setMyTitle(String m355) {
-        ActionBar supportActionBar = getSupportActionBar();
-        if (null != supportActionBar) {
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
-            supportActionBar.setTitle(m355);
+        @Override
+        public int getItemCount() {
+            return mList.size();
+        }
+
+        public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+            this.onItemClickListener = onItemClickListener;
         }
     }
 
+    interface OnItemClickListener {
+        void onItemClick(BusParam param);
+
+        void onItemLongClick(BusParam param);
+    }
+
+    private static class MyViewHolder extends RecyclerView.ViewHolder {
+        View itemView;
+        TextView tvName;
+        TextView tvResult;
+
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            this.itemView = itemView;
+            tvName = itemView.findViewById(R.id.tv_name);
+            tvResult = itemView.findViewById(R.id.tv_result);
+        }
+    }
 }

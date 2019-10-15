@@ -65,10 +65,6 @@
         <activity
             android:name=".kingsoftware.KingsoftwareActivity"
             android:theme="@style/AppTheme.TranslucentStatus" />
-        <activity
-            android:name=".bus.BusActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
-
         <activity android:name=".common.webview.WebActivity" />
         <activity
             android:name=".laifudao.TuPianActivity"
@@ -95,8 +91,8 @@
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity android:name=".common.webview.WebContentActivity" />
         <activity
-            android:name=".bus.BusTvActivity"
-            android:label="@string/bustv_chelaile"
+            android:name=".bus.BusActivity"
+            android:label="@string/bus_chelaile"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".man.ManActivity"

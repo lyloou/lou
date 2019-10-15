@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright  (c) 2017 Lyloou
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,49 +15,31 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_bus_M433"
-        android:title="M433  海滨广场-同仁妇科医院"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/menu_bus_M380"
-        android:title="M380  海滨广场-同仁妇科医院"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/menu_bus_GF30"
-        android:title="高峰30  海滨广场-同仁妇科医院"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/menu_bus_610"
-        android:title="610  海滨广场-同仁妇科医院"
-        app:showAsAction="never"/>
+        android:id="@+id/menu_bus_reload"
+        android:title="刷新"
+        app:showAsAction="ifRoom" />
 
     <item
-        android:title="================"
-        app:showAsAction="never"/>
-
+        android:id="@+id/menu_bus_add"
+        android:title="添加车次"
+        app:showAsAction="never" />
     <item
-        android:id="@+id/menu_bus_323"
-        android:title="323  西乡盐田大门-裕安路口"
-        app:showAsAction="never"/>
-
+        android:id="@+id/menu_bus_default"
+        android:title="恢复默认"
+        app:showAsAction="never" />
     <item
-        android:id="@+id/menu_bus_M400"
-        android:title="M400  西乡盐田大门-金成名苑"
-        app:showAsAction="never"/>
-
+        android:id="@+id/menu_bus_shortcut"
+        android:title="添加到桌面"
+        app:showAsAction="never" />
     <item
-        android:title="================"
-        app:showAsAction="never"/>
-
+        android:id="@+id/menu_bus_set_alarm_clock"
+        android:title="设置闹钟"
+        app:showAsAction="never" />
     <item
-        android:id="@+id/menu_bus_M355"
-        android:title="M355  裕安路口-科技园"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/menu_bus_gg1"
-        android:title="观光1  裕安路口-科技园"
-        app:showAsAction="never"/>
+        android:id="@+id/menu_bus_cancel_alarm_clock"
+        android:title="取消闹钟"
+        app:showAsAction="never" />
 </menu>

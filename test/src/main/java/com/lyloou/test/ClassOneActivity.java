@@ -32,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.lyloou.test.bus.BusActivity;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.contact.ContactActivity;
@@ -76,7 +75,6 @@ public class ClassOneActivity extends AppCompatActivity {
             put("多媒体 - 图片", PictureActivity.class);
             put("多媒体 - 音频", RecorderActivity.class);
             put("多媒体 - 视频", VideoActivity.class);
-            put("车来了 - 菜单式", BusActivity.class);
         }};
 
         recyclerView.setAdapter(new MainAdapter(stringClassMap));
