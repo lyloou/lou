@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
+import com.lyloou.test.util.Uview;
 
 public class PictureActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 100;
@@ -38,12 +38,7 @@ public class PictureActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        ImmersionBar.with(this)
-                .statusBarDarkFont(true)
-                .navigationBarDarkIcon(true)
-                .statusBarColor(R.color.colorAccent)
-                .statusBarAlpha(0.1f)
-                .init();
+        Uview.initStatusBar(this, R.color.colorAccent);
     }
 
     public void takePhoto(View view) {

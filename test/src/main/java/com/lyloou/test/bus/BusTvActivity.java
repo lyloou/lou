@@ -19,6 +19,7 @@ package com.lyloou.test.bus;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -42,17 +43,18 @@ import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.util.Ugson;
 import com.lyloou.test.util.Uscreen;
-import com.lyloou.test.util.Usp;
-import com.lyloou.test.util.http.Uthread;
+import com.lyloou.test.util.Utoast;
+import com.lyloou.test.util.Uview;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -66,16 +68,17 @@ import okhttp3.ResponseBody;
 
 public class BusTvActivity extends AppCompatActivity {
 
+    private static final String TAG = BusTvActivity.class.getSimpleName();
     public static final String PARAM_DATA = "PARAM_DATA";
 
 
-    List<BusParam> mList;
-
-    Activity mContext;
-    OkHttpClient mOkHttpClient = new OkHttpClient();
-    CompositeDisposable mCompositeDisposable = new CompositeDisposable();
-    BusAdapter mAdapter;
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    private List<BusParam> mList;
+    private Activity mContext;
+    private OkHttpClient mOkHttpClient = new OkHttpClient();
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    private BusAdapter mAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private BusDatabase busDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,17 +93,14 @@ public class BusTvActivity extends AppCompatActivity {
     }
 
     private void initData() {
+        busDatabase = new BusDatabase(mContext);
         mList = getList();
     }
 
+
     @NonNull
     private List<BusParam> getList() {
-        List<BusParam> list = null;
-        String paramData = Usp.init(this).getString(PARAM_DATA, null);
-        if (!TextUtils.isEmpty(paramData)) {
-            list = Ugson.getList(paramData);
-        }
-
+        List<BusParam> list = busDatabase.readData();
         // 如果取不到，就取几个默认的
         if (list == null || list.size() == 0) {
             list = new ArrayList<>();
@@ -117,6 +117,7 @@ public class BusTvActivity extends AppCompatActivity {
         ActionBar supportActionBar = getSupportActionBar();
         if (null != supportActionBar) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.colorAccent)));
             supportActionBar.setTitle(title);
         }
     }
@@ -149,11 +150,24 @@ public class BusTvActivity extends AppCompatActivity {
                     EditText etAddress = view.findViewById(R.id.et_address);
 
                     String name = etName.getText().toString();
+                    if (TextUtils.isEmpty(name)) {
+                        Utoast.show(mContext, "无效的URL");
+                        return;
+                    }
                     String address = etAddress.getText().toString();
-                    mList.add(0, new BusParam(name, address));
+                    try {
+                        new URL(address);
+                        mList.add(0, new BusParam(name, address));
+                        mAdapter.notifyDataSetChanged();
+                        new BusDatabase(mContext).writeData(mList);
+                    } catch (MalformedURLException e) {
+                        Utoast.show(mContext, "无效的URL");
+                    }
+
                 })
                 .show();
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -162,6 +176,7 @@ public class BusTvActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        Uview.initStatusBar(this, R.color.colorAccent);
         EmptyRecyclerView erv = findViewById(R.id.erv_bus);
         erv.setLayoutManager(new LinearLayoutManager(this));
         erv.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
@@ -205,7 +220,6 @@ public class BusTvActivity extends AppCompatActivity {
     }
 
     private void reloadAllData() {
-        CountDownLatch latch = new CountDownLatch(mList.size());
         List<Disposable> subscribes = new ArrayList<>();
         for (BusParam bp : mList) {
             Request request = new Request
@@ -228,24 +242,16 @@ public class BusTvActivity extends AppCompatActivity {
                     .subscribe(buses -> {
                         StringBuilder sb = new StringBuilder();
                         for (Bus bus : buses) {
-                            sb.append("\n  ").append(bus);
+                            sb.append("\n").append(bus);
                         }
                         bp.setResult(sb.toString());
                         mAdapter.notifyDataSetChanged();
-                        latch.countDown();
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }, throwable -> Toast.makeText(mContext, "异常了" + throwable.getMessage(), Toast.LENGTH_SHORT).show());
             subscribes.add(subscribe);
         }
 
         mCompositeDisposable.addAll(subscribes.toArray(new Disposable[0]));
-        new Thread(() -> {
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Uthread.runInMainThread(() -> mSwipeRefreshLayout.setRefreshing(false));
-        });
 
     }
 

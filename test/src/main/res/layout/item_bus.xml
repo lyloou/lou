@@ -23,11 +23,10 @@
     android:stateListAnimator="@animator/touch_raise"
     app:cardCornerRadius="4dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff"
-        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
@@ -42,9 +41,10 @@
             android:id="@+id/tv_result"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryDark"
+            android:layout_below="@id/tv_name"
+            android:textColor="@color/gray"
             android:textSize="16sp"
             tools:text="1994" />
 
-    </LinearLayout>
+    </RelativeLayout>
 </android.support.v7.widget.CardView>

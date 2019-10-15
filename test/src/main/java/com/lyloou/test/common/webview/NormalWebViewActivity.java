@@ -36,11 +36,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gyf.immersionbar.ImmersionBar;
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.WebChromeClient;
 import com.lyloou.test.R;
 import com.lyloou.test.util.Usp;
+import com.lyloou.test.util.Uview;
 
 import org.json.JSONObject;
 
@@ -200,12 +200,7 @@ public class NormalWebViewActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        ImmersionBar.with(this)
-                .statusBarDarkFont(true)
-                .navigationBarDarkIcon(true)
-                .statusBarColor(R.color.colorAccent)
-                .statusBarAlpha(0.1f)
-                .init();
+        Uview.initStatusBar(this, R.color.colorAccent);
     }
 
     private void initViewForDownload() {

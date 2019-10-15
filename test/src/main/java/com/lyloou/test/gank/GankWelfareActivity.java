@@ -35,7 +35,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.DoubleItemWithOneHeaderOffsetDecoration;
 import com.lyloou.test.common.EmptyRecyclerView;
@@ -44,6 +43,7 @@ import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebContentActivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
+import com.lyloou.test.util.Uview;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -173,12 +173,7 @@ public class GankWelfareActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        ImmersionBar.with(this)
-                .statusBarDarkFont(true)
-                .navigationBarDarkIcon(true)
-                .statusBarColor(R.color.colorAccent)
-                .statusBarAlpha(0.1f)
-                .init();
+        Uview.initStatusBar(this, R.color.colorAccent);
 
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_gank_welfare);
         mRefreshLayout = findViewById(R.id.srl_gank_welfare);

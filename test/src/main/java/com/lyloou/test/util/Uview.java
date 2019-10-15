@@ -28,6 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.flow.Consumer;
 
 /**
@@ -38,6 +39,14 @@ import com.lyloou.test.flow.Consumer;
  * Description:
  */
 public class Uview {
+    public static void initStatusBar(Activity context, int statusBarColor) {
+        ImmersionBar.with(context)
+                .statusBarDarkFont(false)
+                .navigationBarDarkIcon(false)
+                .statusBarColor(statusBarColor)
+                .init();
+    }
+
     public static Bitmap getBitmapFromImageView(ImageView imageView) {
 
         Drawable drawable = imageView.getDrawable();

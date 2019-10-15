@@ -27,7 +27,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
@@ -35,6 +34,7 @@ import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
+import com.lyloou.test.util.Uview;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -114,12 +114,7 @@ public class DouBanActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        ImmersionBar.with(this)
-                .statusBarDarkFont(true)
-                .navigationBarDarkIcon(true)
-                .statusBarColor(R.color.colorAccent)
-                .statusBarAlpha(0.1f)
-                .init();
+        Uview.initStatusBar(this, R.color.colorAccent);
 
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_douban);
         mRefreshLayout = findViewById(R.id.srl_douban);

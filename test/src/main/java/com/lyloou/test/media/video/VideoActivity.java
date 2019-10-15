@@ -34,10 +34,10 @@ import com.dueeeke.videoplayer.ijk.IjkPlayerFactory;
 import com.dueeeke.videoplayer.player.VideoView;
 import com.dueeeke.videoplayer.player.VideoViewConfig;
 import com.dueeeke.videoplayer.player.VideoViewManager;
-import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Uview;
 
 import java.util.List;
 
@@ -87,12 +87,7 @@ public class VideoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        ImmersionBar.with(this)
-                .statusBarDarkFont(false)
-                .navigationBarDarkIcon(true)
-                .statusBarColor(R.color.colorAccent)
-                .statusBarAlpha(0.1f)
-                .init();
+        Uview.initStatusBar(this, R.color.colorAccent);
     }
 
     private void initVideoView() {

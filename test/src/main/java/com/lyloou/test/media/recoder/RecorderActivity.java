@@ -29,8 +29,8 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
+import com.lyloou.test.util.Uview;
 
 import java.io.IOException;
 
@@ -66,12 +66,7 @@ public class RecorderActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        ImmersionBar.with(this)
-                .statusBarDarkFont(true)
-                .navigationBarDarkIcon(true)
-                .statusBarColor(R.color.colorAccent)
-                .statusBarAlpha(0.1f)
-                .init();
+        Uview.initStatusBar(this, R.color.colorAccent);
     }
 
     private void requestPermission() {
