@@ -202,6 +202,9 @@ public class BusActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
             case R.id.menu_bus_323:
                 whereIsBus(URL_323);
                 break;
@@ -227,7 +230,7 @@ public class BusActivity extends AppCompatActivity {
                 whereIsBus(URL_610);
                 break;
         }
-        String title = item.getTitle().toString();
+        String title = String.valueOf(item.getTitle());
         if (!title.startsWith("===")) {
             this.setMyTitle(title);
         }
@@ -242,9 +245,4 @@ public class BusActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
 }

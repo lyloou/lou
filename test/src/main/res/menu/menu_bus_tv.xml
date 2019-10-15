@@ -18,8 +18,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_bus_reload"
+        android:title="刷新"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/menu_bus_add"
         android:title="添加"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_bus_default"
+        android:title="恢复默认"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_bus_shortcut"
+        android:title="添加到桌面"
         app:showAsAction="never" />
 
 </menu>

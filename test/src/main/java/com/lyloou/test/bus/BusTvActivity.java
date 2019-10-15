@@ -42,6 +42,7 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.flow.Consumer;
+import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Ugson;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
@@ -79,7 +80,7 @@ public class BusTvActivity extends AppCompatActivity {
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private BusAdapter mAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private BusDatabase busDatabase;
+    private BusDatabase mBusDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,21 +95,21 @@ public class BusTvActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        busDatabase = new BusDatabase(mContext);
+        mBusDatabase = new BusDatabase(mContext);
         mList = getList();
     }
 
 
     @NonNull
     private List<BusParam> getList() {
-        List<BusParam> list = busDatabase.readData();
+        List<BusParam> list = mBusDatabase.readData();
         // 如果取不到，就取几个默认的
         if (list == null || list.size() == 0) {
             list = new ArrayList<>();
-            list.add(new BusParam("上班-m395", "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&modelVersion=0.0.8&last_src=app_360_sj&s=android&stats_referer=nearby&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&lorder=1&geo_lat=22.575608&vc=88&sv=5.1&v=3.39.0&targetOrder=6&gpstype=gcj&imei=866808025006643&lineId=0755-03230-1&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=lL2IimUqQSn8Vj2GdouR4A%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.867149&geo_lac=35.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575608&beforAds=&geo_lng=113.867149"));
-            list.add(new BusParam("上班-m378", "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&last_src=app_360_sj&s=android&stats_referer=searchResult&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&geo_lat=22.575624&vc=88&sv=5.1&v=3.39.0&targetOrder=37&gpstype=gcj&imei=866808025006643&lineId=0755-M4003-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=KJal%2Bc5LEI8kmS1Gz%2BekwA%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.867222&flpolicy=0&geo_lac=35.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575624&geo_lng=113.867222"));
-            list.add(new BusParam("回家-m395", "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&last_src=app_360_sj&s=android&stats_referer=searchResult&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&geo_lat=22.575624&vc=88&sv=5.1&v=3.39.0&targetOrder=37&gpstype=gcj&imei=866808025006643&lineId=0755-M4003-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=KJal%2Bc5LEI8kmS1Gz%2BekwA%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.867222&flpolicy=0&geo_lac=35.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575624&geo_lng=113.867222"));
-            list.add(new BusParam("回家-m378", "https://api.chelaile.net.cn/bus/line!busesDetail.action?filter=1&last_src=app_360_sj&s=android&stats_referer=searchResult&push_open=1&stats_act=switch_stn&userId=unknown&geo_lt=4&geo_lat=22.575624&vc=88&sv=5.1&v=3.39.0&targetOrder=37&gpstype=gcj&imei=866808025006643&lineId=0755-M4003-0&screenHeight=1854&udid=441cf931-6752-4a7c-bd7e-fbd5e8cf6a3f&cshow=linedetail&cityId=014&sign=KJal%2Bc5LEI8kmS1Gz%2BekwA%3D%3D&geo_type=gcj&wifi_open=1&mac=38%3Abc%3A1a%3Ad2%3A97%3A52&deviceType=m1+note&lchsrc=icon&stats_order=1-1&nw=WIFI&AndroidID=9794624a5f2faa00&lng=113.867222&flpolicy=0&geo_lac=35.0&o1=eda29c1b972004dde4dc96ec491d35ac75e8cb75&language=1&first_src=app_qq_sj&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+5.1%3B+m1+note+Build%2FLMY47D%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F53.0.2785.49+Mobile+MQQBrowser%2F6.2+TBS%2F043610+Safari%2F537.36&lat=22.575624&geo_lng=113.867222"));
+            list.add(new BusParam("上班-m395", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=iR6cZFa3lR1nNTpOSxgzIg%3D%3D&language=1&cityId=014&lineNo=06510&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574164&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.9007037650382&cryptoSign=4b66b21b6393a2b0191325143996b801&lng=113.927254&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M395&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E8%A3%95%E5%AE%89%E8%B7%AF%E5%8F%A3%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.573404716848184&direction=1&targetOrder=22&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-06510-1&userAgent=Mozilla%2F5.0+(Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv)+AppleWebKit%2F537.36+(KHTML%2C+like+Gecko)+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927254&geo_lat=22.574164&v=3.85.4&imei=862848046848866&stats_order=1-1"));
+            list.add(new BusParam("上班-m378", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=wl50fDo3Fr8tTOKwXULO0w%3D%3D&language=1&cityId=014&lineNo=M3783&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574181&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.90117882310646&cryptoSign=cb1e6ab2b64c10fdbcb16359133f1f89&lng=113.927291&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M378&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E8%A3%95%E5%AE%89%E8%B7%AF%E5%8F%A3&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.57290849087809&direction=0&targetOrder=21&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-M3783-0&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927291&geo_lat=22.574181&v=3.85.4&imei=862848046848866&stats_order=1-1"));
+            list.add(new BusParam("回家-m378", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=rwS%2BCBeAfPaj5rdJajzMzg%3D%3D&language=1&cityId=014&lineNo=M3783&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.574181&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.9246803751752&cryptoSign=d6a4f3fb35c6dba89865a808b7113ba4&lng=113.927291&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchResult&lineName=M378&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E6%96%B0%E7%A6%8F%E5%B8%82%E5%9C%BA%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.58697971490557&direction=1&targetOrder=39&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-M3783-1&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927291&geo_lat=22.574181&v=3.85.4&imei=862848046848866&stats_order=1-1"));
+            list.add(new BusParam("回家-m395", "https://api.chelaile.net.cn/bus/line!busesDetail.action?stats_act=auto_refresh&sign=Fm%2BW70el84%2B3hLN5ar7lQQ%3D%3D&language=1&cityId=014&lineNo=06510&phoneBrand=HONOR&lchsrc=shortcut&system_push_open=1&lat=22.57416&deviceType=BKL-AL20&geo_type=gcj&o1=89211709d6cf31e368b0d64d39c7b4058607f1f8&targetStationLng=113.92468540887381&cryptoSign=246bbba6d14b73b0091e7c1a50f685a7&lng=113.927274&first_src=app_huawei_store&vc=160&isNewLineDetail=1&gpstype=gcj&geo_lt=5&accountId=34617165&last_src=app_huawei_store&sstate=3&wifi_open=0&screenDensity=3.0&flpolicy=0&astate=1&screenWidth=1080&cshow=linedetail&nw=MOBILE_LTE&stats_referer=searchHistory&lineName=M395&secret=37fde6b9dfc64fdf9a56063198a66659&AndroidID=e55ed573e14d8ad3&mac=58%3A02%3A03%3A04%3A05%3A06&stationName=%E6%96%B0%E7%A6%8F%E5%B8%82%E5%9C%BA%E2%91%A0&udid=a4068f5c-39ee-42e8-ab8c-52511762004d&targetStationLat=22.587014643396046&direction=0&targetOrder=38&push_open=1&sv=9&geo_lac=29.0&screenHeight=2088&lineId=0755-06510-0&userAgent=Mozilla%2F5.0+%28Linux%3B+Android+9%3B+BKL-AL20+Build%2FHUAWEIBKL-AL20%3B+wv%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Version%2F4.0+Chrome%2F72.0.3626.121+Mobile+Safari%2F537.36&userId=unknown&filter=1&paramsMakeUp=is&s=android&geo_lng=113.927274&geo_lat=22.57416&v=3.85.4&imei=862848046848866&stats_order=1-2"));
         }
 
         return list;
@@ -135,8 +136,33 @@ public class BusTvActivity extends AppCompatActivity {
             case R.id.menu_bus_add:
                 addBus();
                 break;
+            case R.id.menu_bus_default:
+                recoverData();
+                break;
+            case R.id.menu_bus_reload:
+                reloadAllDataAndUI();
+                break;
+            case R.id.menu_bus_shortcut:
+                addShortcut();
+            default:
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void addShortcut() {
+        Uapp.addShortCutCompat(this, BusTvActivity.class.getCanonicalName(), "bus_tv", R.mipmap.airplane, R.string.bus_tv);
+    }
+
+    private void reloadAllDataAndUI() {
+        mList.clear();
+        mList.addAll(getList());
+        mAdapter.notifyDataSetChanged();
+        reloadAllData();
+    }
+
+    private void recoverData() {
+        mBusDatabase.delete();
+        reloadAllDataAndUI();
     }
 
     @SuppressLint("InflateParams")
@@ -152,15 +178,16 @@ public class BusTvActivity extends AppCompatActivity {
 
                     String name = etName.getText().toString();
                     if (TextUtils.isEmpty(name)) {
-                        Utoast.show(mContext, "无效的URL");
+                        Utoast.show(mContext, "无效的名称");
                         return;
                     }
                     String address = etAddress.getText().toString();
                     try {
                         new URL(address);
                         mList.add(0, new BusParam(name, address));
+                        mList.clear();
                         mAdapter.notifyDataSetChanged();
-                        new BusDatabase(mContext).writeData(mList);
+                        mBusDatabase.writeData(mList);
                     } catch (MalformedURLException e) {
                         Utoast.show(mContext, "无效的URL");
                     }
@@ -183,14 +210,31 @@ public class BusTvActivity extends AppCompatActivity {
         erv.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
         mAdapter = new BusAdapter(this, mList);
         erv.setAdapter(mAdapter);
-        mAdapter.setOnItemClickListener(this::reloadData);
+        mAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(BusParam param) {
+                reloadData(param);
+            }
+
+            @Override
+            public void onItemLongClick(BusParam param) {
+                new AlertDialog.Builder(mContext)
+                        .setMessage("删除：" + param.getName() + "?")
+                        .setPositiveButton("是的", (dialog, whichButton) -> {
+                            mList.remove(param);
+                            mBusDatabase.writeData(mList);
+                            mAdapter.notifyDataSetChanged();
+                        })
+                        .show();
+            }
+        });
 
         mSwipeRefreshLayout = findViewById(R.id.srl_bus);
         mSwipeRefreshLayout.setOnRefreshListener(this::reloadAllData);
     }
 
     private void reloadData(BusParam bp) {
-        Disposable subscribe = ssss(bp, s -> {
+        Disposable subscribe = sendRequest(bp, s -> {
             bp.setResult(s);
             mAdapter.notifyDataSetChanged();
         });
@@ -198,7 +242,7 @@ public class BusTvActivity extends AppCompatActivity {
         mCompositeDisposable.add(subscribe);
     }
 
-    private Disposable ssss(BusParam bp, Consumer<String> result) {
+    private Disposable sendRequest(BusParam bp, Consumer<String> result) {
         Request request = new Request
                 .Builder()
                 .url(bp.getAddress())
@@ -229,7 +273,7 @@ public class BusTvActivity extends AppCompatActivity {
     private void reloadAllData() {
         List<Disposable> subscribes = new ArrayList<>();
         for (BusParam bp : mList) {
-            Disposable subscribe = ssss(bp, s -> {
+            Disposable subscribe = sendRequest(bp, s -> {
                 bp.setResult(s);
                 mAdapter.notifyDataSetChanged();
                 mSwipeRefreshLayout.setRefreshing(false);
@@ -320,6 +364,13 @@ public class BusTvActivity extends AppCompatActivity {
                     onItemClickListener.onItemClick(busParam);
                 }
             });
+
+            holder.itemView.setOnLongClickListener(v -> {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemLongClick(busParam);
+                }
+                return true;
+            });
         }
 
         @Override
@@ -334,6 +385,8 @@ public class BusTvActivity extends AppCompatActivity {
 
     interface OnItemClickListener {
         void onItemClick(BusParam param);
+
+        void onItemLongClick(BusParam param);
     }
 
     private static class MyViewHolder extends RecyclerView.ViewHolder {
