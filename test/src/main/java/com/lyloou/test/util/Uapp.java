@@ -19,7 +19,7 @@ import android.support.v4.content.pm.ShortcutInfoCompat;
 import android.support.v4.content.pm.ShortcutManagerCompat;
 import android.support.v4.graphics.drawable.IconCompat;
 
-import com.lyloou.test.flow.Consumer;
+import com.lyloou.test.common.Consumer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

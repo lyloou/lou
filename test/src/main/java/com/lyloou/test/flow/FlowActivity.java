@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
+import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uapp;

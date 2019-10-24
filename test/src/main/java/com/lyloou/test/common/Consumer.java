@@ -1,4 +1,4 @@
-package com.lyloou.test.flow;
+package com.lyloou.test.common;
 
 import java.util.Objects;
 

@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.lyloou.test.R;
+import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.webview.WebActivity;
 import com.lyloou.test.util.Uanimation;

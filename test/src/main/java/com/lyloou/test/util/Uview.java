@@ -29,7 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.gyf.immersionbar.ImmersionBar;
-import com.lyloou.test.flow.Consumer;
+import com.lyloou.test.common.Consumer;
 
 /**
  * Author:    Lou

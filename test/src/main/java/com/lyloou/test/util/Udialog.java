@@ -6,7 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.lyloou.test.flow.Consumer;
+import com.lyloou.test.common.Consumer;
 
 public class Udialog {
     public static void alert(Context context, String message, Consumer<Boolean> consumer) {
