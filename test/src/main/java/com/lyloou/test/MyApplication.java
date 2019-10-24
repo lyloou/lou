@@ -3,6 +3,7 @@ package com.lyloou.test;
 import android.app.Application;
 
 import com.lyloou.test.common.CrashHandler;
+import com.lyloou.test.util.Usp;
 
 public class MyApplication extends Application {
 
@@ -13,6 +14,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         initCrashLog();
+        Usp.init(this);
     }
 
     private void initCrashLog() {

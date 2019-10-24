@@ -46,7 +46,8 @@ import com.lyloou.test.util.Utoast;
 public class WebActivity extends AppCompatActivity {
 
     public static final String EXTRA_DATA_URL = "EXTRA_DATA_URL";
-    private static String sKey;
+    public static final String EXTRA_TAG = "EXTRA_DATA_URL";
+    private String mTag;
     private String mUrl;
     private WebView mWvContent;
     private Activity mContext;
@@ -57,12 +58,10 @@ public class WebActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
-        if (!TextUtils.isEmpty(tag)) {
-            sKey = context.getClass().getSimpleName().toUpperCase() + "_" + tag;
-        }
 
         Intent intent = new Intent(context, WebActivity.class);
         intent.putExtra(EXTRA_DATA_URL, url);
+        intent.putExtra(EXTRA_TAG, tag);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -83,9 +82,10 @@ public class WebActivity extends AppCompatActivity {
             Toast.makeText(mContext, "没网络了", Toast.LENGTH_LONG).show();
             return;
         }
+        mTag = getIntent().getStringExtra(EXTRA_DATA_URL);
 
-        if (!TextUtils.isEmpty(sKey)) {
-            mUrl = Usp.getInstance().getString(sKey, null);
+        if (!TextUtils.isEmpty(mTag)) {
+            mUrl = Usp.init(mContext).getString(mTag, null);
         }
 
         if (TextUtils.isEmpty(mUrl)) {
@@ -120,10 +120,12 @@ public class WebActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return super.shouldOverrideUrlLoading(view, url);
             }
+
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 handler.proceed();
             }
+
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
@@ -135,7 +137,7 @@ public class WebActivity extends AppCompatActivity {
                 super.onProgressChanged(view, newProgress);
                 Utoast.show(mContext, "progress:" + newProgress);
                 if (!isScrolled && newProgress > 50) {
-                    int lastPosition = Usp.getInstance().getInt(sKey + "position", 0);
+                    int lastPosition = Usp.init(mContext).getInt(getUrlPosition(), 0);
                     view.scrollTo(0, lastPosition);
                     isScrolled = true;
                 }
@@ -144,7 +146,7 @@ public class WebActivity extends AppCompatActivity {
 
         mWvContent.loadUrl(mUrl);
 
-        if (!TextUtils.isEmpty(sKey)) {
+        if (!TextUtils.isEmpty(mTag)) {
             View fabWrap = findViewById(R.id.fab_wrap);
             FloatingActionButton fab = findViewById(R.id.fab);
             FloatingActionButton fab1 = findViewById(R.id.fab_1);
@@ -216,14 +218,18 @@ public class WebActivity extends AppCompatActivity {
     }
 
     private void saveUrlAndPositionToHistory() {
-        if (!TextUtils.isEmpty(sKey)) {
-            Usp.getInstance()
-                    .putString(sKey, mWvContent.getUrl())
-                    .putInt(sKey + "position", mWvContent.getScrollY())
-                    .putString(sKey, mWvContent.getUrl())
+        if (!TextUtils.isEmpty(mTag)) {
+            Usp.init(mContext)
+                    .putString(mTag, mWvContent.getUrl())
+                    .putInt(getUrlPosition(), mWvContent.getScrollY())
+                    .putString(mTag, mWvContent.getUrl())
                     .commit();
-            sKey = null;
+            mTag = null;
         }
+    }
+
+    private String getUrlPosition() {
+        return mTag + "position";
     }
 
     @Override

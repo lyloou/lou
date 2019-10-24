@@ -37,12 +37,12 @@ public class NotificationPermissionActivity extends LouActivity {
         }
 
         String KEY_SP_CLOSE_NOTIFICATION = "KEY_SP_CLOSE_NOTIFICATION";
-        if (Usp.init(context).getBoolean(KEY_SP_CLOSE_NOTIFICATION, false)) {
+        if (Usp.getBoolean(KEY_SP_CLOSE_NOTIFICATION, false)) {
             new AlertDialog.Builder(context,
                     android.R.style.Theme_DeviceDefault_Light_Dialog)
                     .setTitle("您已取消，是否仍然开启？")
                     .setPositiveButton("继续", (dialog, which) -> {
-                        Usp.init(context).remove(KEY_SP_CLOSE_NOTIFICATION).commit();
+                        Usp.remove(KEY_SP_CLOSE_NOTIFICATION).commit();
                         enableNotificationPermission(context);
                     })
                     .setNegativeButton("否", ((dialog, which) -> {

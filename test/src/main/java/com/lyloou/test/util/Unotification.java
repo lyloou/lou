@@ -43,7 +43,8 @@ public class Unotification {
         Intent nextIntent = new Intent(context, cls);
         Intent mainIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
         if (mainIntent != null) {
-            mainIntent.setPackage(null); // 加上这句代码
+            // [小心 getLaunchIntentForPackage() 方法 - 掘金](https://juejin.im/post/5c36f666e51d45513236f081)
+            mainIntent.setPackage(null);
             stackBuilder.addNextIntent(mainIntent);
         }
         stackBuilder.addNextIntent(nextIntent);

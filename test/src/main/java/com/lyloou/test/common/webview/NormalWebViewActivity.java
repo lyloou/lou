@@ -131,7 +131,7 @@ public class NormalWebViewActivity extends AppCompatActivity {
 
                         // 记录历史
                         if (!isScrolled && newProgress > 90) {
-                            int lastPosition = Usp.getInstance().getInt(mUrl, 0);
+                            int lastPosition = Usp.init(mContext).getInt(mUrl, 0);
                             view.scrollTo(0, lastPosition);
                             isScrolled = true;
                         }
@@ -372,6 +372,6 @@ public class NormalWebViewActivity extends AppCompatActivity {
 
     private void savePosition() {
         int scrollY = mWebView.getScrollY();
-        Usp.getInstance().putInt(mUrl, scrollY).commit();
+        Usp.init(mContext).putInt(mUrl, scrollY).commit();
     }
 }

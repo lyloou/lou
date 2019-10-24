@@ -153,11 +153,10 @@ public class ManActivity extends AppCompatActivity {
                     WebActivity.newInstance(holder.view.getContext(), stringMap.get(label), label));
             holder.view.setOnLongClickListener(v -> {
                 final Context context = v.getContext();
-                Usp.init(context);
                 Udialog.alert(context, "清除它的历史记录：" + label, ok -> {
                     if (ok) {
                         String key = context.getClass().getSimpleName().toUpperCase() + "_" + label;
-                        Usp.getInstance().remove(key).commit();
+                        Usp.init(context).remove(key).commit();
                     }
                 });
                 return true;
