@@ -36,7 +36,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
-import com.lyloou.test.common.CrashHandler;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebActivity;
@@ -71,7 +70,6 @@ public class ManActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        CrashHandler.getInstance().init(this.getApplicationContext());
         initView();
     }
 

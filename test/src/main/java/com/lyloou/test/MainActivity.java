@@ -34,12 +34,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.lyloou.test.bus.notification.LongRunningService;
+import com.lyloou.test.common.Const;
 import com.lyloou.test.common.CrashHandler;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Uservice;
+import com.lyloou.test.util.Usp;
 
 import java.util.Map;
 
@@ -55,6 +59,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class MainActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +68,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         CrashHandler.getInstance().init(this.getApplicationContext());
         initView();
+        initAlarm();
+    }
+
+    private void initAlarm() {
+        if (Usp.init(this).getBoolean(Const.KEY_BACKGROUND_SERVER, false)) {
+            Uservice.start(this, LongRunningService.class);
+        }
     }
 
     private void initView() {

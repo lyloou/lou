@@ -11,8 +11,4 @@
         android:title="添加到桌面"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/menu_send_notice"
-        android:title="发送通知"
-        app:showAsAction="never" />
 </menu>

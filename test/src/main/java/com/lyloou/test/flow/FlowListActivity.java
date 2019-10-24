@@ -43,7 +43,6 @@ import com.lyloou.test.common.webview.WebActivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Udialog;
-import com.lyloou.test.util.Unotification;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Uview;
 
@@ -250,17 +249,10 @@ public class FlowListActivity extends AppCompatActivity {
             case R.id.menu_today_flow_time:
                 toFlowActivity();
                 break;
-            case R.id.menu_send_notice:
-                sendNotice();
         }
         return super.onOptionsItemSelected(item);
     }
 
-
-    // [Create a Notification  |  Android Developers](https://developer.android.com/training/notify-user/build-notification#java)
-    private void sendNotice() {
-        Unotification.show(this, "title", "message", FlowActivity.class);
-    }
 
     private void toFlowActivity() {
         Intent intent = new Intent(mContext, FlowActivity.class);

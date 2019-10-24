@@ -10,6 +10,6 @@ import com.lyloou.test.util.Unotification;
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Unotification.show(context, "帅帅的人", "去上班咯", BusActivity.class);
+        Unotification.show(context, "帅帅的人", "来消息咯", BusActivity.class);
     }
 }

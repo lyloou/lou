@@ -16,6 +16,7 @@
 
 package com.lyloou.test.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ public class Utoast {
         show(context, resId, 0);
     }
 
+    @SuppressLint("ShowToast")
     public static void show(Context context, CharSequence text, int mode) {
         if (mToast == null) {
             mToast = Toast.makeText(context.getApplicationContext(), text, mode);
@@ -40,6 +42,7 @@ public class Utoast {
         mToast.show();
     }
 
+    @SuppressLint("ShowToast")
     public static void show(Context context, int resId, int mode) {
 
         if (mToast == null) {

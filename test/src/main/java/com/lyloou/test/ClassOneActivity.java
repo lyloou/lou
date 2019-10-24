@@ -17,6 +17,7 @@
 package com.lyloou.test;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,21 +27,29 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.lyloou.test.bus.notification.LongRunningService;
+import com.lyloou.test.common.Const;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.contact.ContactActivity;
+import com.lyloou.test.flow.FlowActivity;
 import com.lyloou.test.media.pic.PictureActivity;
 import com.lyloou.test.media.recoder.RecorderActivity;
 import com.lyloou.test.media.video.VideoActivity;
 import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uanimation;
+import com.lyloou.test.util.Unotification;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Uservice;
+import com.lyloou.test.util.Usp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -165,5 +174,33 @@ public class ClassOneActivity extends AppCompatActivity {
                 tvTitle = itemView.findViewById(R.id.tv_title);
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_class_one, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_open_background_server:
+                Usp.init(this).putBoolean(Const.KEY_BACKGROUND_SERVER, true).apply();
+                Uservice.start(this, LongRunningService.class);
+                break;
+            case R.id.menu_close_background_server:
+                Usp.init(this).putBoolean(Const.KEY_BACKGROUND_SERVER, false).apply();
+                stopService(new Intent(this, LongRunningService.class));
+                break;
+            case R.id.menu_send_notice:
+                sendNotice();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // [Create a Notification  |  Android Developers](https://developer.android.com/training/notify-user/build-notification#java)
+    private void sendNotice() {
+        Unotification.show(this, "hi", "进入时分流", FlowActivity.class);
     }
 }

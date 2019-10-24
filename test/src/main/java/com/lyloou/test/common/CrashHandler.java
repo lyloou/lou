@@ -54,7 +54,7 @@ import java.util.Map;
  */
 public class CrashHandler implements UncaughtExceptionHandler {
     public static final String ERROR_TIPS = "Unfortunately, Application has stoped.";
-    private static String LOG_DIR = "/getitnow/";
+    private static String LOG_DIR = "/com.lyloou/crash_log/";
     private final String TAG = "CrashHandler";
 
     //系统默认的UncaughtException处理类
@@ -79,9 +79,10 @@ public class CrashHandler implements UncaughtExceptionHandler {
         return Environment.getExternalStorageDirectory().getPath() + LOG_DIR;
     }
 
-    public void setCrashDir(String dir) {
+    public CrashHandler setCrashDir(String dir) {
         if (!TextUtils.isEmpty(dir))
             LOG_DIR = dir;
+        return this;
     }
 
     private CrashHandler(String logDir) {

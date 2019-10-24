@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".MyApplication"
@@ -101,6 +102,7 @@
         <activity
             android:name=".flow.FlowActivity"
             android:exported="true"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/FastEnterTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -148,6 +150,8 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".bus.notification.AlarmReceiver" />
+
+        <service android:name=".bus.notification.LongRunningService" />
     </application>
 
 </manifest>
