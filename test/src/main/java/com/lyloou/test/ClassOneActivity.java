@@ -147,7 +147,7 @@ public class ClassOneActivity extends AppCompatActivity {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_main, null);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_line_one, null);
             return new ViewHolder(view);
         }
 
@@ -171,7 +171,7 @@ public class ClassOneActivity extends AppCompatActivity {
             ViewHolder(View itemView) {
                 super(itemView);
                 view = itemView;
-                tvTitle = itemView.findViewById(R.id.tv_title);
+                tvTitle = itemView.findViewById(R.id.tv_one);
             }
         }
     }

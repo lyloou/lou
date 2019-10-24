@@ -66,7 +66,7 @@
         <activity
             android:name=".kingsoftware.KingsoftwareActivity"
             android:theme="@style/AppTheme.TranslucentStatus" />
-        <activity android:name=".common.webview.WebActivity" />
+        <activity android:name=".man.WebActivity" />
         <activity
             android:name=".laifudao.TuPianActivity"
             android:label="@string/laifudao_tupian"

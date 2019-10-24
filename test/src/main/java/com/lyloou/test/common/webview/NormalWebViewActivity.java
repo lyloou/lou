@@ -42,6 +42,7 @@ import com.lyloou.test.R;
 import com.lyloou.test.util.Usp;
 import com.lyloou.test.util.Uview;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -72,6 +73,16 @@ public class NormalWebViewActivity extends AppCompatActivity {
             checkStatus();
         }
     };
+
+    public static void newInstance(Context context, String url) {
+        newInstance(context, new JSONObject() {{
+            try {
+                putOpt("url", url);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }});
+    }
 
     public static void newInstance(Context context, JSONObject jsonObject) {
         Intent intent = new Intent(context, NormalWebViewActivity.class);

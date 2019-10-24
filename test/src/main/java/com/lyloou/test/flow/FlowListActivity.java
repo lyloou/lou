@@ -40,7 +40,7 @@ import android.widget.TextView;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.ItemOffsetDecoration;
-import com.lyloou.test.common.webview.WebActivity;
+import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Udialog;
@@ -219,7 +219,7 @@ public class FlowListActivity extends AppCompatActivity {
             ViewHolder(View itemView) {
                 super(itemView);
                 view = itemView;
-                tvTitle = itemView.findViewById(R.id.tv_title);
+                tvTitle = itemView.findViewById(R.id.tv_one);
             }
         }
     }
@@ -244,7 +244,7 @@ public class FlowListActivity extends AppCompatActivity {
                 Uapp.addShortCutCompat(this, FlowActivity.class.getCanonicalName(), "flow_time_day", R.mipmap.lyloou, R.string.flow_time_day);
                 Snackbar snackbar = Snackbar.make(Uview.getRootView(this), "已添加到桌面", Snackbar.LENGTH_LONG);
                 snackbar.setAction("了解详情",
-                        v -> WebActivity.newInstance(this, "https://kf.qq.com/touch/sappfaq/180705A3IB3Y1807056fMr6V.html", "want_to_know_why"));
+                        v -> NormalWebViewActivity.newInstance(mContext, "https://kf.qq.com/touch/sappfaq/180705A3IB3Y1807056fMr6V.html"));
                 snackbar.show();
                 break;
             case R.id.menu_today_flow_time:

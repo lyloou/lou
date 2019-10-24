@@ -112,7 +112,7 @@ class XiaoHuaAdapter extends RecyclerView.Adapter {
         public XiaoHuaViewHolder(View view) {
             super(view);
             this.view = view;
-            tvTitle = (TextView) view.findViewById(R.id.tv_title);
+            tvTitle = (TextView) view.findViewById(R.id.tv_one);
             tvContent = (TextView) view.findViewById(R.id.tv_content);
             ivPoster = (ImageView) view.findViewById(R.id.iv_poster);
         }

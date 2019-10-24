@@ -39,7 +39,7 @@
             android:src="@mipmap/ic_launcher"/>
 
         <TextView
-            android:id="@+id/tv_title"
+            android:id="@+id/tv_one"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             android:id="@+id/tv_second"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_title"
+            android:layout_below="@id/tv_one"
             android:layout_toRightOf="@id/iv_thumb"
             android:text="1994"
             android:textColor="@color/colorPrimaryDark"

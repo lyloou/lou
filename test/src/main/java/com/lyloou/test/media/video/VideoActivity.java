@@ -205,7 +205,7 @@ public class VideoActivity extends AppCompatActivity {
                 super(itemView);
                 this.itemView = itemView;
                 tvDesc = itemView.findViewById(R.id.tv_desc);
-                tvTitle = itemView.findViewById(R.id.tv_title);
+                tvTitle = itemView.findViewById(R.id.tv_one);
             }
         }
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.common.webview;
+package com.lyloou.test.man;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -41,27 +42,22 @@ import android.widget.Toast;
 import com.lyloou.test.R;
 import com.lyloou.test.util.Unet;
 import com.lyloou.test.util.Usp;
-import com.lyloou.test.util.Utoast;
 
 public class WebActivity extends AppCompatActivity {
 
-    public static final String EXTRA_DATA_URL = "EXTRA_DATA_URL";
-    public static final String EXTRA_TAG = "EXTRA_DATA_URL";
-    private String mTag;
-    private String mUrl;
+    private Data mData;
     private WebView mWvContent;
     private Activity mContext;
     private boolean isScrolled;
     private boolean isShowFab;
 
-    public static void newInstance(Context context, String url, String tag) {
+    public static void newInstance(Context context, Data data) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
 
         Intent intent = new Intent(context, WebActivity.class);
-        intent.putExtra(EXTRA_DATA_URL, url);
-        intent.putExtra(EXTRA_TAG, tag);
+        intent.putExtra(Const.EXTRA_DATA, data);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -82,17 +78,11 @@ public class WebActivity extends AppCompatActivity {
             Toast.makeText(mContext, "没网络了", Toast.LENGTH_LONG).show();
             return;
         }
-        mTag = getIntent().getStringExtra(EXTRA_DATA_URL);
-
-        if (!TextUtils.isEmpty(mTag)) {
-            mUrl = Usp.init(mContext).getString(mTag, null);
-        }
-
-        if (TextUtils.isEmpty(mUrl)) {
-            mUrl = getIntent().getStringExtra(EXTRA_DATA_URL);
-            if (TextUtils.isEmpty(mUrl)) {
-                mUrl = "http://lyloou.com";
-            }
+        mData = (Data) getIntent().getSerializableExtra(Const.EXTRA_DATA);
+        if (mData == null) {
+            mData = new Data()
+                    .setTitle("木子楼")
+                    .setUrl("http://lyloou.com");
         }
     }
 
@@ -135,55 +125,59 @@ public class WebActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                Utoast.show(mContext, "progress:" + newProgress);
                 if (!isScrolled && newProgress > 50) {
-                    int lastPosition = Usp.init(mContext).getInt(getUrlPosition(), 0);
+                    int lastPosition = mData.getPosition();
                     view.scrollTo(0, lastPosition);
                     isScrolled = true;
                 }
             }
         });
 
-        mWvContent.loadUrl(mUrl);
+        mWvContent.loadUrl(getUrl());
 
-        if (!TextUtils.isEmpty(mTag)) {
-            View fabWrap = findViewById(R.id.fab_wrap);
-            FloatingActionButton fab = findViewById(R.id.fab);
-            FloatingActionButton fab1 = findViewById(R.id.fab_1);
-            FloatingActionButton fab2 = findViewById(R.id.fab_2);
-            FloatingActionButton fab3 = findViewById(R.id.fab_3);
-            fab.setVisibility(View.VISIBLE);
-            fabWrap.setOnClickListener(v -> {
-                showFab(isShowFab = false, fab1, fab2, fab3);
-                fabWrap.setClickable(false);
-            });
+        View fabWrap = findViewById(R.id.fab_wrap);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab1 = findViewById(R.id.fab_1);
+        FloatingActionButton fab2 = findViewById(R.id.fab_2);
+        FloatingActionButton fab3 = findViewById(R.id.fab_3);
+        fab.setVisibility(View.VISIBLE);
+        fabWrap.setOnClickListener(v -> {
+            showFab(isShowFab = false, fab1, fab2, fab3);
             fabWrap.setClickable(false);
+        });
+        fabWrap.setClickable(false);
 
-            fab.setOnClickListener(v -> {
-                showFab(isShowFab = !isShowFab, fab1, fab2, fab3);
-                fabWrap.setClickable(isShowFab);
-            });
-            fab1.setOnClickListener(v -> mContext.finish());
-            fab2.setOnClickListener(v -> {
-                String title = mWvContent.getTitle();
-                String url = mWvContent.getUrl();
-                String text = "- [" + title + "]" + "(" + url + ")";
-                String tips = "- [标题](链接)已复制到剪切板";
-                copyToClipboard(text, tips);
-            });
-            fab2.setOnLongClickListener(v -> {
-                String text = mWvContent.getUrl();
-                String tips = "(链接)已复制到剪切板";
-                copyToClipboard(text, tips);
-                return true;
-            });
-            fab3.setOnClickListener(v -> {
-                ObjectAnimator anim = ObjectAnimator.ofInt(mWvContent, "scrollY", mWvContent.getScrollY(), 0);
-                anim.setDuration(500);
-                anim.start();
-            });
+        fab.setOnClickListener(v -> {
+            showFab(isShowFab = !isShowFab, fab1, fab2, fab3);
+            fabWrap.setClickable(isShowFab);
+        });
+        fab1.setOnClickListener(v -> mContext.finish());
+        fab2.setOnClickListener(v -> {
+            String title = mWvContent.getTitle();
+            String url = mWvContent.getUrl();
+            String text = "- [" + title + "]" + "(" + url + ")";
+            String tips = "- [标题](链接)已复制到剪切板";
+            copyToClipboard(text, tips);
+        });
+        fab2.setOnLongClickListener(v -> {
+            String text = mWvContent.getUrl();
+            String tips = "(链接)已复制到剪切板";
+            copyToClipboard(text, tips);
+            return true;
+        });
+        fab3.setOnClickListener(v -> {
+            ObjectAnimator anim = ObjectAnimator.ofInt(mWvContent, "scrollY", mWvContent.getScrollY(), 0);
+            anim.setDuration(500);
+            anim.start();
+        });
 
+    }
+
+    private String getUrl() {
+        if (!TextUtils.isEmpty(mData.getLastUrl())) {
+            return mData.getLastUrl();
         }
+        return mData.getUrl();
     }
 
     private void copyToClipboard(String text, String tips) {
@@ -218,19 +212,14 @@ public class WebActivity extends AppCompatActivity {
     }
 
     private void saveUrlAndPositionToHistory() {
-        if (!TextUtils.isEmpty(mTag)) {
-            Usp.init(mContext)
-                    .putString(mTag, mWvContent.getUrl())
-                    .putInt(getUrlPosition(), mWvContent.getScrollY())
-                    .putString(mTag, mWvContent.getUrl())
-                    .commit();
-            mTag = null;
-        }
+        mData.setPosition(mWvContent.getScrollY())
+                .setLastUrl(mWvContent.getUrl());
+        Intent intent = new Intent();
+        intent.setAction(Const.ACTION_POSITION);
+        intent.putExtra(Const.EXTRA_DATA, mData);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    private String getUrlPosition() {
-        return mTag + "position";
-    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {

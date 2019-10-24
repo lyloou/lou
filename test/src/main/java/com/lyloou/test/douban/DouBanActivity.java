@@ -36,9 +36,6 @@ import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 import com.lyloou.test.util.Uview;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -121,13 +118,7 @@ public class DouBanActivity extends AppCompatActivity {
 
         mSubjectAdapter = new SubjectAdapter(this);
         mSubjectAdapter.setOnItemClickListener(subject -> {
-            NormalWebViewActivity.newInstance(mContext, new JSONObject() {{
-                try {
-                    putOpt("url", subject.getAlt());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }});
+            NormalWebViewActivity.newInstance(mContext, subject.getAlt());
         });
         recyclerView.setAdapter(mSubjectAdapter);
         recyclerView.setItemTypeCount(mSubjectAdapter.getItemTypeCount());

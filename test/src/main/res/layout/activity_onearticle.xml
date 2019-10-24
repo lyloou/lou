@@ -80,7 +80,7 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:id="@+id/tv_title"
+                    android:id="@+id/tv_one"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"

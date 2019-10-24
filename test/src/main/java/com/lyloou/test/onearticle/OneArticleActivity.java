@@ -127,7 +127,7 @@ public class OneArticleActivity extends AppCompatActivity {
         String authDate = oneArticle.getData().getAuthor() + "（" + mCurrentDay.getDate() + "）";
         String htmlContent = oneArticle.getData().getContent();
 
-        TextView tvTitle = findViewById(R.id.tv_title);
+        TextView tvTitle = findViewById(R.id.tv_one);
         TextView tvAuthorDate = findViewById(R.id.tv_author_date);
         tvTitle.setText(title);
         tvAuthorDate.setText(authDate);
@@ -227,7 +227,7 @@ public class OneArticleActivity extends AppCompatActivity {
         final LouAdapter<Article> adapter = new LouAdapter<Article>(listView, R.layout.item_onearticle_favorite) {
             @Override
             protected void assign(ViewHolder holder, Article s) {
-                holder.putText(R.id.tv_title, s.getTitle());
+                holder.putText(R.id.tv_one, s.getTitle());
                 holder.putText(R.id.tv_author_date, s.getAuthor() + " - " + s.getDate());
             }
         };

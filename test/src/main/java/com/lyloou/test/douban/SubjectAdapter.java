@@ -172,7 +172,7 @@ class SubjectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         SubjectHolder(View itemView) {
             super(itemView);
             view = itemView;
-            tvTitle = (TextView) view.findViewById(R.id.tv_title);
+            tvTitle = (TextView) view.findViewById(R.id.tv_one);
             tvSecond = (TextView) view.findViewById(R.id.tv_second);
             ivThumb = (ImageView) view.findViewById(R.id.iv_thumb);
         }

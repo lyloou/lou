@@ -2,9 +2,10 @@ package com.lyloou.test.man;
 
 import java.io.Serializable;
 
-public class Data implements Serializable {
+class Data implements Serializable {
     private String title;
     private String url;
+    private String lastUrl;
     private int position;
 
     public String getTitle() {
@@ -22,6 +23,15 @@ public class Data implements Serializable {
 
     public Data setUrl(String url) {
         this.url = url;
+        return this;
+    }
+
+    public String getLastUrl() {
+        return lastUrl;
+    }
+
+    public Data setLastUrl(String lastUrl) {
+        this.lastUrl = lastUrl;
         return this;
     }
 
