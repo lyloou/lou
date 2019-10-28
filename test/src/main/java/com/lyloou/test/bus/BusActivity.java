@@ -331,7 +331,8 @@ public class BusActivity extends AppCompatActivity {
                                 .append(fb.getNotice());
                         tvWeather.setText(sb.toString());
                     }
-                })
+                }, throwable ->
+                        Toast.makeText(mContext, "连接天气服务异常", Toast.LENGTH_SHORT).show())
         );
     }
 
