@@ -42,6 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lyloou.test.R;
+import com.lyloou.test.util.Uanimator;
 import com.lyloou.test.util.Unet;
 import com.lyloou.test.util.Usp;
 
@@ -93,27 +94,28 @@ public class WebActivity extends AppCompatActivity {
         initWebView();
     }
 
-    private long lastClickTime;
 
     private void initTopView() {
         findViewById(R.id.iv_back).setOnClickListener(v -> onBackPressed());
         findViewById(R.id.iv_more).setOnClickListener(v -> onMorePressed());
+        findViewById(R.id.iv_more).setOnLongClickListener(v -> minimize(false));
         findViewById(R.id.iv_close).setOnClickListener(v -> finish());
         mTvTitle = findViewById(R.id.tv_title);
         mTvTitle.setText(mData.getTitle());
-        mTvTitle.setOnClickListener(v -> {
-            if (System.currentTimeMillis() - lastClickTime < 800) {
-                scrollToTop();
-                return;
-            }
-            lastClickTime = System.currentTimeMillis();
-        });
+        mTvTitle.setOnClickListener(v -> tapTwoTimesQuicklyScrollToTop());
+        minimize(true);
     }
 
-    private void scrollToTop() {
-        ObjectAnimator anim = ObjectAnimator.ofInt(mWvContent, "scrollY", mWvContent.getScrollY(), 0);
-        anim.setDuration(360);
-        anim.start();
+    private long lastClickedTime;
+
+    private void tapTwoTimesQuicklyScrollToTop() {
+        if (System.currentTimeMillis() - lastClickedTime < 800) {
+            ObjectAnimator anim = ObjectAnimator.ofInt(mWvContent, "scrollY", mWvContent.getScrollY(), 0);
+            anim.setDuration(360);
+            anim.start();
+            return;
+        }
+        lastClickedTime = System.currentTimeMillis();
     }
 
     enum OperateType {
@@ -170,6 +172,13 @@ public class WebActivity extends AppCompatActivity {
     private void initWebView() {
         mWvContent = findViewById(R.id.wv_content);
         mWvContent.setScrollbarFadingEnabled(true);
+        initWebSettings();
+        mWvContent.setWebViewClient(getWebViewClient());
+        mWvContent.setWebChromeClient(getWebChromeClient());
+        mWvContent.loadUrl(getUrl());
+    }
+
+    private void initWebSettings() {
         WebSettings webSettings = mWvContent.getSettings();
         // https://www.jianshu.com/p/14ca454ab3d1
         webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
@@ -184,8 +193,24 @@ public class WebActivity extends AppCompatActivity {
         webSettings.setAppCacheEnabled(false);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setBlockNetworkImage(false);
+    }
 
-        mWvContent.setWebViewClient(new WebViewClient() {
+    private WebChromeClient getWebChromeClient() {
+        return new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                if (!isScrolled && newProgress > 80) {
+                    int lastPosition = mData.getPosition();
+                    view.setScrollY(lastPosition);
+                    isScrolled = true;
+                }
+            }
+        };
+    }
+
+    private WebViewClient getWebViewClient() {
+        return new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 return super.shouldOverrideUrlLoading(view, url);
@@ -201,29 +226,20 @@ public class WebActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
                 mTvTitle.setText(view.getTitle());
             }
-        });
-        mWvContent.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                super.onProgressChanged(view, newProgress);
-                if (!isScrolled && newProgress > 80) {
-                    int lastPosition = mData.getPosition();
-                    view.setScrollY(lastPosition);
-                    isScrolled = true;
-                }
-            }
-        });
-
-        initWebViewScroll();
-        mWvContent.loadUrl(getUrl());
+        };
     }
 
 
-    private void initWebViewScroll() {
-//        View topView = findViewById(R.id.rylt);
-//        boolean isVisible = topView.getVisibility() == View.VISIBLE;
-//        topView.setVisibility(View.GONE);
-//        topView.setVisibility(View.VISIBLE);
+    private boolean minimize(boolean showTopBar) {
+        View topView = findViewById(R.id.rylt);
+        if (showTopBar && topView.getVisibility() == View.VISIBLE) {
+            return true;
+        }
+        Uanimator.animHeightToView(this, topView, showTopBar, 300);
+        View mini = findViewById(R.id.iv_minimize);
+        mini.setOnClickListener(v -> minimize(!showTopBar));
+        mini.setVisibility(showTopBar ? View.GONE : View.VISIBLE);
+        return true;
     }
 
 
