@@ -248,7 +248,6 @@ public class BusActivity extends AppCompatActivity {
                     try {
                         new URL(address);
                         mList.add(0, new BusParam(name, address));
-                        mList.clear();
                         mAdapter.notifyDataSetChanged();
                         mBusDatabase.writeData(mList);
                     } catch (MalformedURLException e) {

@@ -26,11 +26,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,7 +46,10 @@ import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Utoast;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,10 +59,12 @@ public class ManActivity extends AppCompatActivity {
     private DataRepositoryHelper mDataRepositoryHelper;
     private List<Data> mDataList;
     private ManAdapter mManAdapter;
+    private Context mContext;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
 
         setContentView(R.layout.activity_main);
         initData();
@@ -93,13 +104,23 @@ public class ManActivity extends AppCompatActivity {
         }
     };
 
+    private Data queryDataByTitle(String title) {
+        for (Data d : mDataList) {
+            if (title.equals(d.getTitle())) {
+                return d;
+            }
+        }
+        return null;
+    }
+
     @SuppressLint("CheckResult")
     private void initView() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         Uscreen.setToolbarMarginTop(this, toolbar);
 
         ImageView ivHeader = findViewById(R.id.iv_header);
@@ -139,17 +160,71 @@ public class ManActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.rv_main);
         mManAdapter = new ManAdapter(mDataList);
-        mManAdapter.setListener(data -> {
-            Data d = queryDataByTitle(data.getTitle());
-            if (d != null) {
-                d.setLastUrl(data.getLastUrl());
-                d.setPosition(data.getPosition());
-                updateDataRepository();
-            }
-        });
+        mManAdapter.setListener(data -> new AlertDialog.Builder(mContext)
+                .setTitle("操作")
+                .setItems(OperateType.toStrArray(), (dialog, which) -> {
+                    switch (OperateType.indexOf(which)) {
+                        case DELETE:
+                            mDataList.remove(data);
+                            updateDataRepository();
+                            break;
+                        case CLEAR_HISTORY:
+                            data.setLastUrl(null);
+                            data.setPosition(0);
+                            updateDataRepository();
+                            break;
+                    }
+                })
+                .create()
+                .show());
         recyclerView.setAdapter(mManAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
+    }
+
+    @SuppressLint("InflateParams")
+    public void addAddress() {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_man_address_add, null);
+        new AlertDialog.Builder(mContext)
+                .setTitle("添加更多网址")
+                .setView(view)
+                .setPositiveButton("是的", (dialog, whichButton) -> {
+                    EditText etName = view.findViewById(R.id.et_name);
+                    EditText etAddress = view.findViewById(R.id.et_address);
+
+                    String name = etName.getText().toString();
+                    if (TextUtils.isEmpty(name)) {
+                        Utoast.show(mContext, "无效的名称");
+                        return;
+                    }
+                    String address = etAddress.getText().toString();
+                    try {
+                        new URL(address);
+                        mDataList.add(0, new Data().setTitle(name).setUrl(address));
+                        updateDataRepository();
+                    } catch (MalformedURLException e) {
+                        Utoast.show(mContext, "无效的URL");
+                    }
+
+                })
+                .show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_man, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_man_add:
+                addAddress();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void updateDataRepository() {
@@ -157,14 +232,6 @@ public class ManActivity extends AppCompatActivity {
         mDataRepositoryHelper.writeData(mDataList);
     }
 
-    private Data queryDataByTitle(String title) {
-        for (Data d : mDataList) {
-            if (title.equals(d.getTitle())) {
-                return d;
-            }
-        }
-        return null;
-    }
 
     @Override
     protected void onDestroy() {

@@ -43,7 +43,11 @@ class DataRepositoryHelper {
 
     public List<Data> readData() {
         try {
-            return Ugson.getGson().fromJson(new FileReader(dataFile), getDataListType());
+            List<Data> data = Ugson.getGson().fromJson(new FileReader(dataFile), getDataListType());
+            if (data.isEmpty()) {
+                return DATA;
+            }
+            return data;
         } catch (Exception e) {
             // 文件不存在，或者文件内容不符合规范；匀可忽略
         }

@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.lyloou.test.R;
-import com.lyloou.test.util.Udialog;
 
 import java.util.List;
 
@@ -42,18 +41,13 @@ class ManAdapter extends RecyclerView.Adapter<ManAdapter.ViewHolder> {
         holder.tvLastUrl.setText(TextUtils.isEmpty(lastUrl) ? url : lastUrl);
         holder.view.setOnClickListener(v -> WebActivity.newInstance(holder.view.getContext(), data));
         holder.view.setOnLongClickListener(v -> {
-            Udialog.alert(v.getContext(), "清除它的历史记录：" + title, ok -> {
-                if (ok) {
-                    data.setLastUrl(null);
-                    data.setPosition(0);
-                    if (mListener != null) {
-                        mListener.onDataChanged(data);
-                    }
-                }
-            });
+            if (mListener != null) {
+                mListener.setOnLongClickListener(data);
+            }
             return true;
         });
     }
+
 
     @Override
     public int getItemCount() {
