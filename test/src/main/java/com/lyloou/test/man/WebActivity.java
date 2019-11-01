@@ -23,12 +23,13 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -37,6 +38,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lyloou.test.R;
@@ -49,7 +51,7 @@ public class WebActivity extends AppCompatActivity {
     private WebView mWvContent;
     private Activity mContext;
     private boolean isScrolled;
-    private boolean isShowFab;
+    private TextView mTvTitle;
 
     public static void newInstance(Context context, Data data) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -86,8 +88,86 @@ public class WebActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     private void initView() {
+        initTopView();
+        initWebView();
+    }
+
+    private long lastClickTime;
+
+    private void initTopView() {
+        findViewById(R.id.iv_back).setOnClickListener(v -> onBackPressed());
+        findViewById(R.id.iv_more).setOnClickListener(v -> onMorePressed());
+        findViewById(R.id.iv_close).setOnClickListener(v -> finish());
+        mTvTitle = findViewById(R.id.tv_title);
+        mTvTitle.setText(mData.getTitle());
+        mTvTitle.setOnClickListener(v -> {
+            if (System.currentTimeMillis() - lastClickTime < 800) {
+                scrollToTop();
+                return;
+            }
+            lastClickTime = System.currentTimeMillis();
+        });
+    }
+
+    private void scrollToTop() {
+        ObjectAnimator anim = ObjectAnimator.ofInt(mWvContent, "scrollY", mWvContent.getScrollY(), 0);
+        anim.setDuration(360);
+        anim.start();
+    }
+
+    enum OperateType {
+        REFRESH("刷新"),
+        COPY_LINK("复制链接"),
+        COPY_MD_LINK("复制md链接"),
+        OPEN_WITH_BROWSER("在浏览器中打开"),
+        ;
+        String title;
+
+        OperateType(String title) {
+            this.title = title;
+        }
+
+        public static OperateType indexOf(int index) {
+            return OperateType.values()[index];
+        }
+
+        public static String[] toStrArray() {
+            OperateType[] values = OperateType.values();
+            String[] result = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                result[i] = values[i].title;
+            }
+            return result;
+        }
+    }
+
+    private void onMorePressed() {
+        new AlertDialog.Builder(mContext)
+                .setTitle("操作")
+                .setItems(OperateType.toStrArray(), (dialog, which) -> {
+                    switch (OperateType.indexOf(which)) {
+                        case REFRESH:
+                            mWvContent.reload();
+                            break;
+                        case COPY_LINK:
+                            copyToClipboard(mWvContent.getUrl(), "已复制到剪切板");
+                        case COPY_MD_LINK:
+                            String title = mWvContent.getTitle();
+                            String url = mWvContent.getUrl();
+                            copyToClipboard("- [" + title + "]" + "(" + url + ")", "已复制到剪切板");
+                        case OPEN_WITH_BROWSER:
+                            Uri uri = Uri.parse(mWvContent.getUrl());
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                            break;
+                    }
+                })
+                .create().show();
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private void initWebView() {
         mWvContent = findViewById(R.id.wv_content);
         mWvContent.setScrollbarFadingEnabled(true);
         WebSettings webSettings = mWvContent.getSettings();
@@ -119,59 +199,33 @@ public class WebActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                mTvTitle.setText(view.getTitle());
             }
         });
         mWvContent.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                if (!isScrolled && newProgress > 50) {
+                if (!isScrolled && newProgress > 80) {
                     int lastPosition = mData.getPosition();
-                    view.scrollTo(0, lastPosition);
+                    view.setScrollY(lastPosition);
                     isScrolled = true;
                 }
             }
         });
 
+        initWebViewScroll();
         mWvContent.loadUrl(getUrl());
-
-        View fabWrap = findViewById(R.id.fab_wrap);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        FloatingActionButton fab1 = findViewById(R.id.fab_1);
-        FloatingActionButton fab2 = findViewById(R.id.fab_2);
-        FloatingActionButton fab3 = findViewById(R.id.fab_3);
-        fab.setVisibility(View.VISIBLE);
-        fabWrap.setOnClickListener(v -> {
-            showFab(isShowFab = false, fab1, fab2, fab3);
-            fabWrap.setClickable(false);
-        });
-        fabWrap.setClickable(false);
-
-        fab.setOnClickListener(v -> {
-            showFab(isShowFab = !isShowFab, fab1, fab2, fab3);
-            fabWrap.setClickable(isShowFab);
-        });
-        fab1.setOnClickListener(v -> mContext.finish());
-        fab2.setOnClickListener(v -> {
-            String title = mWvContent.getTitle();
-            String url = mWvContent.getUrl();
-            String text = "- [" + title + "]" + "(" + url + ")";
-            String tips = "- [标题](链接)已复制到剪切板";
-            copyToClipboard(text, tips);
-        });
-        fab2.setOnLongClickListener(v -> {
-            String text = mWvContent.getUrl();
-            String tips = "(链接)已复制到剪切板";
-            copyToClipboard(text, tips);
-            return true;
-        });
-        fab3.setOnClickListener(v -> {
-            ObjectAnimator anim = ObjectAnimator.ofInt(mWvContent, "scrollY", mWvContent.getScrollY(), 0);
-            anim.setDuration(500);
-            anim.start();
-        });
-
     }
+
+
+    private void initWebViewScroll() {
+//        View topView = findViewById(R.id.rylt);
+//        boolean isVisible = topView.getVisibility() == View.VISIBLE;
+//        topView.setVisibility(View.GONE);
+//        topView.setVisibility(View.VISIBLE);
+    }
+
 
     private String getUrl() {
         if (!TextUtils.isEmpty(mData.getLastUrl())) {
@@ -186,12 +240,6 @@ public class WebActivity extends AppCompatActivity {
             ClipData label = ClipData.newPlainText("label", text);
             clipboardManager.setPrimaryClip(label);
             Snackbar.make(mWvContent, tips, Snackbar.LENGTH_SHORT).show();
-        }
-    }
-
-    private void showFab(boolean isShowFab, View... views) {
-        for (View view : views) {
-            view.setVisibility(isShowFab ? View.VISIBLE : View.GONE);
         }
     }
 

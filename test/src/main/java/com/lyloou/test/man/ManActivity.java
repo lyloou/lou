@@ -182,6 +182,29 @@ public class ManActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
     }
 
+    enum OperateType {
+        DELETE("删除"),
+        CLEAR_HISTORY("清除历史");
+        String title;
+
+        OperateType(String title) {
+            this.title = title;
+        }
+
+        public static OperateType indexOf(int index) {
+            return OperateType.values()[index];
+        }
+
+        public static String[] toStrArray() {
+            OperateType[] values = OperateType.values();
+            String[] result = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                result[i] = values[i].title;
+            }
+            return result;
+        }
+    }
+
     @SuppressLint("InflateParams")
     public void addAddress() {
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_man_address_add, null);

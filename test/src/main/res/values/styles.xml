@@ -36,6 +36,12 @@
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
 
+    <style name="AppTheme.FULL" parent="AppTheme">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
     <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
         <!-- Required for pre-Lollipop. -->
         <item name="overlapAnchor">false</item>
