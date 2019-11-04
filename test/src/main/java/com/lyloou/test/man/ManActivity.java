@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -44,13 +45,17 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uanimation;
+import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
+import com.lyloou.test.util.Uview;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -80,15 +85,15 @@ public class ManActivity extends AppCompatActivity {
 
     private IntentFilter getIntentFilter() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Const.ACTION_POSITION);
+        intentFilter.addAction(Const.Action.POSITION.str());
         return intentFilter;
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (Const.ACTION_POSITION.equals(intent.getAction())) {
-                Data fromData = (Data) intent.getSerializableExtra(Const.EXTRA_DATA);
+            if (Const.Action.POSITION.str().equals(intent.getAction())) {
+                Data fromData = (Data) intent.getSerializableExtra(Const.Extra.WEB_DATA.str());
 
                 if (fromData == null) {
                     return;
@@ -173,6 +178,10 @@ public class ManActivity extends AppCompatActivity {
                             data.setPosition(0);
                             updateDataRepository();
                             break;
+                        case ADD_SHORTCUT:
+                            addShortcut(data);
+                            break;
+                        default:
                     }
                 })
                 .create()
@@ -182,9 +191,28 @@ public class ManActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
     }
 
+    private Intent getShortcutIntent(Data data) {
+        Intent intent = new Intent();
+        intent.setClassName(this, Objects.requireNonNull(WebActivity.class.getCanonicalName()));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Const.Extra.WEB_TITLE.str(), data.getTitle());
+        intent.setAction(Intent.ACTION_VIEW);
+        return intent;
+    }
+
+    private void addShortcut(Data data) {
+        Uapp.addShortCutCompat(this, getShortcutIntent(data), data.getTitle(), R.mipmap.lyloou, data.getTitle());
+        Snackbar snackbar = Snackbar.make(Uview.getRootView(this), "已添加到桌面", Snackbar.LENGTH_LONG);
+        snackbar.setAction("了解详情",
+                v -> NormalWebViewActivity.newInstance(mContext, "https://kf.qq.com/touch/sappfaq/180705A3IB3Y1807056fMr6V.html"));
+        snackbar.show();
+    }
+
     enum OperateType {
         DELETE("删除"),
-        CLEAR_HISTORY("清除历史");
+        CLEAR_HISTORY("清除历史"),
+        ADD_SHORTCUT("添加快捷方式"),
+        ;
         String title;
 
         OperateType(String title) {

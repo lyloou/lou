@@ -213,7 +213,7 @@ public class BusActivity extends AppCompatActivity {
     }
 
     private void addShortcut() {
-        Uapp.addShortCutCompat(this, BusActivity.class.getCanonicalName(), "bus", R.mipmap.airplane, R.string.bus_line);
+        Uapp.addShortCutCompat(this, BusActivity.class.getCanonicalName(), "bus", R.mipmap.airplane, this.getResources().getString(R.string.bus_line));
     }
 
     private void reloadAllDataAndUI() {

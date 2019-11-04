@@ -81,12 +81,12 @@ public class Uapp {
      * 添加桌面快捷方式
      *
      * @param context
-     * @param className  快捷方式的目标类(全包名的路径)
-     * @param id         快捷方式对应的id
-     * @param iconResId  快捷方式的图标资源
-     * @param labelResId 快捷方式的名称资源
+     * @param className 快捷方式的目标类(全包名的路径)
+     * @param id        快捷方式对应的id
+     * @param iconResId 快捷方式的图标资源
+     * @param label     显示名称
      */
-    public static void addShortCutCompat(Activity context, String className, String id, int iconResId, int labelResId) {
+    public static void addShortCutCompat(Activity context, String className, String id, int iconResId, String label) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
@@ -103,8 +103,24 @@ public class Uapp {
         shortcutInfoIntent.setClassName(context, className);
         shortcutInfoIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         shortcutInfoIntent.setAction(Intent.ACTION_VIEW);
-        addShortCutCompat(context, shortcutInfoIntent, id, iconResId, labelResId);
+        addShortCutCompatWithoutCheckPermission(context, shortcutInfoIntent, id, iconResId, label);
     }
+
+    public static void addShortCutCompat(Activity context, Intent intent, String id, int iconResId, String label) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            return;
+        }
+        String installShortcut = Manifest.permission.INSTALL_SHORTCUT;
+
+        if (ContextCompat.checkSelfPermission(context, installShortcut)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        String[] permissions = {installShortcut};
+        ActivityCompat.requestPermissions(context, permissions, 0);
+        addShortCutCompatWithoutCheckPermission(context, intent, id, iconResId, label);
+    }
+
 
     /**
      * 添加桌面快捷方式
@@ -113,13 +129,13 @@ public class Uapp {
      * @param shortcutInfoIntent 点击快捷方式时的启动目标intent
      * @param id                 快捷方式对应的id
      * @param iconResId          快捷方式的图标资源
-     * @param labelResId         快捷方式的名称资源
+     * @param label
      */
-    public static void addShortCutCompat(Context context, Intent shortcutInfoIntent, String id, int iconResId, int labelResId) {
+    public static void addShortCutCompatWithoutCheckPermission(Context context, Intent shortcutInfoIntent, String id, int iconResId, String label) {
         if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
             ShortcutInfoCompat info = new ShortcutInfoCompat.Builder(context, id)
                     .setIcon(IconCompat.createWithResource(context, iconResId))
-                    .setShortLabel(context.getResources().getString(labelResId))
+                    .setShortLabel(label)
                     .setIntent(shortcutInfoIntent)
                     .build();
             //这里第二个参数可以传一个回调，用来接收当快捷方式被创建时的响应

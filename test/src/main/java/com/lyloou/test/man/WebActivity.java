@@ -46,6 +46,8 @@ import com.lyloou.test.util.Uanimator;
 import com.lyloou.test.util.Unet;
 import com.lyloou.test.util.Usp;
 
+import java.util.List;
+
 public class WebActivity extends AppCompatActivity {
 
     private Data mData;
@@ -60,7 +62,7 @@ public class WebActivity extends AppCompatActivity {
         }
 
         Intent intent = new Intent(context, WebActivity.class);
-        intent.putExtra(Const.EXTRA_DATA, data);
+        intent.putExtra(Const.Extra.WEB_DATA.str(), data);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -81,12 +83,32 @@ public class WebActivity extends AppCompatActivity {
             Toast.makeText(mContext, "没网络了", Toast.LENGTH_LONG).show();
             return;
         }
-        mData = (Data) getIntent().getSerializableExtra(Const.EXTRA_DATA);
+
+        mData = (Data) getIntent().getSerializableExtra(Const.Extra.WEB_DATA.str());
         if (mData == null) {
+            String webTitle = getIntent().getStringExtra(Const.Extra.WEB_TITLE.str());
+            if (!TextUtils.isEmpty(webTitle)) {
+                Data data = queryDataByTitle(webTitle);
+                if (data != null) {
+                    mData = data;
+                    return;
+                }
+            }
+
             mData = new Data()
                     .setTitle("木子楼")
                     .setUrl("http://lyloou.com");
         }
+    }
+
+    private Data queryDataByTitle(String title) {
+        List<Data> data = DataRepositoryHelper.newInstance(this).readData();
+        for (Data d : data) {
+            if (title.equals(d.getTitle())) {
+                return d;
+            }
+        }
+        return null;
     }
 
     private void initView() {
@@ -279,8 +301,8 @@ public class WebActivity extends AppCompatActivity {
         mData.setPosition(mWvContent.getScrollY())
                 .setLastUrl(mWvContent.getUrl());
         Intent intent = new Intent();
-        intent.setAction(Const.ACTION_POSITION);
-        intent.putExtra(Const.EXTRA_DATA, mData);
+        intent.setAction(Const.Action.POSITION.str());
+        intent.putExtra(Const.Extra.WEB_DATA.str(), mData);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
