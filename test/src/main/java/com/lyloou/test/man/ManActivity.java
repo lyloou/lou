@@ -274,6 +274,10 @@ public class ManActivity extends AppCompatActivity {
             case R.id.menu_man_add:
                 addAddress();
                 break;
+            case R.id.menu_man_recover:
+                mDataList.clear();
+                updateDataRepository();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

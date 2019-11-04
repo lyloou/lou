@@ -22,5 +22,8 @@
         android:id="@+id/menu_man_add"
         android:title="添加网址"
         app:showAsAction="never" />
-
+    <item
+        android:id="@+id/menu_man_recover"
+        android:title="恢复默认"
+        app:showAsAction="never" />
 </menu>
