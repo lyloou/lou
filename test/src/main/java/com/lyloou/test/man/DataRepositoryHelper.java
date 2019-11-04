@@ -19,6 +19,7 @@ class DataRepositoryHelper {
 
     static {
         DATA.add(new Data().setTitle("木子楼").setUrl("http://lyloou.com/"));
+        DATA.add(new Data().setTitle("酷课程").setUrl("http://114.67.95.131:8000/"));
         DATA.add(new Data().setTitle("阮一峰").setUrl("http://ruanyifeng.com/blog/"));
         DATA.add(new Data().setTitle("阮一峰 - ES6").setUrl("http://es6.ruanyifeng.com/"));
         DATA.add(new Data().setTitle("阮一峰 - 幸存者").setUrl("http://survivor.ruanyifeng.com/index.html"));
@@ -84,6 +85,7 @@ class DataRepositoryHelper {
     }
 
     public void delete() {
+        //noinspection ResultOfMethodCallIgnored
         dataFile.delete();
     }
 }

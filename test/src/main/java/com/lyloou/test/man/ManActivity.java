@@ -275,11 +275,17 @@ public class ManActivity extends AppCompatActivity {
                 addAddress();
                 break;
             case R.id.menu_man_recover:
-                mDataList.clear();
-                updateDataRepository();
+                recoverAddress();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void recoverAddress() {
+        mDataList.clear();
+        mDataRepositoryHelper.delete();
+        mDataList.addAll(mDataRepositoryHelper.readData());
+        updateDataRepository();
     }
 
     private void updateDataRepository() {

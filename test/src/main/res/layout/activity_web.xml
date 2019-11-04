@@ -92,6 +92,8 @@
         android:layout_alignParentRight="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:padding="13dp"
-        android:src="@mipmap/ic_more" />
+        android:rotation="90"
+        android:src="@mipmap/ic_more"
+        android:visibility="gone" />
 
 </RelativeLayout>
