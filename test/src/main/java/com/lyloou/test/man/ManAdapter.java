@@ -39,7 +39,11 @@ class ManAdapter extends RecyclerView.Adapter<ManAdapter.ViewHolder> {
         holder.tvTitle.setText(title);
         holder.tvUrl.setText(url);
         holder.tvLastUrl.setText(TextUtils.isEmpty(lastUrl) ? url : lastUrl);
-        holder.view.setOnClickListener(v -> WebActivity.newInstance(holder.view.getContext(), data));
+        holder.view.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.setOnClickListener(data);
+            }
+        });
         holder.view.setOnLongClickListener(v -> {
             if (mListener != null) {
                 mListener.setOnLongClickListener(data);

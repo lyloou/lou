@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -129,6 +130,11 @@ public class ManActivity extends AppCompatActivity {
         Uscreen.setToolbarMarginTop(this, toolbar);
 
         ImageView ivHeader = findViewById(R.id.iv_header);
+        Glide.with(ivHeader.getContext().getApplicationContext())
+                .load("http://ww2.sinaimg.cn/large/7a8aed7bjw1f0cw7swd9tj20hy0qogoo.jpg")
+                .centerCrop()
+                .into(ivHeader);
+
         TextView tvHeader = findViewById(R.id.tv_header);
         //noinspection ResultOfMethodCallIgnored
         NetWork.getKingsoftwareApi()
@@ -136,16 +142,10 @@ public class ManActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
-                            Glide
-                                    .with(ivHeader.getContext().getApplicationContext())
-                                    .load("http://ww2.sinaimg.cn/large/7a8aed7bjw1f0cw7swd9tj20hy0qogoo.jpg")
-                                    .centerCrop()
-                                    .into(ivHeader);
-                            tvHeader.setText(daily.getContent());
-                            tvHeader.setTag(daily.getNote());
-                            tvHeader.setVisibility(View.VISIBLE);
-                        }
-                        , Throwable::printStackTrace);
+                    tvHeader.setText(daily.getContent());
+                    tvHeader.setTag(daily.getNote());
+                    tvHeader.setVisibility(View.VISIBLE);
+                }, Throwable::printStackTrace);
 
         View fab = findViewById(R.id.fab);
         fab.startAnimation(Uanimation.getRotateAnimation(3600));
@@ -165,13 +165,38 @@ public class ManActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.rv_main);
         mManAdapter = new ManAdapter(mDataList);
-        mManAdapter.setListener(data -> new AlertDialog.Builder(mContext)
+        mManAdapter.setListener(new Listener() {
+            @Override
+            public void setOnLongClickListener(Data data) {
+                doOnLongClickListener(data);
+            }
+
+            @Override
+            public void setOnClickListener(Data data) {
+                doOnClickListener(data);
+            }
+        });
+        recyclerView.setAdapter(mManAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
+    }
+
+    private void doOnClickListener(Data data) {
+        WebActivity.newInstance(mContext, data);
+    }
+
+    private void doOnLongClickListener(Data data) {
+        new AlertDialog.Builder(mContext)
                 .setTitle("操作")
                 .setItems(OperateType.toStrArray(), (dialog, which) -> {
                     switch (OperateType.indexOf(which)) {
                         case DELETE:
                             mDataList.remove(data);
                             updateDataRepository();
+                            break;
+                        case OPEN_WITHOUT_HISTORY:
+                            data.setLastUrl(null);
+                            doOnClickListener(data);
                             break;
                         case CLEAR_HISTORY:
                             data.setLastUrl(null);
@@ -181,14 +206,16 @@ public class ManActivity extends AppCompatActivity {
                         case ADD_SHORTCUT:
                             addShortcut(data);
                             break;
+                        case OPEN_WITH_OTHER:
+                            Uri uri = Uri.parse(data.getLastUrl());
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                            break;
                         default:
                     }
                 })
                 .create()
-                .show());
-        recyclerView.setAdapter(mManAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
+                .show();
     }
 
     private Intent getShortcutIntent(Data data) {
@@ -209,9 +236,11 @@ public class ManActivity extends AppCompatActivity {
     }
 
     enum OperateType {
-        DELETE("删除"),
+        OPEN_WITHOUT_HISTORY("直接打开"),
         CLEAR_HISTORY("清除历史"),
+        DELETE("删除此项"),
         ADD_SHORTCUT("添加快捷方式"),
+        OPEN_WITH_OTHER("在浏览器中打开"),
         ;
         String title;
 
