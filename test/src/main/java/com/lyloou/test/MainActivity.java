@@ -17,6 +17,7 @@
 package com.lyloou.test;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -58,11 +59,12 @@ import io.reactivex.schedulers.Schedulers;
  * Description:
  */
 public class MainActivity extends AppCompatActivity {
-
+    private Context mContext;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         toNext();
 
         setContentView(R.layout.activity_main);
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
@@ -100,21 +103,20 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
+        //noinspection ResultOfMethodCallIgnored
         NetWork.getKingsoftwareApi()
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
-                            Glide
-                                    .with(ivHeader.getContext().getApplicationContext())
-                                    .load(daily.getPicture2())
-                                    .centerCrop()
-                                    .into(ivHeader);
-                            tvHeader.setText(daily.getContent());
-                            tvHeader.setTag(daily.getNote());
-                            tvHeader.setVisibility(View.VISIBLE);
-                        }
-                        , Throwable::printStackTrace);
+                    Glide.with(mContext)
+                            .load(daily.getPicture2())
+                            .centerCrop()
+                            .into(ivHeader);
+                    tvHeader.setText(daily.getContent());
+                    tvHeader.setTag(daily.getNote());
+                    tvHeader.setVisibility(View.VISIBLE);
+                }, Throwable::printStackTrace);
 
         View fab = findViewById(R.id.fab);
         fab.startAnimation(Uanimation.getRotateAnimation(3600));
@@ -131,12 +133,6 @@ public class MainActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        // Toast.makeText(this, "你回来了", Toast.LENGTH_SHORT).show();
     }
 
     static class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
