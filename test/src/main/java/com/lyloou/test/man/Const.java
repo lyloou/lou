@@ -1,7 +1,5 @@
 package com.lyloou.test.man;
 
-import android.content.Context;
-
 /**
  * you can use ctrl+alt+F7 to navigate usage position
  */
@@ -31,10 +29,6 @@ interface Const {
 
     enum Key implements Str {
         ;
-
-        public static String get(Context context, String key) {
-            return context.getPackageName().concat(".").concat(key);
-        }
 
         @Override
         public String str() {

@@ -29,6 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -55,6 +56,7 @@ public class WebActivity extends AppCompatActivity {
     private Activity mContext;
     private boolean isScrolled;
     private TextView mTvTitle;
+    private SwipeRefreshLayout mRefreshLayout;
 
     public static void newInstance(Context context, Data data) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -113,7 +115,14 @@ public class WebActivity extends AppCompatActivity {
 
     private void initView() {
         initTopView();
+        initLoadingView();
         initWebView();
+    }
+
+    private void initLoadingView() {
+        mRefreshLayout = findViewById(R.id.srl_man);
+        mRefreshLayout.setRefreshing(true);
+        mRefreshLayout.setOnRefreshListener(() -> mWvContent.reload());
     }
 
 
@@ -176,15 +185,18 @@ public class WebActivity extends AppCompatActivity {
                             break;
                         case COPY_LINK:
                             copyToClipboard(mWvContent.getUrl(), "已复制到剪切板");
+                            break;
                         case COPY_MD_LINK:
                             String title = mWvContent.getTitle();
                             String url = mWvContent.getUrl();
                             copyToClipboard("- [" + title + "]" + "(" + url + ")", "已复制到剪切板");
+                            break;
                         case OPEN_WITH_BROWSER:
                             Uri uri = Uri.parse(mWvContent.getUrl());
                             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                             startActivity(intent);
                             break;
+                        default:
                     }
                 })
                 .create().show();
@@ -193,7 +205,7 @@ public class WebActivity extends AppCompatActivity {
     @SuppressLint("SetJavaScriptEnabled")
     private void initWebView() {
         mWvContent = findViewById(R.id.wv_content);
-        mWvContent.setScrollbarFadingEnabled(true);
+//        mWvContent.setScrollbarFadingEnabled(true);
         initWebSettings();
         mWvContent.setWebViewClient(getWebViewClient());
         mWvContent.setWebChromeClient(getWebChromeClient());
@@ -222,10 +234,13 @@ public class WebActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                if (!isScrolled && newProgress > 80) {
-                    int lastPosition = mData.getPosition();
-                    view.setScrollY(lastPosition);
-                    isScrolled = true;
+                if (newProgress > 80) {
+                    if (!isScrolled) {
+                        int lastPosition = mData.getPosition();
+                        view.setScrollY(lastPosition);
+                        isScrolled = true;
+                    }
+                    mRefreshLayout.setRefreshing(false);
                 }
             }
         };

@@ -79,11 +79,18 @@
             android:src="@mipmap/ic_more" />
     </RelativeLayout>
 
-    <WebView
-        android:id="@+id/wv_content"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl_man"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/rylt" />
+        android:layout_below="@id/rylt">
+
+        <WebView
+            android:id="@+id/wv_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <ImageView
         android:id="@+id/iv_minimize"
