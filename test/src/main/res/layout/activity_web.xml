@@ -53,11 +53,8 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/iv_more"
             android:layout_toRightOf="@id/iv_close"
-            android:ellipsize="marquee"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+            android:ellipsize="end"
             android:gravity="start"
-            android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
             android:textSize="18sp"
             tools:text="标题" />

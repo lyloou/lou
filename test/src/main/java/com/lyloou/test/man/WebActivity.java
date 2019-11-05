@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -46,7 +45,10 @@ import com.lyloou.test.R;
 import com.lyloou.test.util.Uanimator;
 import com.lyloou.test.util.Unet;
 import com.lyloou.test.util.Usp;
+import com.lyloou.views.popview.Item;
+import com.lyloou.views.popview.MenuPopView;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class WebActivity extends AppCompatActivity {
@@ -122,13 +124,18 @@ public class WebActivity extends AppCompatActivity {
     private void initLoadingView() {
         mRefreshLayout = findViewById(R.id.srl_man);
         mRefreshLayout.setRefreshing(true);
-        mRefreshLayout.setOnRefreshListener(() -> mWvContent.reload());
+        mRefreshLayout.setOnRefreshListener(this::reload);
+    }
+
+    private void reload() {
+        mRefreshLayout.setRefreshing(true);
+        mWvContent.reload();
     }
 
 
     private void initTopView() {
         findViewById(R.id.iv_back).setOnClickListener(v -> onBackPressed());
-        findViewById(R.id.iv_more).setOnClickListener(v -> onMorePressed());
+        findViewById(R.id.iv_more).setOnClickListener(this::onMorePressed);
         findViewById(R.id.iv_more).setOnLongClickListener(v -> minimize(false));
         findViewById(R.id.iv_close).setOnClickListener(v -> finish());
         mTvTitle = findViewById(R.id.tv_title);
@@ -149,57 +156,21 @@ public class WebActivity extends AppCompatActivity {
         lastClickedTime = System.currentTimeMillis();
     }
 
-    enum OperateType {
-        REFRESH("刷新"),
-        COPY_LINK("复制链接"),
-        COPY_MD_LINK("复制md链接"),
-        OPEN_WITH_BROWSER("在浏览器中打开"),
-        ;
-        String title;
-
-        OperateType(String title) {
-            this.title = title;
-        }
-
-        public static OperateType indexOf(int index) {
-            return OperateType.values()[index];
-        }
-
-        public static String[] toStrArray() {
-            OperateType[] values = OperateType.values();
-            String[] result = new String[values.length];
-            for (int i = 0; i < values.length; i++) {
-                result[i] = values[i].title;
-            }
-            return result;
-        }
-    }
-
-    private void onMorePressed() {
-        new AlertDialog.Builder(mContext)
-                .setTitle("操作")
-                .setItems(OperateType.toStrArray(), (dialog, which) -> {
-                    switch (OperateType.indexOf(which)) {
-                        case REFRESH:
-                            mWvContent.reload();
-                            break;
-                        case COPY_LINK:
-                            copyToClipboard(mWvContent.getUrl(), "已复制到剪切板");
-                            break;
-                        case COPY_MD_LINK:
-                            String title = mWvContent.getTitle();
-                            String url = mWvContent.getUrl();
-                            copyToClipboard("- [" + title + "]" + "(" + url + ")", "已复制到剪切板");
-                            break;
-                        case OPEN_WITH_BROWSER:
-                            Uri uri = Uri.parse(mWvContent.getUrl());
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                            startActivity(intent);
-                            break;
-                        default:
-                    }
+    private void onMorePressed(View v) {
+        MenuPopView.show(this, v, Arrays.asList(
+                new Item("刷新", v1 -> reload()),
+                new Item("复制链接", v1 -> copyToClipboard(mWvContent.getUrl(), "已复制到剪切板")),
+                new Item("复制md链接", v1 -> {
+                    String title = mWvContent.getTitle();
+                    String url = mWvContent.getUrl();
+                    copyToClipboard("- [" + title + "]" + "(" + url + ")", "已复制到剪切板");
+                }),
+                new Item("在浏览器中打开", v1 -> {
+                    Uri uri = Uri.parse(mWvContent.getUrl());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
                 })
-                .create().show();
+        ));
     }
 
     @SuppressLint("SetJavaScriptEnabled")

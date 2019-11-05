@@ -42,47 +42,53 @@ public class LouProgressBar {
                     ViewGroup.LayoutParams.WRAP_CONTENT);
 
     private TextView mTvTips;
-    private LinearLayout mLayout;
 
     private LouProgressBar(Context context) {
+        this(context, false);
+    }
+
+    private LouProgressBar(Context context, boolean cancelable) {
         mContext = context;
 
         // 创建 Dialog 需要在主线程中运行；
-        Uthread.runInMainThread(() -> initView(context));
+        Uthread.runInMainThread(() -> initView(context, cancelable));
     }
 
-    private void initView(Context context) {
+    private void initView(Context context, boolean cancelable) {
         int PADDING = Uscreen.dp2Px(context, 16);
         int MARGIN_6DP = Uscreen.dp2Px(context, 6);
-        mLayout = new LinearLayout(context);
-        mLayout.setLayoutParams(WRAP_CONTENT);
-        mLayout.setOrientation(LinearLayout.HORIZONTAL);
-        mLayout.setGravity(Gravity.CENTER);
-        mLayout.setPadding(PADDING, PADDING, PADDING, PADDING);
+        LinearLayout layout = new LinearLayout(context);
+        layout.setLayoutParams(WRAP_CONTENT);
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        layout.setGravity(Gravity.CENTER);
+        layout.setPadding(PADDING, PADDING, PADDING, PADDING);
 
         Space space = new Space(context);
         LinearLayout.LayoutParams SPACE_MARGIN = new LinearLayout.LayoutParams(MARGIN_6DP, MARGIN_6DP);
-        mLayout.addView(space, SPACE_MARGIN);
+        layout.addView(space, SPACE_MARGIN);
 
         // add ProgressBar
         ProgressBar bar = new ProgressBar(context);
-        mLayout.addView(bar, WRAP_CONTENT);
+        layout.addView(bar, WRAP_CONTENT);
 
         space = new Space(context);
-        mLayout.addView(space, SPACE_MARGIN);
+        layout.addView(space, SPACE_MARGIN);
 
         // add TextView
         mTvTips = new TextView(context);
         mTvTips.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
         mTvTips.setTextSize(16);
-        mLayout.addView(mTvTips, WRAP_CONTENT);
-        mDialog = LouDialog.newInstance(mContext, mLayout, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar)
-                .setDimAmount(0.3f)
-                .setCancelable(false);
+        layout.addView(mTvTips, WRAP_CONTENT);
+        mDialog = LouDialog.newInstance(mContext, layout, R.style.TransparentDialog)
+                .setCancelable(cancelable);
     }
 
     public static LouProgressBar buildDialog(@NonNull Context context) {
         return new LouProgressBar(context);
+    }
+
+    public static LouProgressBar buildDialog(@NonNull Context context, boolean cancelable) {
+        return new LouProgressBar(context, cancelable);
     }
 
 
@@ -96,10 +102,6 @@ public class LouProgressBar {
                 mDialog.show();
             }
         });
-    }
-
-    public void setCncelble(boolean cancelble) {
-        mDialog.setCancelable(cancelble);
     }
 
     public void hide() {
