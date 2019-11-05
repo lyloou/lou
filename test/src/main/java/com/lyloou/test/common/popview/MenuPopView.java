@@ -1,4 +1,4 @@
-package com.lyloou.views.popview;
+package com.lyloou.test.common.popview;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -11,8 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.lyloou.views.R;
-import com.lyloou.views.util.Uscreen;
+import com.lyloou.test.R;
+import com.lyloou.test.util.Uscreen;
 
 import java.util.List;
 

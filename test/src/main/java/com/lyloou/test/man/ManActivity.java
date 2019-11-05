@@ -234,27 +234,31 @@ public class ManActivity extends AppCompatActivity {
     }
 
     @SuppressLint("InflateParams")
-    public void addAddress() {
+    public void addAddress(String nameStr, String addressStr) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.dialog_man_address_add, null);
+        EditText etName = view.findViewById(R.id.et_name);
+        etName.setText(nameStr);
+        EditText etAddress = view.findViewById(R.id.et_address);
+        etAddress.setText(addressStr);
+
         new AlertDialog.Builder(mContext)
                 .setTitle("添加更多网址")
                 .setView(view)
                 .setPositiveButton("是的", (dialog, whichButton) -> {
-                    EditText etName = view.findViewById(R.id.et_name);
-                    EditText etAddress = view.findViewById(R.id.et_address);
-
                     String name = etName.getText().toString();
+                    String address = etAddress.getText().toString();
                     if (TextUtils.isEmpty(name)) {
                         Utoast.show(mContext, "无效的名称");
+                        addAddress(name, address);
                         return;
                     }
-                    String address = etAddress.getText().toString();
                     try {
                         new URL(address);
                         mDataList.add(0, new Data().setTitle(name).setUrl(address));
                         updateDataRepository();
                     } catch (MalformedURLException e) {
                         Utoast.show(mContext, "无效的URL");
+                        addAddress(name, address);
                     }
 
                 })
@@ -272,7 +276,7 @@ public class ManActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_man_add:
-                addAddress();
+                addAddress("", "");
                 break;
             case R.id.menu_man_recover:
                 recoverAddress();

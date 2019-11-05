@@ -41,7 +41,7 @@ public class Udialog {
 
     public static void showTimePicker(Context context, TimePickerDialog.OnTimeSetListener listener, int[] time) {
         if (time == null || time.length != 2) {
-            Toast.makeText(context, "程序异常", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "参数异常", Toast.LENGTH_LONG).show();
             return;
         }
         new TimePickerDialog(context, 0, listener, time[0], time[1], true).show();

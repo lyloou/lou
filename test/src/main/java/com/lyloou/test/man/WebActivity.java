@@ -42,11 +42,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lyloou.test.R;
+import com.lyloou.test.common.popview.Item;
+import com.lyloou.test.common.popview.MenuPopView;
 import com.lyloou.test.util.Uanimator;
 import com.lyloou.test.util.Unet;
 import com.lyloou.test.util.Usp;
-import com.lyloou.views.popview.Item;
-import com.lyloou.views.popview.MenuPopView;
 
 import java.util.Arrays;
 import java.util.List;

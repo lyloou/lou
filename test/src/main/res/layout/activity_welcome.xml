@@ -5,5 +5,4 @@
     android:layout_height="match_parent"
     android:background="#009edc"
     android:contentDescription="@string/app_name"
-    android:scaleType="fitCenter"
-    android:visibility="invisible" />
+    android:scaleType="fitCenter" />

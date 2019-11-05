@@ -34,25 +34,23 @@ public class WelcomeActivity extends Activity {
     private void initView() {
         ImageView ivWelcome = findViewById(R.id.iv_welcome);
         ivWelcome.setOnClickListener(v -> toNext());
+        //noinspection ResultOfMethodCallIgnored
         NetWork.getKingsoftwareApi()
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(daily -> {
-                            Glide.with(getApplicationContext())
-                                    .load(daily.getFenxiang_img())
-                                    .into(new GlideDrawableImageViewTarget(ivWelcome) {
-                                        @Override
-                                        protected void setResource(GlideDrawable resource) {
-                                            // https://github.com/bumptech/glide/issues/275
-                                            super.setResource(resource);
-                                            ivWelcome.setVisibility(View.VISIBLE);
-                                        }
-                                    });
-
-                            handler.postDelayed(toNext, 800);
-                        }
+                .subscribe(daily -> Glide.with(getApplicationContext())
+                                .load(daily.getFenxiang_img())
+                                .into(new GlideDrawableImageViewTarget(ivWelcome) {
+                                    @Override
+                                    protected void setResource(GlideDrawable resource) {
+                                        // https://github.com/bumptech/glide/issues/275
+                                        super.setResource(resource);
+                                        ivWelcome.setVisibility(View.VISIBLE);
+                                    }
+                                })
                         , Throwable::printStackTrace);
+        handler.postDelayed(toNext, 800);
     }
 
     private void toNext() {
