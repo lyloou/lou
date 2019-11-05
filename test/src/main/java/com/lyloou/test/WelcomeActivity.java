@@ -12,10 +12,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-import com.lyloou.test.common.NetWork;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import com.lyloou.test.util.Utime;
 
 /**
  * Created by Administrator on 2016.10.18.
@@ -33,24 +30,19 @@ public class WelcomeActivity extends Activity {
     @SuppressLint("CheckResult")
     private void initView() {
         ImageView ivWelcome = findViewById(R.id.iv_welcome);
+        // http://cdn.iciba.com/news/word/big_20181103b.jpg
         ivWelcome.setOnClickListener(v -> toNext());
-        //noinspection ResultOfMethodCallIgnored
-        NetWork.getKingsoftwareApi()
-                .getDaily("")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(daily -> Glide.with(getApplicationContext())
-                                .load(daily.getFenxiang_img())
-                                .into(new GlideDrawableImageViewTarget(ivWelcome) {
-                                    @Override
-                                    protected void setResource(GlideDrawable resource) {
-                                        // https://github.com/bumptech/glide/issues/275
-                                        super.setResource(resource);
-                                        ivWelcome.setVisibility(View.VISIBLE);
-                                    }
-                                })
-                        , Throwable::printStackTrace);
-        handler.postDelayed(toNext, 800);
+        Glide.with(getApplicationContext())
+                .load(String.format("http://cdn.iciba.com/web/news/longweibo/imag/%s.jpg", Utime.getDayWithFormatOne()))
+                .into(new GlideDrawableImageViewTarget(ivWelcome) {
+                    @Override
+                    protected void setResource(GlideDrawable resource) {
+                        // https://github.com/bumptech/glide/issues/275
+                        super.setResource(resource);
+                        ivWelcome.setVisibility(View.VISIBLE);
+                    }
+                });
+        handler.postDelayed(toNext, 3600);
     }
 
     private void toNext() {

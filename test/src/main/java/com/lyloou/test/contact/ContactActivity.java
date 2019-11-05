@@ -62,29 +62,31 @@ public class ContactActivity extends AppCompatActivity {
 
 
     private void initView() {
-        EditText etContent = findViewById(R.id.et_content);
+        findViewById(R.id.iv_search).setOnClickListener(v -> reloadWithFilter());
+    }
 
-        findViewById(R.id.iv_search).setOnClickListener(v -> {
-            String content = etContent.getText().toString();
-            if (TextUtils.isEmpty(content)) {
-                Utoast.show(mContext, "请输入名称或电话");
-                reloadData();
-                return;
+    private void reloadWithFilter() {
+        EditText etContent = findViewById(R.id.et_content);
+        String content = etContent.getText().toString();
+        if (TextUtils.isEmpty(content)) {
+            Utoast.show(mContext, "请输入名称或电话");
+            reloadData();
+            return;
+        }
+        mAdapter.clear();
+        List<LinkMan> manList = readLinkMans();
+        for (LinkMan man : manList) {
+            if (man.getNumber().contains(content) || man.getName().contains(content)) {
+                mAdapter.addItem(man, true);
             }
-            mAdapter.clear();
-            List<LinkMan> manList = readLinkMans();
-            for (LinkMan man : manList) {
-                if (man.getNumber().contains(content) || man.getName().contains(content)) {
-                    mAdapter.addItem(man, true);
-                }
-            }
-        });
+        }
+        mRefreshLayout.setRefreshing(false);
     }
 
     private void initListView() {
         mRefreshLayout = findViewById(R.id.srl_contact);
         mRefreshLayout.setEnabled(true);
-        mRefreshLayout.setOnRefreshListener(this::reloadData);
+        mRefreshLayout.setOnRefreshListener(this::reloadWithFilter);
 
         ListView listView = findViewById(R.id.lv_contact);
         mAdapter = new LouAdapter<LinkMan>(listView, android.R.layout.simple_list_item_2) {

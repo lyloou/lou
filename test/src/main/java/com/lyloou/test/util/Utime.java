@@ -111,4 +111,12 @@ public class Utime {
         }
         return timeStr;
     }
+
+    public static String getDayWithFormatOne() {
+        return SDF_ONE.format(new Date());
+    }
+
+    public static String getDayWithFormatTwo() {
+        return SDF_TWO.format(new Date());
+    }
 }
