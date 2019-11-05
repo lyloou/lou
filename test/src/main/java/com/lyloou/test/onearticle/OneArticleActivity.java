@@ -44,9 +44,6 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.LouAdapter;
 import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.NetWork;
-import com.lyloou.test.common.db.Article;
-import com.lyloou.test.common.db.ArticleEntry;
-import com.lyloou.test.common.db.DbCallback;
 import com.lyloou.test.common.db.LouSQLite;
 import com.lyloou.test.util.Uscreen;
 

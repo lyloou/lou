@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.common.db;
+package com.lyloou.test.onearticle;
 
 public class Article {
     private String date;

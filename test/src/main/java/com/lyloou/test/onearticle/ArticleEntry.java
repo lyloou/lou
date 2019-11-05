@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.common.db;
+package com.lyloou.test.onearticle;
 
 import android.provider.BaseColumns;
 

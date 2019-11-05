@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.common.db;
+package com.lyloou.test.onearticle;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.lyloou.test.common.db.LouSQLite;
 
 import java.util.Arrays;
 import java.util.List;
