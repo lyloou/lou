@@ -15,6 +15,8 @@ import com.lyloou.test.util.Utime;
  */
 
 public class WelcomeActivity extends Activity {
+    private Handler mHandler = new Handler();
+    private Runnable mToNextRunnable = this::toNext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +31,11 @@ public class WelcomeActivity extends Activity {
         Glide.with(getApplicationContext())
                 .load(String.format("http://cdn.iciba.com/web/news/longweibo/imag/%s.jpg", Utime.getDayWithFormatOne()))
                 .into(ivWelcome);
-        handler.postDelayed(toNext, 3600);
+        mHandler.postDelayed(mToNextRunnable, 3600);
     }
 
     private void toNext() {
-        handler.removeCallbacks(toNext);
+        mHandler.removeCallbacks(mToNextRunnable);
         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -49,6 +51,5 @@ public class WelcomeActivity extends Activity {
         return true;
     }
 
-    Handler handler = new Handler();
-    Runnable toNext = this::toNext;
+
 }
