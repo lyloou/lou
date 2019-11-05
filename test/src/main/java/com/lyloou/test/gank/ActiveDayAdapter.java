@@ -178,7 +178,6 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             Context applicationContext = mContext.getApplicationContext();
                             Glide.with(applicationContext)
                                     .load(welfareUrl)
-                                    .placeholder(R.mipmap.ic_launcher)
                                     .signature(new StringSignature(welfareUrl))
                                     .fitCenter()
                                     .into(ivPic);
