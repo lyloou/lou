@@ -42,6 +42,7 @@ import com.lyloou.test.common.NetWork;
 import com.lyloou.test.contact.ContactActivity;
 import com.lyloou.test.flow.FlowActivity;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
+import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.media.pic.PictureActivity;
 import com.lyloou.test.media.recoder.RecorderActivity;
 import com.lyloou.test.media.video.VideoActivity;
@@ -104,16 +105,15 @@ public class ClassOneActivity extends AppCompatActivity {
 
         ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
+        Glide.with(this)
+                .load(KingsoftwareUtil.getTodayBigImage())
+                .centerCrop()
+                .into(ivHeader);
         NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
-                            Glide
-                                    .with(ivHeader.getContext().getApplicationContext())
-                                    .load(daily.getPicture2())
-                                    .centerCrop()
-                                    .into(ivHeader);
                             tvHeader.setText(daily.getContent());
                             tvHeader.setTag(daily.getNote());
                             tvHeader.setVisibility(View.VISIBLE);

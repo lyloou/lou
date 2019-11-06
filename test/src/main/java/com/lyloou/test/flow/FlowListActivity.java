@@ -35,8 +35,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.ItemOffsetDecoration;
@@ -140,6 +142,10 @@ public class FlowListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         Uscreen.setToolbarMarginTop(this, toolbar);
+        Glide.with(getApplicationContext())
+                .load("http://ww2.sinaimg.cn/large/7a8aed7bjw1f0cw7swd9tj20hy0qogoo.jpg")
+                .centerCrop()
+                .into((ImageView) findViewById(R.id.iv_header));
 
         TextView tvHeader = findViewById(R.id.tv_header);
         tvHeader.setText("大写的时间");

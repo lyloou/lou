@@ -35,6 +35,7 @@ import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
+import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Uscreen;
@@ -290,16 +291,16 @@ public class FlowActivity extends AppCompatActivity {
         Uview.initStatusBar(this, R.color.colorAccent);
 
         ImageView ivHeader = findViewById(R.id.iv_header);
+        Glide.with(mContext)
+                .load(KingsoftwareUtil.getBigImage(mFlowDay.getDay()))
+                .centerCrop()
+                .into(ivHeader);
         TextView tvHeader = findViewById(R.id.tv_header);
         NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily(day)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
-                            Glide.with(ivHeader.getContext().getApplicationContext())
-                                    .load(daily.getPicture2())
-                                    .centerCrop()
-                                    .into(ivHeader);
                             ivHeader.setTag(daily.getFenxiang_img());
                             Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE, false);
                             tvHeader.setText(daily.getContent());

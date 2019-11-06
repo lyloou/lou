@@ -41,6 +41,7 @@ import com.lyloou.test.common.CrashHandler;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
+import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
@@ -104,16 +105,16 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
+        Glide.with(mContext)
+                .load(KingsoftwareUtil.getTodayBigImage())
+                .centerCrop()
+                .into(ivHeader);
         //noinspection ResultOfMethodCallIgnored
         NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
-                    Glide.with(mContext)
-                            .load(daily.getPicture2())
-                            .centerCrop()
-                            .into(ivHeader);
                     tvHeader.setText(daily.getContent());
                     tvHeader.setTag(daily.getNote());
                     tvHeader.setVisibility(View.VISIBLE);
