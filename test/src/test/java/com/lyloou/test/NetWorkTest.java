@@ -19,14 +19,19 @@ package com.lyloou.test;
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.douban.DouBanApi;
+import com.lyloou.test.ipinfo.IpService;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.onearticle.OneArticleApi;
 
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,6 +47,40 @@ import okhttp3.Response;
  * Description:
  */
 public class NetWorkTest {
+
+    @Test
+    public void testIp() {
+        List<String> ips = Arrays.asList(
+                "104.194.84.57"
+                , "14.194.84.55"
+                , "13.194.84.55"
+        );
+        CountDownLatch latch = new CountDownLatch(ips.size());
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+        compositeDisposable.addAll(ips.stream()
+                .map(s -> getDisposable(latch, s))
+                .toArray(Disposable[]::new));
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Disposable getDisposable(CountDownLatch latch, String ip) {
+        return NetWork.get("http://ip-api.com/", IpService.class)
+                .getIpDetail2(ip)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .subscribe(ipDetail -> {
+                    latch.countDown();
+                    System.out.println("city:" + ipDetail.getCity());
+                }, throwable -> {
+                    latch.countDown();
+                    System.out.println("error:" + throwable);
+                });
+    }
 
     @Test
     public void kingsoftwareDaily() {
