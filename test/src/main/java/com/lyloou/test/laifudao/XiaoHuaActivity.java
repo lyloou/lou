@@ -30,6 +30,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.lyloou.test.R;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
@@ -72,7 +73,7 @@ public class XiaoHuaActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        Observable<List<XiaoHua>> observable = NetWork.getLaiFuDaoApi().getXiaoHua();
+        Observable<List<XiaoHua>> observable = NetWork.get(Constant.Url.Laifudao.getUrl(), LaiFuDaoApi.class).getXiaoHua();
         Disposable disposable = observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

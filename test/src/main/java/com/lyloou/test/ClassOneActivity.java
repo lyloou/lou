@@ -36,11 +36,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.bus.notification.LongRunningService;
-import com.lyloou.test.common.Const;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.contact.ContactActivity;
 import com.lyloou.test.flow.FlowActivity;
+import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.media.pic.PictureActivity;
 import com.lyloou.test.media.recoder.RecorderActivity;
 import com.lyloou.test.media.video.VideoActivity;
@@ -103,7 +104,7 @@ public class ClassOneActivity extends AppCompatActivity {
 
         ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
-        NetWork.getKingsoftwareApi()
+        NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -186,11 +187,11 @@ public class ClassOneActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_open_background_server:
-                Usp.init(this).putBoolean(Const.KEY_BACKGROUND_SERVER, true).apply();
+                Usp.init(this).putBoolean(Constant.Key.BACKGROUND_SERVER.str(), true).apply();
                 Uservice.start(this, LongRunningService.class);
                 break;
             case R.id.menu_close_background_server:
-                Usp.init(this).putBoolean(Const.KEY_BACKGROUND_SERVER, false).apply();
+                Usp.init(this).putBoolean(Constant.Key.BACKGROUND_SERVER.str(), false).apply();
                 stopService(new Intent(this, LongRunningService.class));
                 break;
             case R.id.menu_send_notice:

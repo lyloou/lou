@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lyloou.test.R;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.DoubleItemWithOneHeaderOffsetDecoration;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.LouProgressBar;
@@ -130,7 +131,7 @@ public class GankWelfareActivity extends AppCompatActivity {
             String month = split[1];
             String day = split[2];
 
-            Call<ResponseBody> gankData = NetWork.getGankApi().getGankContent(year, month, day);
+            Call<ResponseBody> gankData = NetWork.get(Constant.Url.Gank.getUrl(), GankApi.class).getGankContent(year, month, day);
             gankData.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -316,7 +317,7 @@ public class GankWelfareActivity extends AppCompatActivity {
         // 通过取消上次加载，来防止出现加载数据混淆的问题（）
         unSubscribe();
 
-        mDisposable = NetWork.getGankApi().getActiveDays()
+        mDisposable = NetWork.get(Constant.Url.Gank.getUrl(), GankApi.class).getActiveDays()
 
                 .map((Function<ActiveDayResult, List<String>>) activeDayResult -> {
                     if (activeDayResult.isError()) {

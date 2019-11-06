@@ -35,11 +35,13 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.lyloou.test.R;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
 import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.LouProgressBar;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.gank.Ushare;
+import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 
@@ -79,7 +81,7 @@ public class TuPianActivity extends AppCompatActivity {
 
     private void loadData() {
 
-        Observable<List<TuPian>> observable = NetWork.getLaiFuDaoApi().getTuPian();
+        Observable<List<TuPian>> observable = NetWork.get(Constant.Url.Laifudao.getUrl(), LaiFuDaoApi.class).getTuPian();
         Disposable disposable = observable
                 .subscribeOn(Schedulers.io())
                 .doOnNext(tuPien -> {
@@ -120,7 +122,7 @@ public class TuPianActivity extends AppCompatActivity {
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
         ImageView ivHeader = findViewById(R.id.iv_header);
-        NetWork.getKingsoftwareApi()
+        NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

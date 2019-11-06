@@ -23,6 +23,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Ufile;
 import com.lyloou.test.util.Utoast;
@@ -54,7 +55,7 @@ public class Ushare {
             String month = split[1];
             String day = split[2];
 
-            Call<ResponseBody> gankData = NetWork.getGankApi().getGankData(year, month, day);
+            Call<ResponseBody> gankData = NetWork.get(Constant.Url.Gank.getUrl(), GankApi.class).getGankData(year, month, day);
             Response<ResponseBody> response = null;
             try {
                 response = gankData.execute();

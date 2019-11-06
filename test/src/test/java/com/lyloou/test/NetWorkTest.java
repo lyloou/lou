@@ -16,7 +16,11 @@
 
 package com.lyloou.test;
 
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.douban.DouBanApi;
+import com.lyloou.test.kingsoftware.KingsoftwareAPI;
+import com.lyloou.test.onearticle.OneArticleApi;
 
 import org.junit.Test;
 
@@ -42,7 +46,7 @@ public class NetWorkTest {
     @Test
     public void kingsoftwareDaily() {
         CountDownLatch latch = new CountDownLatch(1);
-        NetWork.getKingsoftwareApi()
+        NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily("")
                 .subscribe(daily -> {
                     System.out.println(daily.getFenxiang_img());
@@ -62,7 +66,7 @@ public class NetWorkTest {
     @Test
     public void doubanMovieTop20() {
         CountDownLatch latch = new CountDownLatch(1);
-        NetWork.getDouBanApi()
+        NetWork.get(Constant.Url.Douban.getUrl(), DouBanApi.class)
                 .getTopMovie(0, 20)
                 .map(listHttpResult -> listHttpResult.getSubjects())
                 .subscribeOn(Schedulers.io())
@@ -86,7 +90,7 @@ public class NetWorkTest {
     @Test
     public void doubanMovieDetail() {
         CountDownLatch latch = new CountDownLatch(1);
-        NetWork.getDouBanApi()
+        NetWork.get(Constant.Url.Douban.getUrl(), DouBanApi.class)
                 .getMovieDetail("1295644")
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
@@ -109,7 +113,7 @@ public class NetWorkTest {
     @Test
     public void oneArticle() {
         CountDownLatch latch = new CountDownLatch(1);
-        NetWork.getOneArticleApi()
+        NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class)
                 .getOneArticle(1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
@@ -131,7 +135,7 @@ public class NetWorkTest {
     @Test
     public void specialDayArticle() {
         CountDownLatch latch = new CountDownLatch(1);
-        NetWork.getOneArticleApi()
+        NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class)
                 .getSpecialArticle(1, "20170917")
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())

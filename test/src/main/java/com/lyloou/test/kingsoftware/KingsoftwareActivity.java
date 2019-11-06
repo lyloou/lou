@@ -26,6 +26,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
 
@@ -55,7 +56,7 @@ public class KingsoftwareActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        NetWork.getKingsoftwareApi()
+        NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

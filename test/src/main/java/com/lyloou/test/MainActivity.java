@@ -36,10 +36,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.bus.notification.LongRunningService;
-import com.lyloou.test.common.Const;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.CrashHandler;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uscreen;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAlarm() {
-        if (Usp.init(this).getBoolean(Const.KEY_BACKGROUND_SERVER, false)) {
+        if (Usp.init(this).getBoolean(Constant.Key.BACKGROUND_SERVER.str(), false)) {
             Uservice.start(this, LongRunningService.class);
         }
     }
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
         //noinspection ResultOfMethodCallIgnored
-        NetWork.getKingsoftwareApi()
+        NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

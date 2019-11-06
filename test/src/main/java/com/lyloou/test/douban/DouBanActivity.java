@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.lyloou.test.R;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
@@ -194,12 +195,12 @@ public class DouBanActivity extends AppCompatActivity {
     }
 
     private Observable<HttpResult<List<Subject>>> getTopMovie() {
-        return NetWork.getDouBanApi()
+        return NetWork.get(Constant.Url.Douban.getUrl(), DouBanApi.class)
                 .getTopMovie(mSubjectAdapter.getListSize(), 20);
     }
 
     private Observable<HttpResult<List<Subject>>> getNewMovie() {
-        return NetWork.getDouBanApi()
+        return NetWork.get(Constant.Url.Douban.getUrl(), DouBanApi.class)
                 .getNewMovie(mSubjectAdapter.getListSize(), 20);
     }
 

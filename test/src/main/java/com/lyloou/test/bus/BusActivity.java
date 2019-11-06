@@ -45,6 +45,8 @@ import android.widget.Toast;
 import com.lyloou.test.R;
 import com.lyloou.test.bus.notification.AlarmReceiver;
 import com.lyloou.test.bus.weather.Weather;
+import com.lyloou.test.bus.weather.WeatherApi;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
@@ -301,8 +303,7 @@ public class BusActivity extends AppCompatActivity {
     }
 
     private void loadWeather(TextView tvWeather) {
-        mCompositeDisposable.add(NetWork
-                .getWeatherApi()
+        mCompositeDisposable.add(NetWork.get(Constant.Url.Weather.getUrl(), WeatherApi.class)
                 .getWeather("101280601")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

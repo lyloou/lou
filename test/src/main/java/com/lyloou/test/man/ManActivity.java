@@ -44,9 +44,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.NormalWebViewActivity;
+import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Uscreen;
@@ -137,7 +139,7 @@ public class ManActivity extends AppCompatActivity {
 
         TextView tvHeader = findViewById(R.id.tv_header);
         //noinspection ResultOfMethodCallIgnored
-        NetWork.getKingsoftwareApi()
+        NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

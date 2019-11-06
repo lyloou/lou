@@ -32,7 +32,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uscreen;
 
 import java.text.ParseException;
@@ -42,9 +41,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
@@ -126,19 +122,8 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void loadDataAndRenderView(String day, ImageView view) {
-        NetWork.getKingsoftwareApi()
-                .getDaily(day)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(daily -> {
-                            String url = daily.getFenxiang_img();
-                            Glide
-                                    .with(mContext)
-                                    .load(url).into(view);
-                            view.setTag(url);
-                        },
-                        Throwable::printStackTrace);
-
+        String url = KingsoftwareUtil.getShareImage(day);
+        Glide.with(mContext).load(url).into(view);
     }
 
     @Override

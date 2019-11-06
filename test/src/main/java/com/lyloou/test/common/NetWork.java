@@ -16,104 +16,40 @@
 
 package com.lyloou.test.common;
 
-import com.lyloou.test.bus.weather.WeatherApi;
-import com.lyloou.test.douban.DouBanApi;
-import com.lyloou.test.gank.GankApi;
-import com.lyloou.test.kingsoftware.KingsoftwareAPI;
-import com.lyloou.test.laifudao.LaiFuDaoApi;
-import com.lyloou.test.onearticle.OneArticleApi;
+import android.support.annotation.NonNull;
 
-import okhttp3.OkHttpClient;
+import java.util.HashMap;
+import java.util.Map;
+
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Author:    Lou
- * Version:   V1.0
+ * Version:   V2.0
  * Date:      2017.06.26 19:15
+ * Update:    2019-11-06 10:42
  * <p>
  * Description:
  */
 public class NetWork {
-    private static KingsoftwareAPI sKingsoftwareAPI;
-    private static LaiFuDaoApi sLaiFuDaoApi;
-    private static DouBanApi sDouBanApi;
-    private static OneArticleApi sOneArticleApi;
-    private static GankApi sGankApi;
-    private static WeatherApi sWeatherApi;
 
-    public static KingsoftwareAPI getKingsoftwareApi() {
-        if (sKingsoftwareAPI == null) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://open.iciba.com")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build();
-            sKingsoftwareAPI = retrofit.create(KingsoftwareAPI.class);
-        }
-        return sKingsoftwareAPI;
-    }
+    private static Map<String, Object> map = new HashMap<>();
 
-    public static LaiFuDaoApi getLaiFuDaoApi() {
-        if (sLaiFuDaoApi == null) {
-            OkHttpClient client = new OkHttpClient();
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://api.laifudao.com/")
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build();
-            sLaiFuDaoApi = retrofit.create(LaiFuDaoApi.class);
+    public static <T> T get(@NonNull String baseUrl, @NonNull Class<T> clazz) {
+        String key = clazz.getSimpleName().concat(baseUrl);
+        if (map.containsKey(key)) {
+            //noinspection unchecked
+            return (T) map.get(key);
         }
-        return sLaiFuDaoApi;
-    }
-
-    public static DouBanApi getDouBanApi() {
-        if (sDouBanApi == null) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.douban.com/v2/movie/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build();
-            sDouBanApi = retrofit.create(DouBanApi.class);
-        }
-        return sDouBanApi;
-    }
-
-    public static OneArticleApi getOneArticleApi() {
-        if (sOneArticleApi == null) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://interface.meiriyiwen.com/article/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build();
-            sOneArticleApi = retrofit.create(OneArticleApi.class);
-        }
-        return sOneArticleApi;
-    }
-
-    public static GankApi getGankApi() {
-        if (sGankApi == null) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://gank.io/api/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build();
-            sGankApi = retrofit.create(GankApi.class);
-        }
-        return sGankApi;
-    }
-
-    public static WeatherApi getWeatherApi() {
-        if (sWeatherApi == null) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://t.weather.sojson.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build();
-            sWeatherApi = retrofit.create(WeatherApi.class);
-        }
-        return sWeatherApi;
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+        T t = retrofit.create(clazz);
+        map.put(key, t);
+        return t;
     }
 }

@@ -41,13 +41,13 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.LouAdapter;
 import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.db.LouSQLite;
 import com.lyloou.test.util.Uscreen;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -77,7 +77,7 @@ public class OneArticleActivity extends AppCompatActivity {
         initData();
         initView();
 
-        layoutIt(NetWork.getOneArticleApi().getOneArticle(1));
+        layoutIt(NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class).getOneArticle(1));
     }
 
     private void initData() {
@@ -98,10 +98,11 @@ public class OneArticleActivity extends AppCompatActivity {
 
     private void queryFromDb() {
         if (mFavorites == null) {
-            mFavorites = LouSQLite.query(DbCallback.TABLE_NAME_ONE_ARTICLE
+            mFavorites = LouSQLite.query(
+                    DbCallback.TABLE_NAME_ONE_ARTICLE
                     , "select * from " + DbCallback.TABLE_NAME_ONE_ARTICLE
-                    , null);
-            System.out.println("=====>收藏夹：" + Arrays.toString(mFavorites.toArray()));
+                    , null
+            );
         }
     }
 
@@ -160,7 +161,7 @@ public class OneArticleActivity extends AppCompatActivity {
         ImageView ivHeader = collapsingToolbarLayout.findViewById(R.id.iv_header);
 
         int image = (int) (98 * Math.random() + 1);
-        String url = "https://meiriyiwen.com/images/new_feed/bg_" + image + ".jpg";
+        String url = OneArticleUtil.getImage(image);
         Glide.with(mContext).load(url).into(ivHeader);
 
         NestedScrollView nestedScrollView = findViewById(R.id.nsv_view);
@@ -193,11 +194,11 @@ public class OneArticleActivity extends AppCompatActivity {
         Observable<OneArticle> observable;
         switch (item.getItemId()) {
             case R.id.menu_one_article_today:
-                observable = NetWork.getOneArticleApi().getOneArticle(1);
+                observable = NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class).getOneArticle(1);
                 layoutIt(observable);
                 break;
             case R.id.menu_one_article_random:
-                observable = NetWork.getOneArticleApi().getRandomArticle(1);
+                observable = NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class).getRandomArticle(1);
                 layoutIt(observable);
                 break;
             case R.id.menu_one_article_select:
@@ -244,7 +245,7 @@ public class OneArticleActivity extends AppCompatActivity {
 
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             Article article = mFavorites.get(i);
-            Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, article.getDate());
+            Observable<OneArticle> observable = NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class).getSpecialArticle(1, article.getDate());
             layoutIt(observable);
             louDialog.dismiss();
         });
@@ -312,7 +313,7 @@ public class OneArticleActivity extends AppCompatActivity {
                     String m = String.format(Locale.getDefault(), "%02d", month + 1);
                     String d = String.format(Locale.getDefault(), "%02d", dayOfMonth);
                     String date = y + m + d;
-                    Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, date);
+                    Observable<OneArticle> observable = NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class).getSpecialArticle(1, date);
                     layoutIt(observable);
                     louDialog.dismiss();
                 });
@@ -330,7 +331,7 @@ public class OneArticleActivity extends AppCompatActivity {
         tv.setOnClickListener(view -> {
             String date = datePicker.getText().toString();
             if (!TextUtils.isEmpty(date.trim())) {
-                Observable<OneArticle> observable = NetWork.getOneArticleApi().getSpecialArticle(1, date);
+                Observable<OneArticle> observable = NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class).getSpecialArticle(1, date);
                 layoutIt(observable);
             }
             louDialog.dismiss();
