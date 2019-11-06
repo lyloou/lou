@@ -12,6 +12,7 @@ public class Utime {
 
     private static final SimpleDateFormat SDF_ONE = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
     private static final SimpleDateFormat SDF_TWO = new SimpleDateFormat("yyyyMMdd", Locale.CHINA);
+    private static final SimpleDateFormat SDF_THREE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.CHINA);
 
     public static int[] getValidTime(String time) {
         int hourOfDay;
@@ -90,10 +91,20 @@ public class Utime {
         return Utime.getTimeString(spendHour, spendMinute);
     }
 
-    public static String transferDay(String day) {
+    public static String transferTwoToOne(String day) {
         Date parse = null;
         try {
             parse = SDF_TWO.parse(day);
+        } catch (ParseException e) {
+            return null;
+        }
+        return SDF_ONE.format(parse);
+    }
+
+    public static String transferThreeToOne(String day) {
+        Date parse;
+        try {
+            parse = SDF_THREE.parse(day);
         } catch (ParseException e) {
             return null;
         }

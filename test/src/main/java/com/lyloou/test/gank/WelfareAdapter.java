@@ -17,6 +17,7 @@
 package com.lyloou.test.gank;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -25,41 +26,28 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.StringSignature;
 import com.lyloou.test.R;
-import com.lyloou.test.common.Constant;
-import com.lyloou.test.common.NetWork;
+import com.lyloou.test.util.Utime;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class WelfareAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_FOOTER = 2;
-    private List<ActiveDay> mList;
+    private List<Welfare> mList;
     private boolean mMaxed;
     private Context mContext;
     private OnItemClickListener mItemClickListener;
     private String mTitle;
     private int mMode; // 0:表示正常模式；1：表示多选模式；
 
-    ActiveDayAdapter(Context context) {
+    WelfareAdapter(Context context, List<Welfare> list) {
         mContext = context;
-        mList = new ArrayList<>();
+        mList = list;
     }
 
     public int getMode() {
@@ -70,7 +58,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mMode = mode;
     }
 
-    public List<ActiveDay> getList() {
+    public List<Welfare> getList() {
         return mList;
     }
 
@@ -79,7 +67,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void clearSelected() {
-        for (ActiveDay activeDay : mList) {
+        for (Welfare activeDay : mList) {
             if (activeDay.isSelected())
                 activeDay.setSelected(false);
         }
@@ -94,7 +82,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         if (viewType == TYPE_ITEM) {
             View view = inflater.inflate(R.layout.item_gank_welfare, parent, false);
-            return new ActiveDayHolder(view);
+            return new WelfareHolder(view);
         } else if (viewType == TYPE_HEADER) {
             View view = inflater.inflate(R.layout.item_gank_header, parent, false);
             return new HeaderHolder(view);
@@ -114,25 +102,26 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if (viewHolder instanceof ActiveDayHolder) {
-            ActiveDayHolder holder = (ActiveDayHolder) viewHolder;
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+        if (viewHolder instanceof WelfareHolder) {
+            WelfareHolder holder = (WelfareHolder) viewHolder;
 
-            ActiveDay activeDay = mList.get(position - 1); // 注意需要减去header的数量
+            Welfare welfare = mList.get(position - 1); // 注意需要减去header的数量
             if (mMode == 0) {
                 holder.cbItem.setVisibility(View.GONE);
             } else if (mMode == 1) {
                 holder.cbItem.setVisibility(View.VISIBLE);
-                holder.cbItem.setChecked(activeDay.isSelected());
+                holder.cbItem.setChecked(welfare.isSelected());
             }
 
-            holder.tvItem.setText(activeDay.getDay());
-
-            holder.view.setOnClickListener(view -> mItemClickListener.onClick(holder.getAdapterPosition(), activeDay));
-
-            holder.ivItem.setOnLongClickListener(view -> mItemClickListener.onLongClick(holder.ivItem));
-            holder.ivItem.setImageDrawable(null);
-            loadWelfareToImageView(activeDay.getDay(), holder.ivItem);
+            holder.tvItem.setText(getDay(welfare));
+            holder.view.setOnClickListener(view -> mItemClickListener.onClick(holder.getAdapterPosition(), welfare));
+            holder.view.setOnLongClickListener(view -> mItemClickListener.onLongClick(welfare));
+            Glide.with(mContext)
+                    .load(welfare.getUrl())
+                    .signature(new StringSignature(welfare.getUrl()))
+                    .fitCenter()
+                    .into(holder.ivItem);
 
         } else if (viewHolder instanceof HeaderHolder) {
             HeaderHolder holder = (HeaderHolder) viewHolder;
@@ -150,56 +139,8 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
-    private void loadWelfareToImageView(String activeDay, final ImageView ivPic) {
-
-
-        String[] split = activeDay.split("-");
-        if (split.length == 3) {
-            String year = split[0];
-            String month = split[1];
-            String day = split[2];
-
-            Call<ResponseBody> gankData = NetWork.get(Constant.Url.Gank.getUrl(), GankApi.class).getGankData(year, month, day);
-            gankData.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        try {
-                            ResponseBody body = response.body();
-                            if (body == null) {
-                                return;
-                            }
-                            String string = body.string();
-                            JSONObject jsonObject = new JSONObject(string);
-                            JSONObject results = jsonObject.getJSONObject("results");
-                            JSONArray welfares = results.getJSONArray("福利");
-                            JSONObject welfare = welfares.getJSONObject(0);
-                            String welfareUrl = welfare.getString("url");
-
-                            Context applicationContext = mContext.getApplicationContext();
-                            Glide.with(applicationContext)
-                                    .load(welfareUrl)
-                                    .signature(new StringSignature(welfareUrl))
-                                    .fitCenter()
-                                    .into(ivPic);
-
-                            ivPic.setTag(ivPic.getId(), welfareUrl);
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    t.printStackTrace();
-                }
-            });
-
-
-        } else {
-            Toast.makeText(mContext, "格式不对：" + activeDay, Toast.LENGTH_SHORT).show();
-        }
+    private String getDay(Welfare welfare) {
+        return Utime.transferThreeToOne(welfare.getPublishedAt());
     }
 
     @Override
@@ -223,11 +164,6 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void addAll(List<ActiveDay> activeDays) {
-        mList.addAll(activeDays);
-        notifyItemRangeInserted(getListSize(), activeDays.size());
-    }
-
     public int getListSize() {
         return mList.size();
     }
@@ -237,21 +173,21 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     interface OnItemClickListener {
-        void onClick(int realPosition, ActiveDay activeDay);
+        void onClick(int realPosition, Welfare welfare);
 
-        boolean onLongClick(ImageView view);
+        boolean onLongClick(Welfare welfare);
     }
 
-    private static class ActiveDayHolder extends RecyclerView.ViewHolder {
+    private static class WelfareHolder extends RecyclerView.ViewHolder {
         View view;
         TextView tvItem;
         ImageView ivItem;
         CheckBox cbItem;
 
-        ActiveDayHolder(View itemView) {
+        WelfareHolder(View itemView) {
             super(itemView);
             view = itemView;
-            tvItem = (TextView) view.findViewById(R.id.tv_item);
+            tvItem = view.findViewById(R.id.tv_item);
             ivItem = view.findViewById(R.id.iv_item);
             cbItem = view.findViewById(R.id.cb_item);
             cbItem.setClickable(false);
@@ -272,7 +208,7 @@ class ActiveDayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         FooterHolder(View view) {
             super(view);
-            tvFooter = (TextView) view.findViewById(R.id.tv_footer);
+            tvFooter = view.findViewById(R.id.tv_footer);
         }
     }
 }

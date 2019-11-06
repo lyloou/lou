@@ -92,6 +92,10 @@ public class LouProgressBar {
     }
 
 
+    public boolean isShowing() {
+        return mDialog != null && mDialog.isShowing();
+    }
+
     public void show(final String tips) {
         Uthread.runInMainThread(() -> {
             if (!TextUtils.isEmpty(tips)) {

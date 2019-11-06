@@ -19,214 +19,163 @@ package com.lyloou.test.gank;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
+import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.DoubleItemWithOneHeaderOffsetDecoration;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.LouProgressBar;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebContentActivity;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Utoast;
 import com.lyloou.test.util.Uview;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class GankWelfareActivity extends AppCompatActivity {
     private static final String TAG = GankWelfareActivity.class.getSimpleName();
-    private final List<ActiveDay> mActiveDays = new ArrayList<>();
-    LinearLayout mLlytBottom;
+    public static final int NUMBER = 20;
+    private int mPage = 1;
+    private final List<Welfare> mWelfareList = new ArrayList<>();
+    private LinearLayout mLlytBottom;
     private SwipeRefreshLayout mRefreshLayout;
-    private ActiveDayAdapter mActiveDayAdapter;
+    private WelfareAdapter mWelfareAdapter;
     private Activity mContext;
-    private boolean mIsLoading = false;
+    private boolean mIsLoadingData = false;
+    private LouProgressBar mProgressBar;
+    private Disposable mDisposable;
     private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-
             GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
-            int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+            int lastVisibleItem = Objects.requireNonNull(layoutManager).findLastVisibleItemPosition();
             int totalItemCount = layoutManager.getItemCount();
 
-            int max_size = mActiveDays.size();
-            // 快到底部了，数据不多了
+            // 快到底部了，数据不多了，接着加载
             int nearBottom = totalItemCount - 8;
-            if (totalItemCount < max_size && lastVisibleItem >= nearBottom) {
-                if (mIsLoading) {
-                    Log.i(TAG, "加载中...");
-                } else {
+            if (!mWelfareAdapter.isMaxed() && lastVisibleItem >= nearBottom) {
+                if (!mIsLoadingData) {
                     loadMore();
                 }
-
             }
         }
     };
-    private Disposable mDisposable;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-
         setContentView(R.layout.activity_gank_welfare);
-
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-
         initView();
+        initData();
     }
 
-    private List<ActiveDay> getCheckedActiveDays() {
-        List<ActiveDay> activeDays = new ArrayList<>();
-        if (mActiveDayAdapter != null) {
-            List<ActiveDay> activeDayList = mActiveDayAdapter.getList();
-            for (ActiveDay activeDay : activeDayList) {
-                if (activeDay.isSelected()) {
-                    activeDays.add(activeDay);
+    private List<Welfare> getCheckedWelfares() {
+        List<Welfare> list = new ArrayList<>();
+        if (mWelfareAdapter != null) {
+            List<Welfare> welfareListList = mWelfareAdapter.getList();
+            for (Welfare welfare : welfareListList) {
+                if (welfare.isSelected()) {
+                    list.add(welfare);
                 }
             }
 
         }
-        return activeDays;
+        return list;
     }
 
-    private void loadWelfareToImageView(String activeDay) {
+    private void toWelfare(String activeDay) {
+        if (activeDay == null) {
+            Toast.makeText(mContext, "格式不对", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String[] split = activeDay.split("-");
         if (split.length == 3) {
             String year = split[0];
             String month = split[1];
             String day = split[2];
-
-            Call<ResponseBody> gankData = NetWork.get(Constant.Url.Gank.getUrl(), GankApi.class).getGankContent(year, month, day);
-            gankData.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        try {
-                            ResponseBody body = response.body();
-                            if (body == null) {
-                                return;
-                            }
-                            String string = body.string();
-                            JSONObject jsonObject = new JSONObject(string);
-                            JSONArray results = jsonObject.getJSONArray("results");
-
-                            JSONObject contentObject = results.getJSONObject(0);
-                            String content = contentObject.getString("content");
-
-                            WebContentActivity.newInstance(mContext, content);
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
+            mProgressBar.show("正在加载...");
+            mDisposable = NetWork.get(Constant.Url.Gank.getUrl(), GankApi.class).getGankContent(year, month, day)
+                    .subscribeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .filter(gankContentResult -> !gankContentResult.isError())
+                    .map(GankContentResult::getResults)
+                    .subscribe(gankContents -> {
+                        mProgressBar.hide();
+                        String content = getOneGankContent(gankContents);
+                        if (TextUtils.isEmpty(content)) {
+                            Utoast.show(mContext, "欣赏美图就好");
+                            return;
                         }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    t.printStackTrace();
-                }
-            });
-
-
+                        WebContentActivity.newInstance(mContext, content);
+                    }, throwable -> {
+                        throwable.printStackTrace();
+                        mProgressBar.hide();
+                        Utoast.show(mContext, "欣赏美图就好");
+                    });
         } else {
             Toast.makeText(mContext, "格式不对：" + activeDay, Toast.LENGTH_SHORT).show();
         }
     }
 
+    private String getOneGankContent(List<GankContentResult.GankContent> gankContents) {
+        if (gankContents.isEmpty()) {
+            return null;
+        }
+
+        for (GankContentResult.GankContent gankContent : gankContents) {
+            String content = gankContent.getContent();
+            if (!TextUtils.isEmpty(content)) {
+                return content;
+            }
+        }
+        return null;
+    }
+
     private void initView() {
-        Toolbar toolbar = findViewById(R.id.toolbar_gank);
-        toolbar.setTitle("看，有流星");
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        Uview.initStatusBar(this, R.color.colorAccent);
-
-        EmptyRecyclerView recyclerView = findViewById(R.id.erv_gank_welfare);
+        initTopView();
+        mProgressBar = LouProgressBar.buildDialog(mContext);
         mRefreshLayout = findViewById(R.id.srl_gank_welfare);
+        mRefreshLayout.setOnRefreshListener(this::reloadData);
         mLlytBottom = findViewById(R.id.llyt_bottom);
+        initRecyclerView();
+    }
 
-        mActiveDayAdapter = new ActiveDayAdapter(this);
-        mActiveDayAdapter.setTitle("福利岛");
-        mActiveDayAdapter.setOnItemClickListener(new ActiveDayAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(int realPosition, ActiveDay activeDay) {
-
-                int mode = mActiveDayAdapter.getMode();
-                if (mode == 1) {
-                    activeDay.setSelected(!activeDay.isSelected());
-                    mActiveDayAdapter.notifyItemChanged(realPosition);
-
-                    List<ActiveDay> checkedActiveDays = getCheckedActiveDays();
-                    initBootomViewWithData(mLlytBottom, checkedActiveDays);
-
-                } else if (mode == 0) {
-                    loadWelfareToImageView(activeDay.getDay());
-                }
-            }
-
-            @SuppressLint("CheckResult")
-            @Override
-            public boolean onLongClick(ImageView view) {
-
-                Object tag = view.getTag(view.getId());
-                if (tag instanceof String) {
-                    String url = String.valueOf(tag);
-                    if (!TextUtils.isEmpty(url)) {
-                        LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
-                        progressTips.show("正在加载...");
-                        Observable.fromCallable(() -> url)
-                                .subscribeOn(Schedulers.io())
-                                .subscribe(s -> {
-                                    Ushare.sharePicUrl(mContext, url);
-                                    progressTips.hide();
-                                }, throwable -> {
-                                    progressTips.hide();
-                                });
-                    }
-                } else {
-                    Utoast.show(mContext, "URL不存在");
-                }
-
-                return false;
-            }
-        });
-        recyclerView.setAdapter(mActiveDayAdapter);
-        recyclerView.setItemTypeCount(mActiveDayAdapter.getItemTypeCount());
+    private void initRecyclerView() {
+        EmptyRecyclerView recyclerView = findViewById(R.id.erv_gank_welfare);
+        mWelfareAdapter = new WelfareAdapter(this, mWelfareList);
+        mWelfareAdapter.setTitle("福利岛");
+        mWelfareAdapter.setOnItemClickListener(getOnItemClickListener());
+        recyclerView.setAdapter(mWelfareAdapter);
+        recyclerView.setItemTypeCount(mWelfareAdapter.getItemTypeCount());
         recyclerView.setEmptyView(findViewById(R.id.rlyt_empty));
         recyclerView.setHasFixedSize(true);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
@@ -241,26 +190,76 @@ public class GankWelfareActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addItemDecoration(new DoubleItemWithOneHeaderOffsetDecoration(Uscreen.dp2Px(mContext, 16)));
         recyclerView.addOnScrollListener(mListener);
-
-        mRefreshLayout.setOnRefreshListener(() -> {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mActiveDayAdapter.setMaxed(false);
-                }
-            });
-            mLlytBottom.setVisibility(View.GONE);
-            mActiveDayAdapter.clearAll();
-            mActiveDays.clear();
-            loadDatas();
-        });
-
-        // 开始加载数据
-        loadDatas();
     }
 
-    private void initBootomViewWithData(LinearLayout view, final List<ActiveDay> checkedActiveDays) {
-        int size = checkedActiveDays.size();
+    private WelfareAdapter.OnItemClickListener getOnItemClickListener() {
+        return new WelfareAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int realPosition, Welfare welfare) {
+
+                int mode = mWelfareAdapter.getMode();
+                if (mode == 1) {
+                    welfare.setSelected(!welfare.isSelected());
+                    mWelfareAdapter.notifyItemChanged(realPosition);
+                    List<Welfare> checkedWelfares = getCheckedWelfares();
+                    initBottomViewWithData(mLlytBottom, checkedWelfares);
+
+                } else if (mode == 0) {
+                    toWelfare(Utime.transferThreeToOne(welfare.getPublishedAt()));
+                }
+            }
+
+            @SuppressLint("CheckResult")
+            @Override
+            public boolean onLongClick(Welfare welfare) {
+                if (!TextUtils.isEmpty(welfare.getUrl())) {
+                    LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
+                    progressTips.show("正在加载...");
+                    //noinspection ResultOfMethodCallIgnored
+                    Observable.fromCallable(() -> welfare)
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(s -> {
+                                Ushare.sharePicUrl(mContext, welfare.getUrl());
+                                progressTips.hide();
+                            }, throwable -> progressTips.hide());
+                } else {
+                    Utoast.show(mContext, "URL不存在");
+                }
+                return false;
+            }
+        };
+    }
+
+    private void initData() {
+        // 开始加载数据
+        reloadData();
+    }
+
+    private void reloadData() {
+        mLlytBottom.setVisibility(View.GONE);
+        mWelfareAdapter.clearAll();
+        mWelfareList.clear();
+        mPage = 1;
+        mWelfareAdapter.setMaxed(false);
+        loadData(NUMBER, mPage, welfareList -> {
+            mWelfareList.addAll(welfareList);
+            mWelfareAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+        });
+    }
+
+    private void initTopView() {
+        Toolbar toolbar = findViewById(R.id.toolbar_gank);
+        toolbar.setTitle("看，有流星");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        Uview.initStatusBar(this, R.color.colorAccent);
+    }
+
+    private void initBottomViewWithData(LinearLayout view, final List<Welfare> list) {
+        int size = list.size();
         if (size > 0) {
             mLlytBottom.setVisibility(View.VISIBLE);
         } else {
@@ -272,7 +271,7 @@ public class GankWelfareActivity extends AppCompatActivity {
         TextView tvFriend = view.findViewById(R.id.tv_share);
         TextView tvTimeline = view.findViewById(R.id.tv_share2);
 
-        String caption = String.valueOf(checkedActiveDays.size());
+        String caption = String.valueOf(list.size());
         tvCount.setText(caption);
 
         LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
@@ -281,8 +280,8 @@ public class GankWelfareActivity extends AppCompatActivity {
             new Thread(() -> {
                 Ushare.clearImageDir(mContext);
                 List<String> paths = new ArrayList<>();
-                for (ActiveDay day : checkedActiveDays) {
-                    String welfareUrl = Ushare.loadWelfareUrl(day.getDay());
+                for (Welfare day : list) {
+                    String welfareUrl = Ushare.loadWelfareUrl(day.getDesc());
                     if (TextUtils.isEmpty(welfareUrl)) {
                         continue;
                     }
@@ -299,81 +298,64 @@ public class GankWelfareActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (mActiveDayAdapter.getListSize() == 0) {
-            loadDatas();
-        }
-    }
-
-    @Override
     protected void onDestroy() {
         unSubscribe();
         super.onDestroy();
     }
 
-    public void loadDatas() {
+    public void loadData(int number, int page, Consumer<List<Welfare>> consumer) {
+        mIsLoadingData = true;
 
         // 通过取消上次加载，来防止出现加载数据混淆的问题（）
         unSubscribe();
-
-        mDisposable = NetWork.get(Constant.Url.Gank.getUrl(), GankApi.class).getActiveDays()
-
-                .map((Function<ActiveDayResult, List<String>>) activeDayResult -> {
-                    if (activeDayResult.isError()) {
+        mDisposable = NetWork.get(Constant.Url.Gank.getUrl(), GankApi.class)
+                .getWelfares(number, page)
+                .map((Function<WelfareResult, List<Welfare>>) welfareResultResult -> {
+                    if (welfareResultResult.isError()) {
                         return new ArrayList<>();
                     }
-                    return activeDayResult.getResults();
-                })
-                .map(list -> {
-                    List<ActiveDay> activeDays = new ArrayList<>();
-                    for (String day : list) {
-                        activeDays.add(new ActiveDay(day));
-                    }
-                    return activeDays;
+                    return welfareResultResult.getResults();
                 })
                 .subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(activeDays -> {
-                    mActiveDays.addAll(activeDays);
-                    loadMore();
-
-                    mRefreshLayout.setRefreshing(false);
+                .subscribe(t -> {
+                    consumer.accept(t);
+                    mIsLoadingData = false;
                 }, throwable -> {
                     throwable.printStackTrace();
-                    mRefreshLayout.setRefreshing(false);
-
+                    mIsLoadingData = false;
                     Utoast.show(mContext, "网络异常:" + throwable.getMessage());
                 });
     }
 
+
     private void loadMore() {
-        int maxSize = mActiveDays.size();
-        int listSize = mActiveDayAdapter.getListSize();
-        if (maxSize == listSize) {
-            return;
-        }
-
-        mIsLoading = true;
-        mRefreshLayout.postDelayed(() -> {
-            int loadedSize = Math.min(maxSize, listSize + 20);
-            mActiveDayAdapter.addAll(mActiveDays.subList(listSize, loadedSize));
-            if (maxSize == loadedSize) {
-                if (!mActiveDayAdapter.isMaxed()) {
-                    mActiveDayAdapter.setMaxed(true);
-                    mActiveDayAdapter.notifyDataSetChanged();
-                }
+        loadData(NUMBER, ++mPage, welfareList -> {
+            if (welfareList.size() < NUMBER) {
+                mWelfareAdapter.setMaxed(true);
             }
-            mIsLoading = false;
-        }, 1600);
-
+            mWelfareList.addAll(welfareList);
+            mWelfareAdapter.notifyDataSetChanged();
+        });
     }
+
 
     private void unSubscribe() {
         if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
+            mDisposable = null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mProgressBar.isShowing()) {
+            unSubscribe();
+            mProgressBar.hide();
+            return;
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -386,20 +368,20 @@ public class GankWelfareActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_normal:
-                if (mActiveDayAdapter.getMode() == 0) {
+                if (mWelfareAdapter.getMode() == 0) {
                     return true;
                 }
-                mActiveDayAdapter.setMode(0);
-                mActiveDayAdapter.clearSelected();
-                mActiveDayAdapter.notifyDataSetChanged();
-                initBootomViewWithData(mLlytBottom, getCheckedActiveDays());
+                mWelfareAdapter.setMode(0);
+                mWelfareAdapter.clearSelected();
+                mWelfareAdapter.notifyDataSetChanged();
+                initBottomViewWithData(mLlytBottom, getCheckedWelfares());
                 break;
             case R.id.menu_multiple:
-                if (mActiveDayAdapter.getMode() == 1) {
+                if (mWelfareAdapter.getMode() == 1) {
                     return true;
                 }
-                mActiveDayAdapter.setMode(1);
-                mActiveDayAdapter.notifyDataSetChanged();
+                mWelfareAdapter.setMode(1);
+                mWelfareAdapter.notifyDataSetChanged();
                 break;
         }
         return super.onOptionsItemSelected(item);

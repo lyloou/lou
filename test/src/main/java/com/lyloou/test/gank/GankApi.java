@@ -30,12 +30,12 @@ import retrofit2.http.Path;
  * Description:
  */
 public interface GankApi {
-    @GET("day/history")
-    Observable<ActiveDayResult> getActiveDays();
+    @GET("data/%E7%A6%8F%E5%88%A9/{number}/{page}")
+    Observable<WelfareResult> getWelfares(@Path("number") int number, @Path("page") int page);
 
     @GET("day/{year}/{month}/{day}")
-    Call<ResponseBody> getGankData(@Path("year")String year, @Path("month") String month, @Path("day") String day);
+    Call<ResponseBody> getGankData(@Path("year") String year, @Path("month") String month, @Path("day") String day);
 
     @GET("history/content/day/{year}/{month}/{day}")
-    Call<ResponseBody> getGankContent(@Path("year")String year, @Path("month") String month, @Path("day") String day);
+    Observable<GankContentResult> getGankContent(@Path("year") String year, @Path("month") String month, @Path("day") String day);
 }

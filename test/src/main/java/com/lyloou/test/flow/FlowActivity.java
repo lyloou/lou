@@ -281,7 +281,7 @@ public class FlowActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void initTopPart() {
-        String day = Utime.transferDay(mFlowDay.getDay());
+        String day = Utime.transferTwoToOne(mFlowDay.getDay());
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(day);
