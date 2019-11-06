@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,6 +43,7 @@ import com.lyloou.test.common.LouProgressBar;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.webview.WebContentActivity;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Usystem;
 import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Utoast;
 import com.lyloou.test.util.Uview;
@@ -151,13 +153,15 @@ public class GankWelfareActivity extends AppCompatActivity {
             return null;
         }
 
+        StringBuilder sb = new StringBuilder();
         for (GankContentResult.GankContent gankContent : gankContents) {
             String content = gankContent.getContent();
-            if (!TextUtils.isEmpty(content)) {
-                return content;
+            if (TextUtils.isEmpty(content)) {
+                continue;
             }
+            sb.append(content);
         }
-        return null;
+        return sb.toString();
     }
 
     private void initView() {
@@ -213,21 +217,63 @@ public class GankWelfareActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(Welfare welfare) {
                 if (!TextUtils.isEmpty(welfare.getUrl())) {
-                    LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
-                    progressTips.show("正在加载...");
-                    //noinspection ResultOfMethodCallIgnored
-                    Observable.fromCallable(() -> welfare)
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(s -> {
-                                Ushare.sharePicUrl(mContext, welfare.getUrl());
-                                progressTips.hide();
-                            }, throwable -> progressTips.hide());
+                    doOnLongClickListener(welfare);
                 } else {
                     Utoast.show(mContext, "URL不存在");
                 }
                 return false;
             }
         };
+    }
+
+    enum OperateType {
+        SHARE("分享"),
+        COPY_LINK("复制链接"),
+        ;
+        String title;
+
+        OperateType(String title) {
+            this.title = title;
+        }
+
+        public static OperateType indexOf(int index) {
+            return OperateType.values()[index];
+        }
+
+        public static String[] toStrArray() {
+            OperateType[] values = OperateType.values();
+            String[] result = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                result[i] = values[i].title;
+            }
+            return result;
+        }
+    }
+
+    private void doOnLongClickListener(Welfare welfare) {
+        new AlertDialog.Builder(mContext)
+                .setTitle("操作")
+                .setItems(OperateType.toStrArray(), (dialog, which) -> {
+                    switch (OperateType.indexOf(which)) {
+                        case SHARE:
+                            LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
+                            progressTips.show("正在加载...");
+                            //noinspection ResultOfMethodCallIgnored
+                            Observable.fromCallable(() -> welfare)
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe(s -> {
+                                        Ushare.sharePicUrl(mContext, welfare.getUrl());
+                                        progressTips.hide();
+                                    }, throwable -> progressTips.hide());
+                            break;
+                        case COPY_LINK:
+                            Usystem.copyString(mContext, welfare.getUrl());
+                            break;
+                        default:
+                    }
+                })
+                .create()
+                .show();
     }
 
     private void initData() {
@@ -240,8 +286,10 @@ public class GankWelfareActivity extends AppCompatActivity {
         mWelfareAdapter.clearAll();
         mWelfareList.clear();
         mPage = 1;
-        mWelfareAdapter.setMaxed(false);
         loadData(NUMBER, mPage, welfareList -> {
+            if (welfareList.size() < NUMBER) {
+                mWelfareAdapter.setMaxed(true);
+            }
             mWelfareList.addAll(welfareList);
             mWelfareAdapter.notifyDataSetChanged();
             mRefreshLayout.setRefreshing(false);

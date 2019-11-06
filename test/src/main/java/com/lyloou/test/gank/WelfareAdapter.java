@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.signature.StringSignature;
 import com.lyloou.test.R;
 import com.lyloou.test.util.Utime;
 
@@ -77,8 +76,9 @@ class WelfareAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mItemClickListener = itemClickListener;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         if (viewType == TYPE_ITEM) {
             View view = inflater.inflate(R.layout.item_gank_welfare, parent, false);
@@ -119,7 +119,6 @@ class WelfareAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.view.setOnLongClickListener(view -> mItemClickListener.onLongClick(welfare));
             Glide.with(mContext)
                     .load(welfare.getUrl())
-                    .signature(new StringSignature(welfare.getUrl()))
                     .fitCenter()
                     .into(holder.ivItem);
 
