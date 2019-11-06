@@ -143,7 +143,7 @@ public class FlowListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         Uscreen.setToolbarMarginTop(this, toolbar);
         Glide.with(getApplicationContext())
-                .load("http://ww2.sinaimg.cn/large/7a8aed7bjw1f0cw7swd9tj20hy0qogoo.jpg")
+                .load("https://ws1.sinaimg.cn/large/610dc034ly1fp9qm6nv50j20u00miacg.jpg")
                 .centerCrop()
                 .into((ImageView) findViewById(R.id.iv_header));
 
