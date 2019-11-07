@@ -33,7 +33,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.ImageViewTarget;
@@ -47,7 +46,6 @@ import com.lyloou.test.common.glide.PaletteBitmap;
 import com.lyloou.test.common.glide.PaletteBitmapTranscoder;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.kingsoftware.KingsoftwareUtil;
-import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Usystem;
@@ -470,15 +468,13 @@ public class FlowActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        String content = FlowItemHelper.toPrettyText(mFlowDay.getItems());
-        String day = mFlowDay.getDay();
-
         switch (item.getItemId()) {
             case R.id.menu_copy:
-                doCopy(day.concat("\n").concat(content));
+                FlowUtil.doCopy(mContext, mFlowDay, false);
                 break;
             case R.id.menu_share:
+                String content = FlowItemHelper.toPrettyText(mFlowDay.getItems());
+                String day = mFlowDay.getDay();
                 Usystem.shareText(mContext, day, content);
             case R.id.menu_save:
                 updateDb(true);
@@ -500,21 +496,6 @@ public class FlowActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void doCopy(String content) {
-        Usystem.copyString(mContext, content);
-        Snackbar snackbar = Snackbar.make(Uview.getRootView(mContext), "复制成功", Snackbar.LENGTH_LONG);
-        snackbar.setAction("跳转到便签", v -> {
-            String packageName = "cn.wps.note";
-            Uapp.handlePackageIntent(mContext, packageName, intent -> {
-                if (intent == null) {
-                    Toast.makeText(mContext, "没有安装" + packageName, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                startActivity(intent);
-            });
-        });
-        snackbar.show();
-    }
 
     private long insertFlowDayToDb(FlowDay flowDay) {
         SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();

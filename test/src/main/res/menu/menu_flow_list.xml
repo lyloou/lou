@@ -7,6 +7,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/menu_recover_last_one"
+        android:title="恢复上一个"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_add_shortcut"
         android:title="添加到桌面"
         app:showAsAction="never" />

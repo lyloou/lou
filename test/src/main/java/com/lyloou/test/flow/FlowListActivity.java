@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,13 +46,14 @@ import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uapp;
-import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Utoast;
 import com.lyloou.test.util.Uview;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Author:    Lou
@@ -65,6 +67,7 @@ public class FlowListActivity extends AppCompatActivity {
     private List<FlowDay> mFlowDays = new ArrayList<>();
     private Activity mContext;
     private Adapter mAdapter;
+    Stack<FlowDay> mFlowDayStack = new Stack<>();
 
 
     @Override
@@ -116,7 +119,7 @@ public class FlowListActivity extends AppCompatActivity {
 
             @Override
             public void onItemLongClicked(FlowDay flowDay) {
-                showDeleteAlert(flowDay);
+                doOnItemLongClicked(flowDay);
             }
         });
         recyclerView.setAdapter(mAdapter);
@@ -124,14 +127,54 @@ public class FlowListActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
     }
 
-    private void showDeleteAlert(FlowDay flowDay) {
-        String message = "确认删除：\n".concat(flowDay.getDay());
-        Udialog.alert(mContext, message, ok -> {
-            if (ok) {
-                consumeCursorByDayForDelete(flowDay.getDay(), count -> mAdapter.remove(flowDay));
-                mAdapter.notifyDataSetChanged();
+
+    enum OperateType {
+        ONLY_COPY("复制"),
+        COPY_TO_WPS("复制到便签"),
+        DELETE("删除此项"),
+        ;
+        String title;
+
+        OperateType(String title) {
+            this.title = title;
+        }
+
+        public static OperateType indexOf(int index) {
+            return OperateType.values()[index];
+        }
+
+        public static String[] toStrArray() {
+            OperateType[] values = OperateType.values();
+            String[] result = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                result[i] = values[i].title;
             }
-        });
+            return result;
+        }
+    }
+
+    private void doOnItemLongClicked(FlowDay flowDay) {
+        new AlertDialog.Builder(mContext)
+                .setTitle("操作")
+                .setItems(OperateType.toStrArray(), (dialog, which) -> {
+                    switch (OperateType.indexOf(which)) {
+                        case DELETE:
+                            mFlowDayStack.add(flowDay);
+                            consumeCursorByDayForDelete(flowDay.getDay(), count -> mAdapter.remove(flowDay));
+                            mAdapter.notifyDataSetChanged();
+                            break;
+                        case ONLY_COPY:
+                            FlowUtil.doCopy(mContext, flowDay, false);
+                            break;
+                        case COPY_TO_WPS:
+                            FlowUtil.doCopy(mContext, flowDay, true);
+                            break;
+                        default:
+                    }
+                })
+                .create()
+                .show();
+
     }
 
     private void initTopPart() {
@@ -186,6 +229,13 @@ public class FlowListActivity extends AppCompatActivity {
                 return;
             }
             list.remove(flowDay);
+        }
+
+        public void add(FlowDay flowDay) {
+            if (list == null) {
+                return;
+            }
+            list.add(flowDay);
         }
 
         @Override
@@ -253,11 +303,23 @@ public class FlowListActivity extends AppCompatActivity {
                         v -> NormalWebViewActivity.newInstance(mContext, "https://kf.qq.com/touch/sappfaq/180705A3IB3Y1807056fMr6V.html"));
                 snackbar.show();
                 break;
+            case R.id.menu_recover_last_one:
+                recoverLastOne();
+                break;
             case R.id.menu_today_flow_time:
                 toFlowActivity();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void recoverLastOne() {
+        if (mFlowDayStack.empty()) {
+            Utoast.show(mContext, "栈里已经没有了");
+            return;
+        }
+        mAdapter.add(mFlowDayStack.pop());
+        mAdapter.notifyDataSetChanged();
     }
 
 
