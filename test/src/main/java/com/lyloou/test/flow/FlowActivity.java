@@ -1,5 +1,7 @@
 package com.lyloou.test.flow;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.TimePickerDialog;
@@ -11,6 +13,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -18,8 +21,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -31,11 +36,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.common.glide.PaletteBitmap;
+import com.lyloou.test.common.glide.PaletteBitmapTranscoder;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Uapp;
@@ -60,6 +69,7 @@ public class FlowActivity extends AppCompatActivity {
     private FlowAdapter mAdapter;
     private FlowDay mFlowDay;
     private AppBarLayout mAppBarLayout;
+    private TextView mTvHeader;
     private static final int COLOR_BLUE = Color.parseColor("#009edc");
     private static final String TAG = FlowActivity.class.getSimpleName();
 
@@ -196,7 +206,7 @@ public class FlowActivity extends AppCompatActivity {
     private void initView() {
         initTopPart();
         EmptyRecyclerView recyclerView = initRecycleView();
-        initFabBottom(recyclerView);
+        initAppBarLayout();
         initAttachView();
     }
 
@@ -310,6 +320,7 @@ public class FlowActivity extends AppCompatActivity {
             @Override
             public void onEditTextFocused(boolean hasFocus, FlowItem item) {
                 if (hasFocus) {
+                    mTvHeader.setVisibility(View.GONE);
                     mAppBarLayout.setExpanded(false, true);
                 }
             }
@@ -356,14 +367,24 @@ public class FlowActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-//        Uview.initStatusBar(this, R.color.colorAccent);
 
         ImageView ivHeader = findViewById(R.id.iv_header);
         Glide.with(mContext)
                 .load(KingsoftwareUtil.getBigImage(mFlowDay.getDay()))
-                .centerCrop()
-                .into(ivHeader);
-        TextView tvHeader = findViewById(R.id.tv_header);
+                .asBitmap()
+                .transcode(new PaletteBitmapTranscoder(mContext), PaletteBitmap.class)
+                .fitCenter()
+                .into(new ImageViewTarget<PaletteBitmap>(ivHeader) {
+                    @Override
+                    protected void setResource(PaletteBitmap resource) {
+                        // [Converting bitmap to drawable in Android - Stack Overflow](https://stackoverflow.com/questions/23107090/converting-bitmap-to-drawable-in-android)
+                        super.view.setBackground(new BitmapDrawable(getResources(), resource.bitmap));
+                        Palette p = resource.palette;
+                        int color = p.getMutedColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+                        resetTopColor(color);
+                    }
+                });
+        mTvHeader = findViewById(R.id.tv_header);
         NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily(day)
                 .subscribeOn(Schedulers.io())
@@ -371,19 +392,19 @@ public class FlowActivity extends AppCompatActivity {
                 .subscribe(daily -> {
                             ivHeader.setTag(daily.getFenxiang_img());
                             Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE, false);
-                            tvHeader.setText(daily.getContent());
-                            tvHeader.setTag(daily.getNote());
-                            tvHeader.setVisibility(View.VISIBLE);
+                            mTvHeader.setText(daily.getContent());
+                            mTvHeader.setTag(daily.getNote());
+                            mTvHeader.setVisibility(View.VISIBLE);
                         }
                         , Throwable::printStackTrace);
 
-        tvHeader.setOnClickListener(view -> {
-            Object tag = tvHeader.getTag();
+        mTvHeader.setOnClickListener(view -> {
+            Object tag = mTvHeader.getTag();
             if (tag instanceof String) {
                 String newStr = (String) tag;
-                String oldStr = tvHeader.getText().toString();
-                tvHeader.setText(newStr);
-                tvHeader.setTag(oldStr);
+                String oldStr = mTvHeader.getText().toString();
+                mTvHeader.setText(newStr);
+                mTvHeader.setTag(oldStr);
             }
         });
 
@@ -393,15 +414,50 @@ public class FlowActivity extends AppCompatActivity {
 
     }
 
-    private void initFabBottom(EmptyRecyclerView recyclerView) {
-        View fabBottom = findViewById(R.id.fab_bottom);
-        fabBottom.setOnClickListener(view -> recyclerView.smoothScrollToPosition(0));
+    private void resetTopColor(int color) {
+        // https://stackoverflow.com/questions/6539879/how-to-convert-a-color-integer-to-a-hex-string-in-android
+        // [Android Material Design - How to change background color of Toolbar after CollapsingToolbarLayout is collapsed - Stack Overflow](https://stackoverflow.com/questions/30619598/android-material-design-how-to-change-background-color-of-toolbar-after-collap)
+        String hexColor = String.format("#%06X", (0xFFFFFF & color));
+        ImmersionBar.with(mContext)
+                .statusBarColor(hexColor)
+                .navigationBarColor(hexColor)
+                .init();
+    }
+
+    private void initAppBarLayout() {
         mAppBarLayout = findViewById(R.id.app_bar);
         mAppBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
-            int totalScrollRange = appBarLayout1.getTotalScrollRange();
-            float offset = verticalOffset * 1.0f / totalScrollRange;
-            fabBottom.setScaleX(offset);
-            fabBottom.setScaleY(offset);
+            if (Math.abs(verticalOffset) == mAppBarLayout.getTotalScrollRange()) {
+                //Collapsed
+                if (mTvHeader.getVisibility() == View.GONE) {
+                    return;
+                }
+                mTvHeader.animate().alpha(0.0f)
+                        .setDuration(300)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                mTvHeader.setVisibility(View.GONE);
+                            }
+                        })
+                        .start();
+            } else {
+                //Expanded
+                if (mTvHeader.getVisibility() == View.VISIBLE) {
+                    return;
+                }
+                mTvHeader.setVisibility(View.VISIBLE);
+                mTvHeader.animate().alpha(1.0f)
+                        .setDuration(300)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                            }
+                        })
+                        .start();
+            }
         });
     }
 
