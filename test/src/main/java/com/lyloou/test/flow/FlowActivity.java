@@ -3,9 +3,11 @@ package com.lyloou.test.flow;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -16,11 +18,11 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,6 +55,7 @@ import io.reactivex.schedulers.Schedulers;
 public class FlowActivity extends AppCompatActivity {
     private static final String EXTRA_ID = "id";
     private static final String EXTRA_DAY = "day";
+    public static final String ACTION_REFRESH = "refresh";
     private Activity mContext;
     private FlowAdapter mAdapter;
     private FlowDay mFlowDay;
@@ -82,7 +85,69 @@ public class FlowActivity extends AppCompatActivity {
         setContentView(R.layout.activity_flow);
         initData();
         initView();
-        Log.i(TAG, "onCreate: day=" + getIntent().getStringExtra(EXTRA_DAY));
+        initReceiver();
+    }
+
+    private void initReceiver() {
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(getReceiver(), getIntentFilter());
+    }
+
+    private void sendRefreshBroadcastReceiver() {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_REFRESH);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+    }
+
+    private BroadcastReceiver getReceiver() {
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent == null || intent.getAction() == null) {
+                    return;
+                }
+                switch (intent.getAction()) {
+                    case ACTION_REFRESH:
+                        reloadDataAndUI();
+                        break;
+                }
+            }
+        };
+    }
+
+    private boolean isFront = false;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isFront = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isFront = false;
+    }
+
+    private IntentFilter getIntentFilter() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_REFRESH);
+        return intentFilter;
+    }
+
+    private void reloadDataAndUI() {
+        if (isFront) {
+            return;
+        }
+        reloadAllDataAndUI();
+    }
+
+    private void reloadAllDataAndUI() {
+        consumeCursorById(mFlowDay.getId(), cursor -> {
+            String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
+            mFlowItems.clear();
+            mFlowItems.addAll(FlowItemHelper.fromJsonArray(items));
+            updateUI();
+        });
     }
 
     private void initData() {
@@ -138,11 +203,6 @@ public class FlowActivity extends AppCompatActivity {
     private void initAttachView() {
         findViewById(R.id.tv_add_item).setOnClickListener(v -> addNewItem());
         findViewById(R.id.tv_to_list).setOnClickListener(v -> toList());
-        Uview.doWhenSoftKeyboardChanged(this, show -> {
-            if (show) {
-                mAppBarLayout.setExpanded(false, true);
-            }
-        });
     }
 
     private void toList() {
@@ -193,6 +253,7 @@ public class FlowActivity extends AppCompatActivity {
         SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
         sd.update(DbHelper.TABLE_NAME, getContentValues(), "id=?", new String[]{String.valueOf(mFlowDay.getId())});
         sd.close();
+        sendRefreshBroadcastReceiver();
     };
 
     private Handler mHandler = new Handler();
@@ -245,6 +306,13 @@ public class FlowActivity extends AppCompatActivity {
                 item.setContent(String.valueOf(s));
                 updateDb();
             }
+
+            @Override
+            public void onEditTextFocused(boolean hasFocus, FlowItem item) {
+                if (hasFocus) {
+                    mAppBarLayout.setExpanded(false, true);
+                }
+            }
         };
     }
 
@@ -288,7 +356,7 @@ public class FlowActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        Uview.initStatusBar(this, R.color.colorAccent);
+//        Uview.initStatusBar(this, R.color.colorAccent);
 
         ImageView ivHeader = findViewById(R.id.iv_header);
         Glide.with(mContext)
@@ -360,12 +428,7 @@ public class FlowActivity extends AppCompatActivity {
                 updateDb(true);
                 break;
             case R.id.menu_recover:
-                consumeCursorById(mFlowDay.getId(), cursor -> {
-                    String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
-                    mFlowItems.clear();
-                    mFlowItems.addAll(FlowItemHelper.fromJsonArray(items));
-                    updateUI();
-                });
+                reloadAllDataAndUI();
                 break;
             case R.id.menu_clear:
                 mFlowItems.clear();

@@ -104,6 +104,7 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
         };
         editText.setOnFocusChangeListener((v, hasFocus) -> {
+            mItemListener.onEditTextFocused(hasFocus, item);
             if (hasFocus) {
                 editText.addTextChangedListener(watcher);
             } else {
@@ -142,6 +143,8 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onClickTimeEnd(FlowItem item);
 
         void onTextChanged(FlowItem item, CharSequence s);
+
+        void onEditTextFocused(boolean hasFocus, FlowItem item);
     }
 
     private static class FlowHolder extends RecyclerView.ViewHolder {
