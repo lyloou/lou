@@ -6,12 +6,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -39,7 +37,6 @@ import com.bumptech.glide.request.target.ImageViewTarget;
 import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
-import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.glide.PaletteBitmap;
@@ -150,7 +147,7 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     private void reloadAllDataAndUI() {
-        consumeCursorById(mFlowDay.getId(), cursor -> {
+        DbUtil.consumeCursorById(this, mFlowDay.getId(), cursor -> {
             String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
             mFlowItems.clear();
             mFlowItems.addAll(FlowItemHelper.fromJsonArray(items));
@@ -161,24 +158,24 @@ public class FlowActivity extends AppCompatActivity {
     private void initData() {
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {
-            consumeCursorById(id, this::fillData);
+            DbUtil.consumeCursorById(this, id, this::fillData);
             return;
         }
 
         String day = getIntent().getStringExtra(EXTRA_DAY);
         if (!TextUtils.isEmpty(day)) {
-            consumeCursorByDay(day, this::fillData);
+            DbUtil.consumeCursorByDay(this, day, this::fillData);
             return;
         }
 
         // new FlowDay with today
         String today = Utime.today();
-        consumeCursorByDay(today, cursor -> {
+        DbUtil.consumeCursorByDay(this, today, cursor -> {
             int count = cursor.getCount();
             if (count == 0) {
                 FlowDay flowDay = new FlowDay();
                 flowDay.setDay(today);
-                long lId = insertFlowDayToDb(flowDay);
+                long lId = DbUtil.insertFlowDayToDb(this, flowDay);
                 flowDay.setId((int) lId);
                 mFlowDay = flowDay;
                 mFlowDay.setItems(mFlowItems);
@@ -203,7 +200,7 @@ public class FlowActivity extends AppCompatActivity {
 
     private void initView() {
         initTopPart();
-        EmptyRecyclerView recyclerView = initRecycleView();
+        initRecycleView();
         initAppBarLayout();
         initAttachView();
     }
@@ -258,9 +255,7 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     private Runnable updateDbTask = () -> {
-        SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
-        sd.update(DbHelper.TABLE_NAME, getContentValues(), "id=?", new String[]{String.valueOf(mFlowDay.getId())});
-        sd.close();
+        DbUtil.getUpdateFlowDayConsumer(mContext).accept(mFlowDay);
         sendRefreshBroadcastReceiver();
     };
 
@@ -496,42 +491,6 @@ public class FlowActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    private long insertFlowDayToDb(FlowDay flowDay) {
-        SQLiteDatabase sd = new DbHelper(this).getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DbHelper.COL_DAY, flowDay.getDay());
-        contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJsonArray(flowDay.getItems()));
-        long id = sd.insert(DbHelper.TABLE_NAME, null, contentValues);
-        sd.close();
-        return id;
-    }
-
-    private void consumeCursorByDay(String day, Consumer<Cursor> consumer) {
-        SQLiteDatabase sd = new DbHelper(this).getReadableDatabase();
-        Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where day = ?", new String[]{day});
-        cursor.moveToFirst();
-        consumer.accept(cursor);
-        cursor.close();
-        sd.close();
-    }
-
-    private void consumeCursorById(int id, Consumer<Cursor> consumer) {
-        SQLiteDatabase sd = new DbHelper(this).getReadableDatabase();
-        Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where id = ?", new String[]{"" + id});
-        cursor.moveToFirst();
-        consumer.accept(cursor);
-        cursor.close();
-        sd.close();
-    }
-
-    @NonNull
-    private ContentValues getContentValues() {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DbHelper.COL_DAY, mFlowDay.getDay());
-        contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJsonArray(mFlowDay.getItems()));
-        return contentValues;
-    }
 
     @Override
     public void onBackPressed() {

@@ -5,31 +5,46 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 
-public class DbHelper extends SQLiteOpenHelper {
-    public final static int DB_VERSION = 1;
-    public final static String DB_NAME = "flow_time.db";
-    public final static String TABLE_NAME = "flow_time";
-    public final static String COL_ID = "id";
-    public final static String COL_DAY = "day";
-    public final static String COL_ITEMS = "items";
+class DbHelper extends SQLiteOpenHelper {
+    private final static int DB_VERSION = 2;
+    final static String DB_NAME = "flow_time.db";
+    final static String TABLE_NAME = "flow_time";
+    final static String COL_ID = "id";
+    final static String COL_DAY = "day";
+    final static String COL_ITEMS = "items";
+    final static String COL_IS_DISABLED = "is_disabled";
 
-    public DbHelper(@Nullable Context context) {
+    private final static String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ( " +
+            COL_ID + "  INTEGER NOT NULL, " +
+            COL_DAY + "  TEXT(20) NOT NULL, " +
+            COL_ITEMS + " TEXT(0), " +
+            COL_IS_DISABLED + " INTEGER DEFAULT 0, " +
+            "  PRIMARY KEY (id) " +
+            ");";
+
+    private final static String CREATE_INDEX = "" +
+            "CREATE INDEX idx_day " +
+            "ON " + TABLE_NAME + " ( " +
+            "  " + COL_DAY + " COLLATE BINARY DESC " +
+            ");";
+
+    DbHelper(@Nullable Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "CREATE TABLE " + TABLE_NAME + " ( " +
-                COL_ID + "  INTEGER NOT NULL, " +
-                COL_DAY + "  TEXT(20) NOT NULL, " +
-                COL_ITEMS + " TEXT(0), " +
-                "  PRIMARY KEY (id) " +
-                ");";
-        db.execSQL(sql);
+        db.execSQL(CREATE_TABLE);
+        db.execSQL(CREATE_INDEX);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        switch (oldVersion) {
+            case 1:
+                db.execSQL(CREATE_INDEX);
+                db.execSQL("alter table " + TABLE_NAME + " add column " + COL_IS_DISABLED + " integer DEFAULT 0 ");
+            default:
+        }
     }
 }

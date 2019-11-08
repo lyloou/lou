@@ -19,8 +19,6 @@ package com.lyloou.test.flow;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -41,7 +39,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
-import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uanimation;
@@ -82,7 +79,7 @@ public class FlowListActivity extends AppCompatActivity {
 
 
     private void initData() {
-        consumeCursorByDay(cursor -> {
+        DbUtil.consumeCursorByDay(this, cursor -> {
             FlowDay fd = new FlowDay();
             int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
             String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
@@ -93,17 +90,6 @@ public class FlowListActivity extends AppCompatActivity {
         Collections.sort(mFlowDays, (o1, o2) -> -o1.getDay().compareTo(o2.getDay()));
     }
 
-    private void consumeCursorByDay(Consumer<Cursor> consumer) {
-        SQLiteDatabase sd = new DbHelper(this).getReadableDatabase();
-        Cursor cursor = sd.rawQuery("select id,day from " + DbHelper.TABLE_NAME, null);
-        if (cursor.moveToFirst()) {
-            do {
-                consumer.accept(cursor);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        sd.close();
-    }
 
     private void initView() {
         initTopPart();
@@ -130,7 +116,7 @@ public class FlowListActivity extends AppCompatActivity {
 
     enum OperateType {
         ONLY_COPY("复制"),
-        COPY_TO_WPS("复制到便签"),
+        COPY_TO_WPS("复制&转到便签"),
         DELETE("删除此项"),
         ;
         String title;
@@ -159,9 +145,12 @@ public class FlowListActivity extends AppCompatActivity {
                 .setItems(OperateType.toStrArray(), (dialog, which) -> {
                     switch (OperateType.indexOf(which)) {
                         case DELETE:
-                            mFlowDayStack.add(flowDay);
-                            consumeCursorByDayForDelete(flowDay.getDay(), count -> mAdapter.remove(flowDay));
-                            mAdapter.notifyDataSetChanged();
+                            if (DbUtil.toggleDisabledFlowDay(mContext, flowDay.getDay(), true)) {
+                                mFlowDayStack.add(flowDay);
+                                mAdapter.remove(flowDay);
+                                mAdapter.notifyDataSetChanged();
+                                Utoast.show(mContext, "已删除");
+                            }
                             break;
                         case ONLY_COPY:
                             FlowUtil.doCopy(mContext, flowDay, false);
@@ -195,9 +184,7 @@ public class FlowListActivity extends AppCompatActivity {
 
         View fab = findViewById(R.id.fab);
         fab.startAnimation(Uanimation.getRotateAnimation(3600));
-        fab.setOnClickListener(view -> {
-            toFlowActivity();
-        });
+        fab.setOnClickListener(view -> toFlowActivity());
 
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
@@ -280,13 +267,6 @@ public class FlowListActivity extends AppCompatActivity {
         }
     }
 
-    private void consumeCursorByDayForDelete(String day, Consumer<Integer> consumer) {
-        SQLiteDatabase sd = new DbHelper(this).getReadableDatabase();
-        int delete = sd.delete(DbHelper.TABLE_NAME, "day = ?", new String[]{day});
-        consumer.accept(delete);
-        sd.close();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_flow_list, menu);
@@ -318,7 +298,10 @@ public class FlowListActivity extends AppCompatActivity {
             Utoast.show(mContext, "栈里已经没有了");
             return;
         }
-        mAdapter.add(mFlowDayStack.pop());
+        FlowDay flowDay = mFlowDayStack.pop();
+        mFlowDays.add(flowDay);
+        DbUtil.toggleDisabledFlowDay(mContext, flowDay.getDay(), false);
+        Collections.sort(mFlowDays, (o1, o2) -> -o1.getDay().compareTo(o2.getDay()));
         mAdapter.notifyDataSetChanged();
     }
 
