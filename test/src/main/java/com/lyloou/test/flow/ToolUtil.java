@@ -8,8 +8,11 @@ import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Usystem;
 import com.lyloou.test.util.Uview;
 
-public class FlowUtil {
+public class ToolUtil {
     public static void doCopy(Activity context, FlowDay flowDay, boolean jumpNow) {
+        if (flowDay == null) {
+            return;
+        }
         String content = flowDay.getDay()
                 .concat("\n")
                 .concat(FlowItemHelper.toPrettyText(flowDay.getItems()));

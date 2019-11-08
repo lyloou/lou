@@ -49,12 +49,13 @@ import com.lyloou.test.util.Usystem;
 import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Uview;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.lyloou.test.flow.TransferUtil.sortItems;
 
 public class FlowActivity extends AppCompatActivity {
     private static final String EXTRA_ID = "id";
@@ -337,19 +338,6 @@ public class FlowActivity extends AppCompatActivity {
         updateDb();
     }
 
-    private void sortItems(List<FlowItem> items) {
-        Collections.sort(items, (o1, o2) -> {
-            if (o1 == null || o2 == null) {
-                return -1;
-            }
-            String o1TimeStart = o1.getTimeStart();
-            String o2TimeStart = o2.getTimeStart();
-            if (o1TimeStart == null || o2TimeStart == null) {
-                return -1;
-            }
-            return o2TimeStart.compareTo(o1TimeStart);
-        });
-    }
 
     @SuppressLint("CheckResult")
     private void initTopPart() {
@@ -465,7 +453,7 @@ public class FlowActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_copy:
-                FlowUtil.doCopy(mContext, mFlowDay, false);
+                ToolUtil.doCopy(mContext, mFlowDay, false);
                 break;
             case R.id.menu_share:
                 String content = FlowItemHelper.toPrettyText(mFlowDay.getItems());

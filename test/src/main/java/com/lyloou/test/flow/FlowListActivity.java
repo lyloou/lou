@@ -131,10 +131,10 @@ public class FlowListActivity extends AppCompatActivity {
                                     }
                                     break;
                                 case ONLY_COPY:
-                                    FlowUtil.doCopy(mContext, flowDay, false);
+                                    ToolUtil.doCopy(mContext, TransferUtil.getFlowDayByDay(mContext, flowDay.getDay()), false);
                                     break;
                                 case COPY_TO_WPS:
-                                    FlowUtil.doCopy(mContext, flowDay, true);
+                                    ToolUtil.doCopy(mContext, TransferUtil.getFlowDayByDay(mContext, flowDay.getDay()), true);
                                     delete(flowDay);
                                     break;
                                 case RECOVER:
