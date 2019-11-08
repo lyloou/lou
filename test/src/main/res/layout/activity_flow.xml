@@ -84,7 +84,7 @@
                 android:gravity="center"
                 android:padding="16dp"
                 android:text="列表"
-                android:textColor="@color/gray" />
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/tv_add_item"
@@ -96,7 +96,7 @@
                 android:gravity="center"
                 android:padding="16dp"
                 android:text="添加"
-                android:textColor="@color/gray" />
+                android:textColor="@color/white" />
 
             <View
                 android:layout_width="match_parent"

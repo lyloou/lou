@@ -362,7 +362,7 @@ public class FlowActivity extends AppCompatActivity {
                         super.view.setBackground(new BitmapDrawable(getResources(), resource.bitmap));
                         Palette p = resource.palette;
                         int color = p.getMutedColor(ContextCompat.getColor(mContext, R.color.colorAccent));
-                        resetTopColor(color);
+                        resetThemeColor(color);
                     }
                 });
         mTvHeader = findViewById(R.id.tv_header);
@@ -395,7 +395,10 @@ public class FlowActivity extends AppCompatActivity {
 
     }
 
-    private void resetTopColor(int color) {
+    private void resetThemeColor(int color) {
+        findViewById(R.id.tv_add_item).setBackgroundColor(color);
+        findViewById(R.id.tv_to_list).setBackgroundColor(color);
+
         // https://stackoverflow.com/questions/6539879/how-to-convert-a-color-integer-to-a-hex-string-in-android
         // [Android Material Design - How to change background color of Toolbar after CollapsingToolbarLayout is collapsed - Stack Overflow](https://stackoverflow.com/questions/30619598/android-material-design-how-to-change-background-color-of-toolbar-after-collap)
         String hexColor = String.format("#%06X", (0xFFFFFF & color));
