@@ -39,7 +39,6 @@ import com.lyloou.test.common.TitleViewPagerAdapter;
 import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Uscreen;
-import com.lyloou.test.util.Utoast;
 import com.lyloou.test.util.Uview;
 
 import java.util.Set;
@@ -126,9 +125,7 @@ public class FlowListActivity extends AppCompatActivity {
                         .setItems(OperateType.toStrArray(), (dialog, which) -> {
                             switch (OperateType.indexOf(which)) {
                                 case DELETE:
-                                    if (delete(flowDay)) {
-                                        Utoast.show(mContext, "已删除");
-                                    }
+                                    delete(flowDay);
                                     break;
                                 case ONLY_COPY:
                                     ToolUtil.doCopy(mContext, TransferUtil.getFlowDayByDay(mContext, flowDay.getDay()), false);
