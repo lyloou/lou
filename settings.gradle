@@ -1,2 +1,3 @@
 //include ':demo', ':test', ':java', ':smoothlayout', ':loudemo', ':loulib', ':sdkdemo', ':weex'
 include ':test'
+include ':smoothlayout'

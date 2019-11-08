@@ -36,10 +36,10 @@ class DbUtil {
         sd.close();
     }
 
-    static void consumeCursorByDay(Context context, Consumer<Cursor> consumer) {
+    static void consumeCursorByDay(Context context, boolean isDisabled, Consumer<Cursor> consumer) {
         SQLiteDatabase sd = new DbHelper(context).getReadableDatabase();
-        Cursor cursor = sd.rawQuery("select id,day from " + DbHelper.TABLE_NAME +
-                " where is_disabled=0 ORDER BY day desc", null);
+        Cursor cursor = sd.rawQuery("select id,day,is_disabled from " + DbHelper.TABLE_NAME +
+                " where is_disabled=" + (isDisabled ? 1 : 0) + " ORDER BY day desc", null);
         if (cursor.moveToFirst()) {
             do {
                 consumer.accept(cursor);
@@ -67,5 +67,13 @@ class DbUtil {
         int update = sd.update(DbHelper.TABLE_NAME, contentValues, "day=?", new String[]{day});
         sd.close();
         return update >= 0;
+    }
+
+    static boolean deepDelete(Context context, String day, Consumer<Integer> consumer) {
+        SQLiteDatabase sd = new DbHelper(context).getReadableDatabase();
+        int delete = sd.delete(DbHelper.TABLE_NAME, "day = ?", new String[]{day});
+        consumer.accept(delete);
+        sd.close();
+        return delete >= 0;
     }
 }

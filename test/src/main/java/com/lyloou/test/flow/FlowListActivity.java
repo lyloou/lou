@@ -17,40 +17,33 @@
 package com.lyloou.test.flow;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
-import com.lyloou.test.common.ItemOffsetDecoration;
+import com.lyloou.test.common.TitleViewPagerAdapter;
 import com.lyloou.test.common.webview.NormalWebViewActivity;
-import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 import com.lyloou.test.util.Uview;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Author:    Lou
@@ -61,10 +54,10 @@ import java.util.Stack;
  */
 public class FlowListActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 100;
-    private List<FlowDay> mFlowDays = new ArrayList<>();
+    public static final String IMG_TOP_BG = "https://ws1.sinaimg.cn/large/610dc034gy1fhupzs0awwj20u00u0tcf.jpg";
     private Activity mContext;
-    private Adapter mAdapter;
-    Stack<FlowDay> mFlowDayStack = new Stack<>();
+    private Adapter mActiveAdapter;
+    private Adapter mDisableddapter;
 
 
     @Override
@@ -72,32 +65,55 @@ public class FlowListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mContext = this;
         setContentView(R.layout.activity_flow_list);
-
-        initData();
         initView();
-    }
-
-
-    private void initData() {
-        DbUtil.consumeCursorByDay(this, cursor -> {
-            FlowDay fd = new FlowDay();
-            int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
-            String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
-            fd.setId(id);
-            fd.setDay(day);
-            mFlowDays.add(fd);
-        });
-        Collections.sort(mFlowDays, (o1, o2) -> -o1.getDay().compareTo(o2.getDay()));
     }
 
 
     private void initView() {
         initTopPart();
+        showViewpager();
+    }
 
-        RecyclerView recyclerView = findViewById(R.id.rv_main);
+    private void showViewpager() {
 
-        mAdapter = new Adapter(this, mFlowDays);
-        mAdapter.setListener(new Listener() {
+        Part part1 = new Part(mContext, "日前的", getData(false));
+        Part part2 = new Part(mContext, "回收站", getData(true));
+        mActiveAdapter = part1.getAdapter();
+        mDisableddapter = part2.getAdapter();
+
+        initListener(part1.getAdapter());
+        initListener(part2.getAdapter());
+
+        TitleViewPagerAdapter pagerAdapter = new TitleViewPagerAdapter();
+        pagerAdapter.addView(part1.getTitle(), part1.getView());
+        pagerAdapter.addView(part2.getTitle(), part2.getView());
+
+        ViewPager viewPager = findViewById(R.id.vp_flow);
+        viewPager.setAdapter(pagerAdapter);
+
+        TabLayout tabLayout = findViewById(R.id.tablyt_flow);
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+    }
+
+    private Set<FlowDay> getData(boolean isDisabled) {
+        Set<FlowDay> sets = new TreeSet<>((o1, o2) -> -o1.getDay().compareTo(o2.getDay()));
+
+        DbUtil.consumeCursorByDay(this, isDisabled, cursor -> {
+            FlowDay fd = new FlowDay();
+            int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
+            String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
+            fd.setId(id);
+            fd.setDay(day);
+            sets.add(fd);
+        });
+        return sets;
+    }
+
+
+    private void initListener(Adapter adapter) {
+        adapter.setListener(new Listener() {
             @Override
             public void onItemClicked(FlowDay flowDay) {
                 FlowActivity.start(mContext, flowDay.getDay());
@@ -105,18 +121,38 @@ public class FlowListActivity extends AppCompatActivity {
 
             @Override
             public void onItemLongClicked(FlowDay flowDay) {
-                doOnItemLongClicked(flowDay);
+                new AlertDialog.Builder(mContext)
+                        .setTitle("操作")
+                        .setItems(OperateType.toStrArray(), (dialog, which) -> {
+                            switch (OperateType.indexOf(which)) {
+                                case DELETE:
+                                    if (delete(flowDay)) {
+                                        Utoast.show(mContext, "已删除");
+                                    }
+                                    break;
+                                case ONLY_COPY:
+                                    FlowUtil.doCopy(mContext, flowDay, false);
+                                    break;
+                                case COPY_TO_WPS:
+                                    FlowUtil.doCopy(mContext, flowDay, true);
+                                    delete(flowDay);
+                                    break;
+                                case RECOVER:
+                                    unDelete(flowDay);
+                                default:
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
     }
 
 
     enum OperateType {
         ONLY_COPY("复制"),
-        COPY_TO_WPS("复制&转到便签"),
+        RECOVER("恢复"),
+        COPY_TO_WPS("一键复制"),
         DELETE("删除此项"),
         ;
         String title;
@@ -139,31 +175,26 @@ public class FlowListActivity extends AppCompatActivity {
         }
     }
 
-    private void doOnItemLongClicked(FlowDay flowDay) {
-        new AlertDialog.Builder(mContext)
-                .setTitle("操作")
-                .setItems(OperateType.toStrArray(), (dialog, which) -> {
-                    switch (OperateType.indexOf(which)) {
-                        case DELETE:
-                            if (DbUtil.toggleDisabledFlowDay(mContext, flowDay.getDay(), true)) {
-                                mFlowDayStack.add(flowDay);
-                                mAdapter.remove(flowDay);
-                                mAdapter.notifyDataSetChanged();
-                                Utoast.show(mContext, "已删除");
-                            }
-                            break;
-                        case ONLY_COPY:
-                            FlowUtil.doCopy(mContext, flowDay, false);
-                            break;
-                        case COPY_TO_WPS:
-                            FlowUtil.doCopy(mContext, flowDay, true);
-                            break;
-                        default:
-                    }
-                })
-                .create()
-                .show();
+    private boolean delete(FlowDay flowDay) {
+        if (DbUtil.toggleDisabledFlowDay(mContext, flowDay.getDay(), true)) {
+            mActiveAdapter.remove(flowDay);
+            mActiveAdapter.notifyDataSetChanged();
+            mDisableddapter.add(flowDay);
+            mDisableddapter.notifyDataSetChanged();
+            return true;
+        }
+        return false;
+    }
 
+    private boolean unDelete(FlowDay flowDay) {
+        if (DbUtil.toggleDisabledFlowDay(mContext, flowDay.getDay(), false)) {
+            mActiveAdapter.add(flowDay);
+            mActiveAdapter.notifyDataSetChanged();
+            mDisableddapter.remove(flowDay);
+            mDisableddapter.notifyDataSetChanged();
+            return true;
+        }
+        return false;
     }
 
     private void initTopPart() {
@@ -175,96 +206,16 @@ public class FlowListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         Uscreen.setToolbarMarginTop(this, toolbar);
         Glide.with(getApplicationContext())
-                .load("https://ws1.sinaimg.cn/large/610dc034ly1fp9qm6nv50j20u00miacg.jpg")
+                .load(IMG_TOP_BG)
                 .centerCrop()
                 .into((ImageView) findViewById(R.id.iv_header));
 
         TextView tvHeader = findViewById(R.id.tv_header);
         tvHeader.setText("大写的时间");
 
-        View fab = findViewById(R.id.fab);
-        fab.startAnimation(Uanimation.getRotateAnimation(3600));
-        fab.setOnClickListener(view -> toFlowActivity());
-
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
-    }
-
-    interface Listener {
-        void onItemClicked(FlowDay flowDay);
-
-        void onItemLongClicked(FlowDay flowDay);
-    }
-
-    static class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
-        final List<FlowDay> list;
-        final Context context;
-        Listener mListener;
-
-        public void setListener(Listener mListener) {
-            this.mListener = mListener;
-        }
-
-        Adapter(Context context, List<FlowDay> list) {
-            this.context = context;
-            this.list = list;
-        }
-
-        public void remove(FlowDay flowDay) {
-            if (list == null) {
-                return;
-            }
-            list.remove(flowDay);
-        }
-
-        public void add(FlowDay flowDay) {
-            if (list == null) {
-                return;
-            }
-            list.add(flowDay);
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_flow_list, null);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            FlowDay flowDay = list.get(position);
-            holder.tvTitle.setText(flowDay.getDay());
-            holder.view.setOnClickListener(v -> {
-                if (mListener == null) {
-                    return;
-                }
-                mListener.onItemClicked(flowDay);
-            });
-            holder.view.setOnLongClickListener(view -> {
-                if (mListener == null) {
-                    return false;
-                }
-                mListener.onItemLongClicked(flowDay);
-                return false;
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return list.size();
-        }
-
-        class ViewHolder extends RecyclerView.ViewHolder {
-            TextView tvTitle;
-            View view;
-
-            ViewHolder(View itemView) {
-                super(itemView);
-                view = itemView;
-                tvTitle = itemView.findViewById(R.id.tv_one);
-            }
-        }
     }
 
     @Override
@@ -283,26 +234,11 @@ public class FlowListActivity extends AppCompatActivity {
                         v -> NormalWebViewActivity.newInstance(mContext, "https://kf.qq.com/touch/sappfaq/180705A3IB3Y1807056fMr6V.html"));
                 snackbar.show();
                 break;
-            case R.id.menu_recover_last_one:
-                recoverLastOne();
-                break;
             case R.id.menu_today_flow_time:
                 toFlowActivity();
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void recoverLastOne() {
-        if (mFlowDayStack.empty()) {
-            Utoast.show(mContext, "栈里已经没有了");
-            return;
-        }
-        FlowDay flowDay = mFlowDayStack.pop();
-        mFlowDays.add(flowDay);
-        DbUtil.toggleDisabledFlowDay(mContext, flowDay.getDay(), false);
-        Collections.sort(mFlowDays, (o1, o2) -> -o1.getDay().compareTo(o2.getDay()));
-        mAdapter.notifyDataSetChanged();
     }
 
 
@@ -316,15 +252,15 @@ public class FlowListActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             FlowDay flowDay = (FlowDay) data.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
             if (isNotContain(flowDay)) {
-                mFlowDays.add(flowDay);
-                mAdapter.notifyDataSetChanged();
+                mActiveAdapter.getList().add(flowDay);
+                mActiveAdapter.notifyDataSetChanged();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     private boolean isNotContain(FlowDay flowDay) {
-        for (FlowDay day : mFlowDays) {
+        for (FlowDay day : mActiveAdapter.getList()) {
             if (flowDay != null && flowDay.getDay().equals(day.getDay())) {
                 return false;
             }

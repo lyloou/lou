@@ -11,6 +11,8 @@ public class FlowDay implements Serializable {
     private Integer id; // 20190921
     @SerializedName("day")
     private String day; // 20190921
+    @SerializedName("is_disabled")
+    private Integer isDisabled; // 20190921
     @SerializedName("items")
     private List<FlowItem> items;
 
@@ -36,5 +38,13 @@ public class FlowDay implements Serializable {
 
     public void setDay(String day) {
         this.day = day;
+    }
+
+    public Integer getIsDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(Integer isDisabled) {
+        this.isDisabled = isDisabled;
     }
 }
