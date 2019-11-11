@@ -76,6 +76,18 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 mItemListener.onClickTimeEnd(item);
             }
         });
+        holder.tvTimeStart.setOnLongClickListener(view -> {
+            if (mItemListener != null) {
+                mItemListener.onLongClickTimeStart(item);
+            }
+            return true;
+        });
+        holder.tvTimeEnd.setOnLongClickListener(view -> {
+            if (mItemListener != null) {
+                mItemListener.onLongClickTimeEnd(item);
+            }
+            return true;
+        });
         holder.view.setOnLongClickListener(v -> {
             if (mItemListener != null) {
                 mItemListener.onLongClickItem(item);
@@ -141,6 +153,10 @@ class FlowAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onClickTimeStart(FlowItem item);
 
         void onClickTimeEnd(FlowItem item);
+
+        void onLongClickTimeStart(FlowItem item);
+
+        void onLongClickTimeEnd(FlowItem item);
 
         void onTextChanged(FlowItem item, CharSequence s);
 

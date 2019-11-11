@@ -72,6 +72,20 @@ public class FlowActivity extends AppCompatActivity {
     // 每次都是插入到第一个，用 LinkedList 效率应该会更好（https://snailclimb.top/JavaGuide/#/java/collection/Java集合框架常见面试题?id=arraylist-与-linkedlist-区别）
     private List<FlowItem> mFlowItems = new LinkedList<>();
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null || intent.getAction() == null) {
+                return;
+            }
+            switch (intent.getAction()) {
+                case ACTION_REFRESH:
+                    reloadDataAndUI();
+                    break;
+            }
+        }
+    };
+
     public static void start(Context context, int id) {
         Intent intent = new Intent(context, FlowActivity.class);
         intent.putExtra(EXTRA_ID, id);
@@ -95,7 +109,7 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     private void initReceiver() {
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(getReceiver(), getIntentFilter());
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver, getIntentFilter());
     }
 
     private void sendRefreshBroadcastReceiver() {
@@ -104,21 +118,6 @@ public class FlowActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
-    private BroadcastReceiver getReceiver() {
-        return new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent == null || intent.getAction() == null) {
-                    return;
-                }
-                switch (intent.getAction()) {
-                    case ACTION_REFRESH:
-                        reloadDataAndUI();
-                        break;
-                }
-            }
-        };
-    }
 
     private boolean isFront = false;
 
@@ -132,6 +131,12 @@ public class FlowActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         isFront = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceiver);
+        super.onDestroy();
     }
 
     private IntentFilter getIntentFilter() {
@@ -303,6 +308,26 @@ public class FlowActivity extends AppCompatActivity {
                     updateDbAndUI();
                 };
                 Udialog.showTimePicker(mContext, listener, Utime.getValidTime(item.getTimeEnd()));
+            }
+
+            @Override
+            public void onLongClickTimeStart(FlowItem item) {
+                Udialog.alert(mContext, "清空开始时间", result -> {
+                    if (result) {
+                        item.setTimeStart(null);
+                        updateDbAndUI();
+                    }
+                });
+            }
+
+            @Override
+            public void onLongClickTimeEnd(FlowItem item) {
+                Udialog.alert(mContext, "清空结束时间", result -> {
+                    if (result) {
+                        item.setTimeEnd(null);
+                        updateDbAndUI();
+                    }
+                });
             }
 
             @Override
