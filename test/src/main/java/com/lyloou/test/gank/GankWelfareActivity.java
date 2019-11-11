@@ -174,7 +174,7 @@ public class GankWelfareActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_gank_welfare);
-        mWelfareAdapter = new WelfareAdapter(this, new ArrayList<>());
+        mWelfareAdapter = new WelfareAdapter(this);
         mWelfareAdapter.setTitle("福利岛");
         mWelfareAdapter.setOnItemClickListener(getOnItemClickListener());
         recyclerView.setAdapter(mWelfareAdapter);

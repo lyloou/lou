@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.util.Utime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class WelfareAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -44,9 +45,9 @@ class WelfareAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String mTitle;
     private int mMode; // 0:表示正常模式；1：表示多选模式；
 
-    WelfareAdapter(Context context, List<Welfare> list) {
+    WelfareAdapter(Context context) {
         mContext = context;
-        mList = list;
+        mList = new ArrayList<>();
     }
 
     public int getMode() {
