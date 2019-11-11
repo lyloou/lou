@@ -63,7 +63,6 @@ public class GankWelfareActivity extends AppCompatActivity {
     private static final String TAG = GankWelfareActivity.class.getSimpleName();
     public static final int NUMBER = 20;
     private int mPage = 1;
-    private final List<Welfare> mWelfareList = new ArrayList<>();
     private LinearLayout mLlytBottom;
     private SwipeRefreshLayout mRefreshLayout;
     private WelfareAdapter mWelfareAdapter;
@@ -175,7 +174,7 @@ public class GankWelfareActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         EmptyRecyclerView recyclerView = findViewById(R.id.erv_gank_welfare);
-        mWelfareAdapter = new WelfareAdapter(this, mWelfareList);
+        mWelfareAdapter = new WelfareAdapter(this, new ArrayList<>());
         mWelfareAdapter.setTitle("福利岛");
         mWelfareAdapter.setOnItemClickListener(getOnItemClickListener());
         recyclerView.setAdapter(mWelfareAdapter);
@@ -281,20 +280,6 @@ public class GankWelfareActivity extends AppCompatActivity {
         reloadData();
     }
 
-    private void reloadData() {
-        mLlytBottom.setVisibility(View.GONE);
-        mWelfareAdapter.clearAll();
-        mWelfareList.clear();
-        mPage = 1;
-        loadData(NUMBER, mPage, welfareList -> {
-            if (welfareList.size() < NUMBER) {
-                mWelfareAdapter.setMaxed(true);
-            }
-            mWelfareList.addAll(welfareList);
-            mWelfareAdapter.notifyDataSetChanged();
-            mRefreshLayout.setRefreshing(false);
-        });
-    }
 
     private void initTopView() {
         Toolbar toolbar = findViewById(R.id.toolbar_gank);
@@ -377,14 +362,29 @@ public class GankWelfareActivity extends AppCompatActivity {
                 });
     }
 
+    private void reloadData() {
+        mLlytBottom.setVisibility(View.GONE);
+        mWelfareAdapter.clearAll();
+        mWelfareAdapter.getList().clear();
+        mPage = 1;
+        loadData(NUMBER, mPage, welfareList -> {
+            if (welfareList.size() < NUMBER) {
+                mWelfareAdapter.setMaxed(true);
+            }
+            mWelfareAdapter.getList().addAll(welfareList);
+            mWelfareAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+        });
+    }
 
     private void loadMore() {
         loadData(NUMBER, ++mPage, welfareList -> {
             if (welfareList.size() < NUMBER) {
                 mWelfareAdapter.setMaxed(true);
             }
-            mWelfareList.addAll(welfareList);
-            mWelfareAdapter.notifyDataSetChanged();
+            int lastSize = mWelfareAdapter.getList().size();
+            mWelfareAdapter.getList().addAll(welfareList);
+            mWelfareAdapter.notifyItemRangeInserted(lastSize - 1, welfareList.size());
         });
     }
 
