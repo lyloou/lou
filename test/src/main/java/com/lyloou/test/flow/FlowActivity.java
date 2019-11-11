@@ -420,9 +420,27 @@ public class FlowActivity extends AppCompatActivity {
 
     }
 
+    // [Change int color opacity in java/android - Stack Overflow](https://stackoverflow.com/questions/28483497/change-int-color-opacity-in-java-android)
+    private int getTransparentColor(int color) {
+        int alpha = Color.alpha(color);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+
+        // Set alpha based on your logic, here I'm making it 25% of it's initial value.
+        alpha *= 0.55;
+
+        return Color.argb(alpha, red, green, blue);
+    }
+
     private void resetThemeColor(int color) {
+        int transparentColor = getTransparentColor(color);
+
         findViewById(R.id.tv_add_item).setBackgroundColor(color);
         findViewById(R.id.tv_to_list).setBackgroundColor(color);
+        findViewById(R.id.tv_header).setBackgroundColor(transparentColor);
+        findViewById(R.id.v_sep_1).setBackgroundColor(transparentColor);
+        findViewById(R.id.v_sep_2).setBackgroundColor(transparentColor);
 
         // https://stackoverflow.com/questions/6539879/how-to-convert-a-color-integer-to-a-hex-string-in-android
         // [Android Material Design - How to change background color of Toolbar after CollapsingToolbarLayout is collapsed - Stack Overflow](https://stackoverflow.com/questions/30619598/android-material-design-how-to-change-background-color-of-toolbar-after-collap)
@@ -441,6 +459,7 @@ public class FlowActivity extends AppCompatActivity {
                 if (mTvHeader.getVisibility() == View.GONE) {
                     return;
                 }
+
                 mTvHeader.animate().alpha(0.0f)
                         .setDuration(300)
                         .setListener(new AnimatorListenerAdapter() {

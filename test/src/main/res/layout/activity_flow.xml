@@ -35,7 +35,7 @@
             <TextView
                 android:id="@+id/tv_header"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?android:actionBarSize"
                 android:layout_gravity="bottom|center_horizontal"
                 android:background="@color/colorAccentTransparent"
                 android:gravity="center"
@@ -99,12 +99,14 @@
                 android:textColor="@color/white" />
 
             <View
+                android:id="@+id/v_sep_1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_below="@id/tv_to_list"
                 android:background="@color/colorAccentTransparent" />
 
             <View
+                android:id="@+id/v_sep_2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/colorAccentTransparent" />
