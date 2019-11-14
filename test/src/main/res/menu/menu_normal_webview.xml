@@ -29,5 +29,9 @@
         android:id="@+id/menu_open_with_browser"
         android:title="在浏览器中打开"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_toggle_orientation"
+        android:title="横竖屏切换"
+        app:showAsAction="never" />
 
 </menu>

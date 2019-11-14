@@ -29,6 +29,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.DownloadListener;
+import android.webkit.HttpAuthHandler;
 import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -38,7 +40,9 @@ import android.widget.Toast;
 
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.WebChromeClient;
+import com.just.agentweb.WebViewClient;
 import com.lyloou.test.R;
+import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Usp;
 import com.lyloou.test.util.Uview;
 
@@ -129,25 +133,8 @@ public class NormalWebViewActivity extends AppCompatActivity {
         mAgentWeb = AgentWeb.with(this)
                 .setAgentWebParent((LinearLayout) view, new LinearLayout.LayoutParams(-1, -1))
                 .useDefaultIndicator(getResources().getColor(R.color.colorAccent), 2)
-                .setWebChromeClient(new WebChromeClient() {
-                    @Override
-                    public void onReceivedTitle(WebView view, String title) {
-                        super.onReceivedTitle(view, title);
-                        mToolbar.setTitle(title);
-                    }
-
-                    @Override
-                    public void onProgressChanged(WebView view, int newProgress) {
-                        super.onProgressChanged(view, newProgress);
-
-                        // 记录历史
-                        if (!isScrolled && newProgress > 90) {
-                            int lastPosition = Usp.init(mContext).getInt(mUrl, 0);
-                            view.scrollTo(0, lastPosition);
-                            isScrolled = true;
-                        }
-                    }
-                })
+                .setWebViewClient(getWebViewClient())
+                .setWebChromeClient(getWebChromeClient())
                 .createAgentWeb()
                 .ready()
                 .go(mUrl);
@@ -157,35 +144,72 @@ public class NormalWebViewActivity extends AppCompatActivity {
         WebSettings webSettings = mAgentWeb.getAgentWebSettings().getWebSettings();
         webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         webSettings.setUseWideViewPort(true);
+        webSettings.setJavaScriptEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
 
         mAgentWeb.getWebCreator()
                 .getWebView()
-                .setDownloadListener((url1, userAgent, contentDisposition, mimeType, contentLength) ->
-                        runOnUiThread(() -> {
-                            //使用前先判断是否有读取、写入内存卡权限
-                            if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                                ActivityCompat.requestPermissions(mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE2);
-                            } else {
-                                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url1));
-                                request.setMimeType(mimeType);
-                                // https://stackoverflow.com/questions/33434532/android-webview-download-files-like-browsers-do/33501835
-                                //------------------------COOKIE!!------------------------
-                                String cookies = CookieManager.getInstance().getCookie(url1);
-                                request.addRequestHeader("cookie", cookies);
-                                //------------------------COOKIE!!------------------------
-                                request.addRequestHeader("User-Agent", userAgent);
-                                request.setDescription("Downloading file...");
-                                request.setTitle(URLUtil.guessFileName(url1, contentDisposition, mimeType));
-                                request.allowScanningByMediaScanner();
-                                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url1, contentDisposition, mimeType));
-                                downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                                downloadId = downloadManager.enqueue(request);
-                                Toast.makeText(getApplicationContext(), "正在下载文件", Toast.LENGTH_LONG).show();
-                            }
-                        }));
+                .setDownloadListener(getDownloadListener());
     }
+
+    private WebChromeClient getWebChromeClient() {
+        return new WebChromeClient() {
+            @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                mToolbar.setTitle(title);
+            }
+
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+
+                // 记录历史
+                if (!isScrolled && newProgress > 90) {
+                    int lastPosition = Usp.init(mContext).getInt(mUrl, 0);
+                    view.scrollTo(0, lastPosition);
+                    isScrolled = true;
+                }
+            }
+        };
+    }
+
+    private DownloadListener getDownloadListener() {
+        return (url1, userAgent, contentDisposition, mimeType, contentLength) ->
+                runOnUiThread(() -> {
+                    //使用前先判断是否有读取、写入内存卡权限
+                    if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE2);
+                    } else {
+                        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url1));
+                        request.setMimeType(mimeType);
+                        // https://stackoverflow.com/questions/33434532/android-webview-download-files-like-browsers-do/33501835
+                        //------------------------COOKIE!!------------------------
+                        String cookies = CookieManager.getInstance().getCookie(url1);
+                        request.addRequestHeader("cookie", cookies);
+                        //------------------------COOKIE!!------------------------
+                        request.addRequestHeader("User-Agent", userAgent);
+                        request.setDescription("Downloading file...");
+                        request.setTitle(URLUtil.guessFileName(url1, contentDisposition, mimeType));
+                        request.allowScanningByMediaScanner();
+                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url1, contentDisposition, mimeType));
+                        downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                        downloadId = downloadManager.enqueue(request);
+                        Toast.makeText(getApplicationContext(), "正在下载文件", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private WebViewClient getWebViewClient() {
+        return new WebViewClient() {
+            @Override
+            public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+                Udialog.showHttpAuthRequest(view, handler);
+            }
+        };
+    }
+
 
     private int count = 0;
     private Handler handler = new Handler();
@@ -370,6 +394,13 @@ public class NormalWebViewActivity extends AppCompatActivity {
                 copyString(mContext, url);
                 Toast.makeText(this, "复制成功", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.menu_toggle_orientation:
+                setRequestedOrientation(getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                );
+                break;
+            default:
         }
 
         return super.onOptionsItemSelected(item);

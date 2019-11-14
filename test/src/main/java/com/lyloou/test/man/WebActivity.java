@@ -23,6 +23,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
@@ -33,6 +34,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.webkit.HttpAuthHandler;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -45,6 +47,7 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.popview.Item;
 import com.lyloou.test.common.popview.MenuPopView;
 import com.lyloou.test.util.Uanimator;
+import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Unet;
 import com.lyloou.test.util.Usp;
 
@@ -169,7 +172,12 @@ public class WebActivity extends AppCompatActivity {
                     Uri uri = Uri.parse(mWvContent.getUrl());
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     startActivity(intent);
-                })
+                }),
+                new Item("横竖屏切换", v1 -> setRequestedOrientation(
+                        getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                                ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                                : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                ))
         ));
     }
 
@@ -203,6 +211,12 @@ public class WebActivity extends AppCompatActivity {
     private WebChromeClient getWebChromeClient() {
         return new WebChromeClient() {
             @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                mTvTitle.setText(view.getTitle());
+            }
+
+            @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
                 if (newProgress > 80) {
@@ -230,9 +244,8 @@ public class WebActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                mTvTitle.setText(view.getTitle());
+            public void onReceivedHttpAuthRequest(WebView view, HttpAuthHandler handler, String host, String realm) {
+                Udialog.showHttpAuthRequest(view, handler);
             }
         };
     }

@@ -3,7 +3,11 @@ package com.lyloou.test.util;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.webkit.HttpAuthHandler;
+import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.lyloou.test.common.Consumer;
@@ -45,5 +49,38 @@ public class Udialog {
             return;
         }
         new TimePickerDialog(context, 0, listener, time[0], time[1], true).show();
+    }
+
+    public static void showHttpAuthRequest(WebView view, HttpAuthHandler handler) {
+        Context context = view.getContext();
+        // [Android-WebView's onReceivedHttpAuthRequest() not called again - Stack Overflow](https://stackoverflow.com/questions/20399339/android-webviews-onreceivedhttpauthrequest-not-called-again)
+        final EditText usernameInput = new EditText(context);
+        usernameInput.setHint("Username");
+
+        final EditText passwordInput = new EditText(context);
+        passwordInput.setHint("Password");
+        passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+        LinearLayout ll = new LinearLayout(context);
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.addView(usernameInput);
+        ll.addView(passwordInput);
+
+        new AlertDialog
+                .Builder(context)
+                .setTitle("Authentication")
+                .setView(ll)
+                .setCancelable(false)
+                .setPositiveButton("OK", (dialog, whichButton) -> {
+                    String username = usernameInput.getText().toString();
+                    String password = passwordInput.getText().toString();
+                    handler.proceed(username, password);
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Cancel", (dialog, whichButton) -> {
+                    dialog.dismiss();
+                    view.stopLoading();
+                })
+                .show();
     }
 }
