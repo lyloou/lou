@@ -58,7 +58,7 @@ import java.io.File;
  */
 
 public class NormalWebViewActivity extends AppCompatActivity {
-    public static final String TEST_AUTHORITY = "com.lyloou.test";
+    public static final String TEST_AUTHORITY = "com.lyloou.test.fileprovider";
     private static final int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE2 = 1;
     public static final String EXTRA_URL = "url";
     public static final String EXTRA_IS_DOWNLOAD = "isDownload";
@@ -242,10 +242,13 @@ public class NormalWebViewActivity extends AppCompatActivity {
         Intent data = getIntent();
         boolean isDownload = data.getBooleanExtra(EXTRA_IS_DOWNLOAD, false);
         String desc = data.getStringExtra(EXTRA_DESC);
-        if (mUrl.endsWith(".apk") && isDownload && !TextUtils.isEmpty(desc)) {
+        if (mUrl.endsWith(".apk") && isDownload) {
+            showDownloadStatus("下载中");
             TextView tvDesc = findViewById(R.id.tv_desc);
-            tvDesc.setText(desc);
             tvDesc.setVisibility(View.VISIBLE);
+            if (!TextUtils.isEmpty(desc)) {
+                tvDesc.setText(desc);
+            }
         }
     }
 
@@ -257,27 +260,34 @@ public class NormalWebViewActivity extends AppCompatActivity {
         Cursor c = downloadManager.query(query);
         if (c.moveToFirst()) {
             int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+            String title = null;
             switch (status) {
-                //下载暂停
                 case DownloadManager.STATUS_PAUSED:
+                    title = "下载暂停";
                     break;
-                //下载延迟
                 case DownloadManager.STATUS_PENDING:
+                    title = "下载延迟";
                     break;
-                //正在下载
                 case DownloadManager.STATUS_RUNNING:
+                    title = "正在下载";
                     break;
-                //下载完成
                 case DownloadManager.STATUS_SUCCESSFUL:
-                    //下载完成安装APK
+                    title = "下载完成";
                     installAPK(mContext, TEST_AUTHORITY);
                     break;
-                //下载失败
                 case DownloadManager.STATUS_FAILED:
+                    title = "下载失败";
                     Toast.makeText(mContext, "下载失败", Toast.LENGTH_SHORT).show();
                     break;
             }
+            if (title != null) {
+                showDownloadStatus(title);
+            }
         }
+    }
+
+    private void showDownloadStatus(String title) {
+        mToolbar.setTitle(title);
     }
 
     //下载到本地后执行安装

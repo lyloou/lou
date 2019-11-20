@@ -46,10 +46,14 @@ import android.widget.Toast;
 import com.lyloou.test.R;
 import com.lyloou.test.common.popview.Item;
 import com.lyloou.test.common.popview.MenuPopView;
+import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uanimator;
 import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Unet;
 import com.lyloou.test.util.Usp;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -235,6 +239,10 @@ public class WebActivity extends AppCompatActivity {
         return new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.endsWith(".apk")) {
+                    NormalWebViewActivity.newInstance(mContext, getJsonObject(url));
+                    return true;
+                }
                 return super.shouldOverrideUrlLoading(view, url);
             }
 
@@ -248,6 +256,17 @@ public class WebActivity extends AppCompatActivity {
                 Udialog.showHttpAuthRequest(view, handler);
             }
         };
+    }
+
+    private JSONObject getJsonObject(String url) {
+        return new JSONObject() {{
+            try {
+                putOpt(NormalWebViewActivity.EXTRA_URL, url);
+                putOpt(NormalWebViewActivity.EXTRA_IS_DOWNLOAD, true);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }};
     }
 
 
