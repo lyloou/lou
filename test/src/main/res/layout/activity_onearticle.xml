@@ -49,7 +49,7 @@
                 android:id="@+id/toolbar_onearticle"
                 android:layout_width="match_parent"
                 android:layout_height="?android:actionBarSize"
-                android:title="笑话"
+                app:title="每日一文"
                 app:layout_collapseMode="pin"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>

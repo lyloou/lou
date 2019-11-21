@@ -31,6 +31,9 @@ import android.widget.ImageView;
 import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.common.Consumer;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Author:    Lou
  * Version:   V1.0
@@ -70,6 +73,7 @@ public class Uview {
 
     /**
      * [How to hide soft keyboard on android after clicking outside EditText? - Stack Overflow](https://stackoverflow.com/questions/4165414/how-to-hide-soft-keyboard-on-android-after-clicking-outside-edittext)
+     * 注意：会有滑动不顺问题，使用 editText.setOnFocusChangeListener 或许是个更好的方案，如： com.lyloou.test.flow.FlowAdapter.addChangeListener()
      *
      * @param context 上下文
      * @param view    EditText上层 view
@@ -110,5 +114,30 @@ public class Uview {
             boolean hide = heightDiff > 100;
             consumer.accept(!hide);
         });
+    }
+
+    // 双击 view 执行 runnable
+    public static void setDoubleClickRunnable(View view, Runnable task) {
+        new DoubleClick().click(view, task);
+    }
+
+    private static class DoubleClick {
+        private int count = 0;
+
+        // 双击 View 触发 task
+        void click(View view, Runnable task) {
+            view.setOnClickListener(v -> {
+                if (++count >= 2) {
+                    task.run();
+                    return;
+                }
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        count = 0;
+                    }
+                }, 500);
+            });
+        }
     }
 }

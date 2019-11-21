@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright  (c) 2017 Lyloou
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,33 +15,34 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_one_article_today"
         android:title="今天"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
     <item
         android:id="@+id/menu_one_article_random"
-        android:title="哪天"
-        app:showAsAction="never"/>
+        android:title="随机一天"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_one_article_select"
-        android:title="这天"
-        app:showAsAction="never"/>
+        android:title="选择日期"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_one_article_here"
-        android:title="某天"
-        app:showAsAction="never"/>
+        android:title="手动输入"
+        app:showAsAction="never" />
     <item
         android:id="@+id/menu_one_article_my_favorites"
-        android:title="我的收藏夹"
-        app:showAsAction="never"/>
+        android:title="收藏夹"
+        android:icon="@mipmap/airplane"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_one_article_collect"
-        android:title="收藏"
         android:icon="@mipmap/ic_favorite_border"
-        app:showAsAction="always"/>
+        android:title="收藏"
+        app:showAsAction="always" />
 </menu>

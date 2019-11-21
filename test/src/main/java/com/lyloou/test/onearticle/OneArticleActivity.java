@@ -33,7 +33,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,6 +45,8 @@ import com.lyloou.test.common.LouAdapter;
 import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.db.LouSQLite;
+import com.lyloou.test.util.Content;
+import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.Calendar;
@@ -66,6 +67,7 @@ public class OneArticleActivity extends AppCompatActivity {
     private List<Article> mFavorites;
     private CompositeDisposable mDisposable;
     private MenuItem mItemFavorite;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +127,8 @@ public class OneArticleActivity extends AppCompatActivity {
         String authDate = oneArticle.getData().getAuthor() + "（" + mCurrentDay.getDate() + "）";
         String htmlContent = oneArticle.getData().getContent();
 
+        this.<CollapsingToolbarLayout>findViewById(R.id.coolapsing_toolbar_layout_onearticle).setTitle(title);
+
         TextView tvTitle = findViewById(R.id.tv_one);
         TextView tvAuthorDate = findViewById(R.id.tv_author_date);
         tvTitle.setText(title);
@@ -144,35 +148,28 @@ public class OneArticleActivity extends AppCompatActivity {
 
         WebView webView = findViewById(R.id.wv_content);
         webView.loadDataWithBaseURL("x-data://base", result, "text/html", "utf-8", null);
+        scrollToTop(findViewById(R.id.nsv_view));
     }
 
     private void initView() {
-        Toolbar toolbar = findViewById(R.id.toolbar_onearticle);
-        toolbar.setTitle("每日一文");
-        setSupportActionBar(toolbar);
+        mToolbar = findViewById(R.id.toolbar_onearticle);
+        setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        Uscreen.setToolbarMarginTop(mContext, toolbar);
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        Uscreen.setToolbarMarginTop(mContext, mToolbar);
 
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.coolapsing_toolbar_layout_onearticle);
-        collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
+        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
         ImageView ivHeader = collapsingToolbarLayout.findViewById(R.id.iv_header);
 
         int image = (int) (98 * Math.random() + 1);
         String url = OneArticleUtil.getImage(image);
-        Glide.with(mContext).load(url).into(ivHeader);
-
-        NestedScrollView nestedScrollView = findViewById(R.id.nsv_view);
+        Glide.with(mContext).load(url).asBitmap().centerCrop().into(ivHeader);
 
         View fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> {
-
-            ObjectAnimator anim = ObjectAnimator.ofInt(nestedScrollView, "scrollY", nestedScrollView.getScrollY(), 0);
-            anim.setDuration(500);
-            anim.start();
-        });
+        fab.setOnClickListener(view -> scrollToTop(findViewById(R.id.nsv_view)));
         AppBarLayout appBarLayout = findViewById(R.id.app_bar);
         appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
             int totalScrollRange = appBarLayout1.getTotalScrollRange();
@@ -180,6 +177,12 @@ public class OneArticleActivity extends AppCompatActivity {
             fab.setScaleX(offset);
             fab.setScaleY(offset);
         });
+    }
+
+    private void scrollToTop(NestedScrollView nestedScrollView) {
+        ObjectAnimator anim = ObjectAnimator.ofInt(nestedScrollView, "scrollY", nestedScrollView.getScrollY(), 0);
+        anim.setDuration(500);
+        anim.start();
     }
 
     @Override
@@ -313,8 +316,8 @@ public class OneArticleActivity extends AppCompatActivity {
                     String m = String.format(Locale.getDefault(), "%02d", month + 1);
                     String d = String.format(Locale.getDefault(), "%02d", dayOfMonth);
                     String date = y + m + d;
-                    Observable<OneArticle> observable = NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class).getSpecialArticle(1, date);
-                    layoutIt(observable);
+                    layoutIt(NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class)
+                            .getSpecialArticle(1, date));
                     louDialog.dismiss();
                 });
 
@@ -322,21 +325,19 @@ public class OneArticleActivity extends AppCompatActivity {
     }
 
     private void showSpecialDayArticleHere() {
-        LouDialog louDialog = LouDialog
-                .newInstance(mContext, R.layout.dialog_onearticle_here, R.style.Theme_AppCompat_Dialog)
-                .setCancelable(true);
-        EditText datePicker = louDialog.getView(R.id.et_one_article_here);
-        TextView tv = louDialog.getView(R.id.tv_one_article_here);
-
-        tv.setOnClickListener(view -> {
-            String date = datePicker.getText().toString();
+        Content content = Content.Builder.builder()
+                .title("输入日期")
+                .hint("20171111")
+                .focus(true)
+                .build();
+        Udialog.showInputDialog(mContext, content, date -> {
             if (!TextUtils.isEmpty(date.trim())) {
-                Observable<OneArticle> observable = NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class).getSpecialArticle(1, date);
-                layoutIt(observable);
+                layoutIt(NetWork.get(Constant.Url.Meiriyiwen.getUrl(), OneArticleApi.class)
+                        .getSpecialArticle(1, date)
+                );
+            } else {
+                showSpecialDayArticleHere();
             }
-            louDialog.dismiss();
         });
-
-        louDialog.show();
     }
 }

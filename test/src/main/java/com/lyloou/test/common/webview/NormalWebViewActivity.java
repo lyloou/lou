@@ -17,7 +17,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -211,26 +210,12 @@ public class NormalWebViewActivity extends AppCompatActivity {
     }
 
 
-    private int count = 0;
-    private Handler handler = new Handler();
-    private Runnable resetCount = () -> count = 0;
-
-    // 双击 View 回到顶部
-    private void doubleClickToolbar(View view, Runnable task) {
-        view.setOnClickListener(v -> {
-            if (++count >= 2) {
-                task.run();
-            }
-            handler.postDelayed(resetCount, 500);
-        });
-    }
-
     private void initViewForTop() {
 
         mToolbar = findViewById(R.id.toolbar);
         mToolbar.setTitle("");
         // doubleClickToolbar scrollToTop
-        doubleClickToolbar(mToolbar, () -> mWebView.scrollTo(0, 0));
+        Uview.setDoubleClickRunnable(mToolbar, () -> mWebView.scrollTo(0, 0));
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

@@ -2,6 +2,9 @@ package com.lyloou.test.util;
 
 import android.text.TextUtils;
 
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -13,6 +16,7 @@ public class Utime {
     private static final SimpleDateFormat SDF_ONE = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
     private static final SimpleDateFormat SDF_TWO = new SimpleDateFormat("yyyyMMdd", Locale.CHINA);
     private static final SimpleDateFormat SDF_THREE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.CHINA);
+    private static final String URL_RR_BASE = "http://ip138.com/";
 
     public static int[] getValidTime(String time) {
         int hourOfDay;
@@ -129,5 +133,43 @@ public class Utime {
 
     public static String getDayWithFormatTwo() {
         return SDF_TWO.format(new Date());
+    }
+
+    /*
+     * 获取时间戳（始终使用网络时间，如果获取网络时间失败，才使用本地时间）
+     * 返回的是以秒为单位的时间字符串
+     */
+    public static String getTimeStamp(String url, boolean usePhoneTime) {
+
+        final long phoneTime = System.currentTimeMillis() / 1000;
+        if (usePhoneTime) {
+            return String.valueOf(phoneTime);
+        }
+
+        final String urlRrBase = getBaseUrl(url);
+
+        try {
+            URLConnection uc = new URL(urlRrBase).openConnection();// 生成连接对象
+            uc.connect();// 发出连接
+            long webTimeMillis = uc.getDate();
+            long webTime = webTimeMillis / 1000;// 读取网站日期时间
+            return String.valueOf(webTime);
+        } catch (Exception e) {
+            return String.valueOf(phoneTime);
+        }
+    }
+
+    private static String getBaseUrl(String urls) {
+        if (TextUtils.isEmpty(urls)) {
+            return URL_RR_BASE;
+        }
+
+        try {
+            URI uri = new URI(urls);
+            return uri.getScheme() + "://" + uri.getHost();
+        } catch (Exception e) {
+            return URL_RR_BASE;
+        }
+
     }
 }

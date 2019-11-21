@@ -436,6 +436,7 @@ public class FlowActivity extends AppCompatActivity {
     private void resetThemeColor(int color) {
         int transparentColor = getTransparentColor(color);
 
+        this.<TextView>findViewById(R.id.tv_center).setTextColor(color);
         findViewById(R.id.tv_add_item).setBackgroundColor(color);
         findViewById(R.id.tv_to_list).setBackgroundColor(color);
         findViewById(R.id.tv_header).setBackgroundColor(transparentColor);

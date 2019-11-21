@@ -6,12 +6,12 @@ body {
 
 body {
     background: #fff;
-    color: #444;
+    color: #777;
     overflow: auto;
     overflow-x: hidden
     letter-spacing: 2px;
     line-height: 1.4em;
-    font-size: 16px;
+    font-size: 17px;
 }
 
 a {

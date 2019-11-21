@@ -1,15 +1,20 @@
 package com.lyloou.test.util;
 
+import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.webkit.HttpAuthHandler;
 import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.lyloou.test.R;
 import com.lyloou.test.common.Consumer;
 
 public class Udialog {
@@ -27,20 +32,34 @@ public class Udialog {
                 .show();
     }
 
-    public static void showInputDialog(Context context, String defaultText, Consumer<String> consumer) {
-        EditText editText = new EditText(context);
-        editText.setHint(defaultText);
 
-        new AlertDialog.Builder(context)
-                .setTitle("Moustachify Link")
-                .setMessage("Paste in the link of an image to moustachify!")
-                .setView(editText)
-                .setPositiveButton("是的", (dialog, whichButton) -> {
-                    String url = editText.getText().toString();
-                    consumer.accept(url);
-                })
-                .setNegativeButton("再想想", (dialog, whichButton) -> consumer.accept(""))
-                .show();
+    @SuppressLint("InflateParams")
+    public static void showInputDialog(Context context, Content content, Consumer<String> consumer) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        View v = LayoutInflater.from(context).inflate(R.layout.dialog_et, null, false);
+        EditText editText = v.findViewById(R.id.et_content);
+
+        if (!TextUtils.isEmpty(content.getHint())) {
+            editText.setHint(content.getHint());
+        }
+        if (!TextUtils.isEmpty(content.getDefaultContext())) {
+            editText.setText(content.getDefaultContext());
+        }
+        if (!TextUtils.isEmpty(content.getTitle())) {
+            builder.setTitle(content.getTitle());
+        }
+        builder.setView(v);
+        builder.setPositiveButton("确定", (dialog, whichButton) -> {
+            String url = editText.getText().toString();
+            consumer.accept(url);
+        });
+        builder.setNegativeButton("取消", (dialog, whichButton) -> consumer.accept(""));
+        builder.show();
+
+        if (content.isFocus()) {
+            editText.setFocusable(true);
+            editText.requestFocus();
+        }
     }
 
     public static void showTimePicker(Context context, TimePickerDialog.OnTimeSetListener listener, int[] time) {
