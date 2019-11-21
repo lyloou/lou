@@ -133,7 +133,7 @@ public class UokHttp {
         });
     }
 
-    public String getCookie(String siteName, String cookieName) {
+    public static String getCookie(String siteName, String cookieName) {
         String cookieValue = null;
 
         CookieManager cookieManager = CookieManager.getInstance();

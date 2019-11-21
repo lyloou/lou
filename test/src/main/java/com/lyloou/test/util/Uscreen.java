@@ -38,6 +38,7 @@ import android.widget.LinearLayout;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.lyloou.test.common.LouProgressBar;
+import com.lyloou.test.util.dialog.Udialog;
 
 import java.io.IOException;
 

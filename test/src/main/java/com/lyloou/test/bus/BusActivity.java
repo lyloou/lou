@@ -52,13 +52,13 @@ import com.lyloou.test.common.EmptyRecyclerView;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.util.Uapp;
-import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Ugson;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Usp;
 import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Utoast;
 import com.lyloou.test.util.Uview;
+import com.lyloou.test.util.dialog.Udialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,5 +1,5 @@
 
-package com.lyloou.test.util;
+package com.lyloou.test.util.dialog;
 
 public class Content {
     private String hint;

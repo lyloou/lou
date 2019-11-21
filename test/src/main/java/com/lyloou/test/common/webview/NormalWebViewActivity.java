@@ -41,9 +41,9 @@ import com.just.agentweb.AgentWeb;
 import com.just.agentweb.WebChromeClient;
 import com.just.agentweb.WebViewClient;
 import com.lyloou.test.R;
-import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Usp;
 import com.lyloou.test.util.Uview;
+import com.lyloou.test.util.dialog.Udialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;

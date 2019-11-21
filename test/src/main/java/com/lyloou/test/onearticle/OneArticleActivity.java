@@ -45,9 +45,9 @@ import com.lyloou.test.common.LouAdapter;
 import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.db.LouSQLite;
-import com.lyloou.test.util.Content;
-import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.dialog.Content;
+import com.lyloou.test.util.dialog.Udialog;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.lyloou.test.util;
+package com.lyloou.test.util.dialog;
 
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;

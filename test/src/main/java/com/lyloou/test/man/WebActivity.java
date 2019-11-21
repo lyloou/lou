@@ -48,9 +48,9 @@ import com.lyloou.test.common.popview.Item;
 import com.lyloou.test.common.popview.MenuPopView;
 import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uanimator;
-import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Unet;
 import com.lyloou.test.util.Usp;
+import com.lyloou.test.util.dialog.Udialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;

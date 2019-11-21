@@ -43,11 +43,11 @@ import com.lyloou.test.common.glide.PaletteBitmap;
 import com.lyloou.test.common.glide.PaletteBitmapTranscoder;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.kingsoftware.KingsoftwareUtil;
-import com.lyloou.test.util.Udialog;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Usystem;
 import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.Uview;
+import com.lyloou.test.util.dialog.Udialog;
 
 import java.util.LinkedList;
 import java.util.List;
