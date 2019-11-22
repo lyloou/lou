@@ -207,8 +207,8 @@ public class Uscreen {
 
     private static void toSetWallpaperAsync(Context context, ImageView imageView, int color) {
         new Thread(() -> {
-            LouProgressBar progressBar = LouProgressBar.buildDialog(context);
-            progressBar.show("正在设置壁纸...");
+            LouProgressBar progressBar = LouProgressBar.builder(context).tips("正在设置壁纸...");
+            progressBar.show();
 
             Bitmap bitmap = null;
             Object tag = imageView.getTag();

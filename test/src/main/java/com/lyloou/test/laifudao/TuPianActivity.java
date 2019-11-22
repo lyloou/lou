@@ -179,8 +179,8 @@ public class TuPianActivity extends AppCompatActivity {
 
             @Override
             public void onLongClick(TuPian tuPian) {
-                LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
-                progressTips.show("图片打包中");
+                LouProgressBar progressTips = LouProgressBar.builder(mContext).tips("图片打包中");
+                progressTips.show();
                 new Thread(() -> {
                     Ushare.sharePicUrl(mContext, tuPian.getThumburl());
                     progressTips.hide();

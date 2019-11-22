@@ -122,7 +122,7 @@ public class GankWelfareActivity extends AppCompatActivity {
             String year = split[0];
             String month = split[1];
             String day = split[2];
-            mProgressBar.show("正在加载...");
+            mProgressBar.show();
             mDisposable = NetWork.get(Constant.Url.Gank.getUrl(), GankApi.class).getGankContent(year, month, day)
                     .subscribeOn(Schedulers.io())
                     .unsubscribeOn(Schedulers.io())
@@ -165,7 +165,7 @@ public class GankWelfareActivity extends AppCompatActivity {
 
     private void initView() {
         initTopView();
-        mProgressBar = LouProgressBar.buildDialog(mContext);
+        mProgressBar = LouProgressBar.builder(mContext).tips("正在加载...");
         mRefreshLayout = findViewById(R.id.srl_gank_welfare);
         mRefreshLayout.setOnRefreshListener(this::reloadData);
         mLlytBottom = findViewById(R.id.llyt_bottom);
@@ -255,8 +255,8 @@ public class GankWelfareActivity extends AppCompatActivity {
                 .setItems(OperateType.toStrArray(), (dialog, which) -> {
                     switch (OperateType.indexOf(which)) {
                         case SHARE:
-                            LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
-                            progressTips.show("正在加载...");
+                            LouProgressBar progressTips = LouProgressBar.builder(mContext).tips("正在加载...");
+                            progressTips.show();
                             //noinspection ResultOfMethodCallIgnored
                             Observable.fromCallable(() -> welfare)
                                     .subscribeOn(Schedulers.io())
@@ -307,9 +307,9 @@ public class GankWelfareActivity extends AppCompatActivity {
         String caption = String.valueOf(list.size());
         tvCount.setText(caption);
 
-        LouProgressBar progressTips = LouProgressBar.buildDialog(mContext);
+        LouProgressBar progressTips = LouProgressBar.builder(mContext).tips("福利准备中");
         View.OnClickListener onClickListener = view1 -> {
-            progressTips.show("福利准备中");
+            progressTips.show();
             new Thread(() -> {
                 Ushare.clearImageDir(mContext);
                 List<String> paths = new ArrayList<>();

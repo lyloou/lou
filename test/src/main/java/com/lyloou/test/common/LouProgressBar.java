@@ -35,26 +35,21 @@ import com.lyloou.test.util.http.Uthread;
 public class LouProgressBar {
 
     private Context mContext;
+    private String mTips;
 
+    private TextView mTvTips;
     private LouDialog mDialog;
     private static final LinearLayout.LayoutParams WRAP_CONTENT =
             new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
 
-    private TextView mTvTips;
-
     private LouProgressBar(Context context) {
-        this(context, false);
-    }
-
-    private LouProgressBar(Context context, boolean cancelable) {
         mContext = context;
-
         // 创建 Dialog 需要在主线程中运行；
-        Uthread.runInMainThread(() -> initView(context, cancelable));
+        Uthread.runInMainThread(() -> initView(mContext));
     }
 
-    private void initView(Context context, boolean cancelable) {
+    private void initView(Context context) {
         int PADDING = Uscreen.dp2Px(context, 16);
         int MARGIN_6DP = Uscreen.dp2Px(context, 6);
         LinearLayout layout = new LinearLayout(context);
@@ -79,16 +74,16 @@ public class LouProgressBar {
         mTvTips.setTextColor(ContextCompat.getColor(mContext, R.color.colorAccent));
         mTvTips.setTextSize(16);
         layout.addView(mTvTips, WRAP_CONTENT);
-        mDialog = LouDialog.newInstance(mContext, layout, R.style.TransparentDialog)
-                .setCancelable(cancelable);
+        mDialog = LouDialog.newInstance(mContext, layout, R.style.TransparentDialog).setCancelable(false);
     }
 
-    public static LouProgressBar buildDialog(@NonNull Context context) {
+    public LouProgressBar tips(String tips) {
+        this.mTips = tips;
+        return this;
+    }
+
+    public static LouProgressBar builder(@NonNull Context context) {
         return new LouProgressBar(context);
-    }
-
-    public static LouProgressBar buildDialog(@NonNull Context context, boolean cancelable) {
-        return new LouProgressBar(context, cancelable);
     }
 
 
@@ -96,16 +91,18 @@ public class LouProgressBar {
         return mDialog != null && mDialog.isShowing();
     }
 
-    public void show(final String tips) {
-        Uthread.runInMainThread(() -> {
-            if (!TextUtils.isEmpty(tips)) {
-                mTvTips.setText(tips);
-            }
+    public void show() {
+        Uthread.runInMainThread(this::_show);
+    }
 
-            if (!mDialog.isShowing()) {
-                mDialog.show();
-            }
-        });
+    private void _show() {
+        if (!TextUtils.isEmpty(mTips)) {
+            mTvTips.setText(mTips);
+        }
+
+        if (!mDialog.isShowing()) {
+            mDialog.show();
+        }
     }
 
     public void hide() {

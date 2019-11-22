@@ -403,7 +403,7 @@ public class FlowActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
                             ivHeader.setTag(daily.getFenxiang_img());
-                            Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE, true);
+                            Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE, false);
                             mTvHeader.setText(daily.getContent());
                             mTvHeader.setTag(daily.getNote());
                             mTvHeader.setVisibility(View.VISIBLE);
