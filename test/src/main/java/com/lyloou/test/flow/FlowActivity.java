@@ -277,16 +277,7 @@ public class FlowActivity extends AppCompatActivity {
         return new FlowAdapter.OnItemListener() {
             @Override
             public void onLongClickItem(FlowItem item) {
-                String message = "确认删除时间段：\n"
-                        .concat(Utime.getFormatTime(item.getTimeStart()))
-                        .concat(item.getTimeSep())
-                        .concat(Utime.getFormatTime(item.getTimeEnd()));
-                Udialog.alert(mContext, message, ok -> {
-                    if (ok) {
-                        mFlowItems.remove(item);
-                        updateDbAndUI();
-                    }
-                });
+                doOnLongClickFlowItem(item);
             }
 
             @Override
@@ -312,22 +303,22 @@ public class FlowActivity extends AppCompatActivity {
 
             @Override
             public void onLongClickTimeStart(FlowItem item) {
-                Udialog.alert(mContext, "清空开始时间", result -> {
+                Udialog.AlertOneItem.builder(mContext, result -> {
                     if (result) {
                         item.setTimeStart(null);
                         updateDbAndUI();
                     }
-                });
+                }).message("清空开始时间").show();
             }
 
             @Override
             public void onLongClickTimeEnd(FlowItem item) {
-                Udialog.alert(mContext, "清空结束时间", result -> {
+                Udialog.AlertOneItem.builder(mContext, result -> {
                     if (result) {
                         item.setTimeEnd(null);
                         updateDbAndUI();
                     }
-                });
+                }).message("清空结束时间").show();
             }
 
             @Override
@@ -344,6 +335,21 @@ public class FlowActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    private void doOnLongClickFlowItem(FlowItem item) {
+        Udialog.AlertMultiItem.builder(mContext)
+                .add("复制内容", () -> Usystem.copyString(mContext, item.getContent()))
+                .add("复制全部", () -> Usystem.copyString(mContext, Utime.getFormatTime(item.getTimeStart())
+                        .concat(item.getTimeSep())
+                        .concat(Utime.getFormatTime(item.getTimeEnd()))
+                        .concat("\n")
+                        .concat(item.getContent())))
+                .add("删除此项", () -> {
+                    mFlowItems.remove(item);
+                    updateDbAndUI();
+                })
+                .show();
     }
 
     private void updateDb(boolean... now) {
@@ -397,7 +403,7 @@ public class FlowActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
                             ivHeader.setTag(daily.getFenxiang_img());
-                            Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE, false);
+                            Uscreen.setWallpaperByImageView(ivHeader, COLOR_BLUE, true);
                             mTvHeader.setText(daily.getContent());
                             mTvHeader.setTag(daily.getNote());
                             mTvHeader.setVisibility(View.VISIBLE);
