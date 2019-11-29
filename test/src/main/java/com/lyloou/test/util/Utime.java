@@ -116,7 +116,7 @@ public class Utime {
     }
 
     public static String today() {
-        Date parse = new Date();
+        Date parse = Calendar.getInstance().getTime();
         return SDF_TWO.format(parse);
     }
 
@@ -128,11 +128,11 @@ public class Utime {
     }
 
     public static String getDayWithFormatOne() {
-        return SDF_ONE.format(new Date());
+        return SDF_ONE.format(Calendar.getInstance().getTime());
     }
 
     public static String getDayWithFormatTwo() {
-        return SDF_TWO.format(new Date());
+        return SDF_TWO.format(Calendar.getInstance().getTime());
     }
 
     /*

@@ -31,7 +31,7 @@
             android:id="@+id/collapsing_toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:contentScrim="@color/colorAccent"
+            app:contentScrim="@color/transparent"
             app:expandedTitleGravity="center"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 

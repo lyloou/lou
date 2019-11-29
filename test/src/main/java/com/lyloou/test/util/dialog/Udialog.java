@@ -68,11 +68,19 @@ public class Udialog {
                 builder.setMessage(message);
             }
             if (!TextUtils.isEmpty(negativeTips)) {
-                builder.setNegativeButton(negativeTips, (dialog, which) -> consumer.accept(false));
+                builder.setNegativeButton(negativeTips, (dialog, which) -> {
+                    if (consumer != null) {
+                        consumer.accept(false);
+                    }
+                });
             }
 
             if (!TextUtils.isEmpty(positiveTips)) {
-                builder.setPositiveButton(positiveTips, (dialog, which) -> consumer.accept(true));
+                builder.setPositiveButton(positiveTips, (dialog, which) -> {
+                    if (consumer != null) {
+                        consumer.accept(true);
+                    }
+                });
             }
 
             builder.setCancelable(true);
@@ -143,13 +151,17 @@ public class Udialog {
         builder.setView(v);
         builder.setPositiveButton("确定", (dialog, whichButton) -> {
             String url = editText.getText().toString();
-            consumer.accept(url);
+            if (consumer != null) {
+                consumer.accept(url);
+            }
         });
-        builder.setNegativeButton("取消", (dialog, whichButton) -> consumer.accept(""));
+        builder.setNegativeButton("取消", (dialog, whichButton) -> {
+        });
         builder.show();
 
         if (content.isFocus()) {
             editText.setFocusable(true);
+            editText.setSelection(editText.getText().length());
             editText.requestFocus();
         }
     }

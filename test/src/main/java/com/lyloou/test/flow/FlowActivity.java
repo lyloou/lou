@@ -43,6 +43,7 @@ import com.lyloou.test.common.glide.PaletteBitmap;
 import com.lyloou.test.common.glide.PaletteBitmapTranscoder;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.kingsoftware.KingsoftwareUtil;
+import com.lyloou.test.util.Ucolor;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Usystem;
 import com.lyloou.test.util.Utime;
@@ -426,21 +427,8 @@ public class FlowActivity extends AppCompatActivity {
 
     }
 
-    // [Change int color opacity in java/android - Stack Overflow](https://stackoverflow.com/questions/28483497/change-int-color-opacity-in-java-android)
-    private int getTransparentColor(int color) {
-        int alpha = Color.alpha(color);
-        int red = Color.red(color);
-        int green = Color.green(color);
-        int blue = Color.blue(color);
-
-        // Set alpha based on your logic, here I'm making it 25% of it's initial value.
-        alpha *= 0.55;
-
-        return Color.argb(alpha, red, green, blue);
-    }
-
     private void resetThemeColor(int color) {
-        int transparentColor = getTransparentColor(color);
+        int transparentColor = Ucolor.getTransparentColor(color);
 
         this.<TextView>findViewById(R.id.tv_center).setTextColor(color);
         findViewById(R.id.tv_add_item).setBackgroundColor(color);
