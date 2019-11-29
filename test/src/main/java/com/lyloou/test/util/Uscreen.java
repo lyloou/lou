@@ -194,11 +194,14 @@ public class Uscreen {
                 return false;
             }
 
-            Udialog.AlertOneItem.builder(context, result -> {
-                if (result) {
-                    toSetWallpaperAsync(context, imageView, color);
-                }
-            }).message("设置成壁纸?").show();
+            Udialog.AlertOneItem.builder(context)
+                    .consumer(result -> {
+                        if (result) {
+                            toSetWallpaperAsync(context, imageView, color);
+                        }
+                    })
+                    .message("设置成壁纸?")
+                    .show();
             return false;
         });
 

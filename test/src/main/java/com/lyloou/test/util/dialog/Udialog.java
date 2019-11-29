@@ -25,17 +25,22 @@ public class Udialog {
         private Context context;
         private String title;
         private String message;
-        private Consumer<Boolean> consumer;
+        private Consumer<Boolean> consumer = result -> {
+        };
         private String positiveTips = "确定";
         private String negativeTips = "取消";
 
-        private AlertOneItem(Context context, Consumer<Boolean> consumer) {
+        private AlertOneItem(Context context) {
             this.context = context;
-            this.consumer = consumer;
         }
 
-        public static AlertOneItem builder(Context context, Consumer<Boolean> consumer) {
-            return new AlertOneItem(context, consumer);
+        public static AlertOneItem builder(Context context) {
+            return new AlertOneItem(context);
+        }
+
+        public AlertOneItem consumer(Consumer<Boolean> consumer) {
+            this.consumer = consumer;
+            return this;
         }
 
         public AlertOneItem title(String title) {
@@ -68,19 +73,11 @@ public class Udialog {
                 builder.setMessage(message);
             }
             if (!TextUtils.isEmpty(negativeTips)) {
-                builder.setNegativeButton(negativeTips, (dialog, which) -> {
-                    if (consumer != null) {
-                        consumer.accept(false);
-                    }
-                });
+                builder.setNegativeButton(negativeTips, (dialog, which) -> consumer.accept(false));
             }
 
             if (!TextUtils.isEmpty(positiveTips)) {
-                builder.setPositiveButton(positiveTips, (dialog, which) -> {
-                    if (consumer != null) {
-                        consumer.accept(true);
-                    }
-                });
+                builder.setPositiveButton(positiveTips, (dialog, which) -> consumer.accept(true));
             }
 
             builder.setCancelable(true);

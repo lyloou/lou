@@ -304,22 +304,28 @@ public class FlowActivity extends AppCompatActivity {
 
             @Override
             public void onLongClickTimeStart(FlowItem item) {
-                Udialog.AlertOneItem.builder(mContext, result -> {
-                    if (result) {
-                        item.setTimeStart(null);
-                        updateDbAndUI();
-                    }
-                }).message("清空开始时间").show();
+                Udialog.AlertOneItem.builder(mContext)
+                        .consumer(result -> {
+                            if (result) {
+                                item.setTimeStart(null);
+                                updateDbAndUI();
+                            }
+                        })
+                        .message("清空开始时间")
+                        .show();
             }
 
             @Override
             public void onLongClickTimeEnd(FlowItem item) {
-                Udialog.AlertOneItem.builder(mContext, result -> {
-                    if (result) {
-                        item.setTimeEnd(null);
-                        updateDbAndUI();
-                    }
-                }).message("清空结束时间").show();
+                Udialog.AlertOneItem.builder(mContext)
+                        .consumer(result -> {
+                            if (result) {
+                                item.setTimeEnd(null);
+                                updateDbAndUI();
+                            }
+                        })
+                        .message("清空结束时间")
+                        .show();
             }
 
             @Override
