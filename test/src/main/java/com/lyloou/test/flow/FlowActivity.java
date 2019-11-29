@@ -1,7 +1,5 @@
 package com.lyloou.test.flow;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.TimePickerDialog;
@@ -454,40 +452,7 @@ public class FlowActivity extends AppCompatActivity {
 
     private void initAppBarLayout() {
         mAppBarLayout = findViewById(R.id.app_bar);
-        mAppBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
-            if (Math.abs(verticalOffset) == mAppBarLayout.getTotalScrollRange()) {
-                //Collapsed
-                if (mTvHeader.getVisibility() == View.GONE) {
-                    return;
-                }
-
-                mTvHeader.animate().alpha(0.0f)
-                        .setDuration(300)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                                mTvHeader.setVisibility(View.GONE);
-                            }
-                        })
-                        .start();
-            } else {
-                //Expanded
-                if (mTvHeader.getVisibility() == View.VISIBLE) {
-                    return;
-                }
-                mTvHeader.setVisibility(View.VISIBLE);
-                mTvHeader.animate().alpha(1.0f)
-                        .setDuration(300)
-                        .setListener(new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                super.onAnimationEnd(animation);
-                            }
-                        })
-                        .start();
-            }
-        });
+        Uview.toggleViewVisibleWhenAppBarLayoutScrollChanged(mAppBarLayout, mTvHeader);
     }
 
     @Override

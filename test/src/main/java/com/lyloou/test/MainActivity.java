@@ -19,11 +19,16 @@ package com.lyloou.test;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -35,18 +40,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.ImageViewTarget;
 import com.lyloou.test.bus.notification.LongRunningService;
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.CrashHandler;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.common.glide.PaletteBitmap;
+import com.lyloou.test.common.glide.PaletteBitmapTranscoder;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
 import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uanimation;
+import com.lyloou.test.util.Ucolor;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Uservice;
 import com.lyloou.test.util.Usp;
+import com.lyloou.test.util.Uview;
 
 import java.util.Map;
 
@@ -62,6 +72,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class MainActivity extends AppCompatActivity {
     private Context mContext;
+    private TextView mTvHeader;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,38 +115,56 @@ public class MainActivity extends AppCompatActivity {
         Uscreen.setToolbarMarginTop(this, toolbar);
 
         ImageView ivHeader = findViewById(R.id.iv_header);
-        TextView tvHeader = findViewById(R.id.tv_header);
+        mTvHeader = findViewById(R.id.tv_header);
         Glide.with(mContext)
                 .load(KingsoftwareUtil.getTodayBigImage())
-                .centerCrop()
-                .into(ivHeader);
+                .asBitmap()
+                .transcode(new PaletteBitmapTranscoder(mContext), PaletteBitmap.class)
+                .fitCenter()
+                .into(new ImageViewTarget<PaletteBitmap>(ivHeader) {
+                    @Override
+                    protected void setResource(PaletteBitmap resource) {
+                        // [Converting bitmap to drawable in Android - Stack Overflow](https://stackoverflow.com/questions/23107090/converting-bitmap-to-drawable-in-android)
+                        super.view.setBackground(new BitmapDrawable(getResources(), resource.bitmap));
+                        Palette p = resource.palette;
+                        int color = p.getMutedColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+                        resetThemeColor(color);
+                    }
+                });
         //noinspection ResultOfMethodCallIgnored
         NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
                 .getDaily("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(daily -> {
-                    tvHeader.setText(daily.getContent());
-                    tvHeader.setTag(daily.getNote());
-                    tvHeader.setVisibility(View.VISIBLE);
+                    mTvHeader.setText(daily.getContent());
+                    mTvHeader.setTag(daily.getNote());
+                    mTvHeader.setVisibility(View.VISIBLE);
                 }, Throwable::printStackTrace);
 
         View fab = findViewById(R.id.fab);
         fab.startAnimation(Uanimation.getRotateAnimation(3600));
         fab.setOnClickListener(view -> {
-            Object tag = tvHeader.getTag();
+            Object tag = mTvHeader.getTag();
             if (tag instanceof String) {
                 String newStr = (String) tag;
-                String oldStr = tvHeader.getText().toString();
-                tvHeader.setText(newStr);
-                tvHeader.setTag(oldStr);
+                String oldStr = mTvHeader.getText().toString();
+                mTvHeader.setText(newStr);
+                mTvHeader.setTag(oldStr);
             }
         });
-
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
+        Uview.toggleViewVisibleWhenAppBarLayoutScrollChanged(findViewById(R.id.app_bar), mTvHeader);
     }
+
+    private void resetThemeColor(int color) {
+        int transparentColor = Ucolor.getTransparentColor(color);
+        findViewById(R.id.tv_header).setBackgroundColor(transparentColor);
+        this.<FloatingActionButton>findViewById(R.id.fab).setBackgroundTintList(ColorStateList.valueOf(color));
+    }
+
 
     static class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         final Map<String, Class> stringClassMap;

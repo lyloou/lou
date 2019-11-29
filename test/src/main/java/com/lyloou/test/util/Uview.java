@@ -16,12 +16,15 @@
 
 package com.lyloou.test.util;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.AppBarLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -139,5 +142,43 @@ public class Uview {
                 }, 500);
             });
         }
+    }
+
+
+    public static void toggleViewVisibleWhenAppBarLayoutScrollChanged(AppBarLayout appBarLayout, final View view) {
+        appBarLayout.addOnOffsetChangedListener((appBarLayout1, verticalOffset) -> {
+            if (Math.abs(verticalOffset) == appBarLayout.getTotalScrollRange()) {
+                //Collapsed
+                if (view.getVisibility() == View.GONE) {
+                    return;
+                }
+
+                view.animate().alpha(0.0f)
+                        .setDuration(300)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                view.setVisibility(View.GONE);
+                            }
+                        })
+                        .start();
+            } else {
+                //Expanded
+                if (view.getVisibility() == View.VISIBLE) {
+                    return;
+                }
+                view.setVisibility(View.VISIBLE);
+                view.animate().alpha(1.0f)
+                        .setDuration(300)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                            }
+                        })
+                        .start();
+            }
+        });
     }
 }
