@@ -46,6 +46,7 @@ import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.db.LouSQLite;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Utime;
 import com.lyloou.test.util.dialog.Content;
 import com.lyloou.test.util.dialog.Udialog;
 
@@ -122,6 +123,7 @@ public class OneArticleActivity extends AppCompatActivity {
     private void showArticle(@NonNull OneArticle oneArticle) {
         mCurrentDay = new Article(oneArticle.getData().getDate().getCurr(), oneArticle.getData().getAuthor(), oneArticle.getData().getTitle());
         refreshItemFavoriteStatus(contains(mCurrentDay));
+        setTopBg(mCurrentDay.getDate());
 
         String title = oneArticle.getData().getTitle();
         String authDate = oneArticle.getData().getAuthor() + "（" + mCurrentDay.getDate() + "）";
@@ -162,11 +164,10 @@ public class OneArticleActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.coolapsing_toolbar_layout_onearticle);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
-        ImageView ivHeader = collapsingToolbarLayout.findViewById(R.id.iv_header);
 
-        int image = (int) (98 * Math.random() + 1);
-        String url = OneArticleUtil.getImage(image);
-        Glide.with(mContext).load(url).asBitmap().centerCrop().into(ivHeader);
+
+        String today = Utime.getDayWithFormatTwo();
+        setTopBg(today);
 
         View fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> scrollToTop(findViewById(R.id.nsv_view)));
@@ -177,6 +178,12 @@ public class OneArticleActivity extends AppCompatActivity {
             fab.setScaleX(offset);
             fab.setScaleY(offset);
         });
+    }
+
+    private void setTopBg(String day) {
+        int image = Integer.parseInt(day) % 98;
+        String url = OneArticleUtil.getImage(image);
+        Glide.with(mContext).load(url).asBitmap().centerCrop().into(this.<ImageView>findViewById(R.id.iv_header));
     }
 
     private void scrollToTop(NestedScrollView nestedScrollView) {
