@@ -165,6 +165,8 @@ public class ManActivity extends AppCompatActivity {
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
+        Uview.toggleViewVisibleWhenAppBarLayoutScrollChanged(findViewById(R.id.app_bar), tvHeader);
+
         RecyclerView recyclerView = findViewById(R.id.rv_main);
         mManAdapter = new ManAdapter(mDataList);
         mManAdapter.setListener(new Listener() {
