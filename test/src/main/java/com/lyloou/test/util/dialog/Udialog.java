@@ -138,12 +138,12 @@ public class Udialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         View v = LayoutInflater.from(context).inflate(R.layout.dialog_et, null, false);
         EditText editText = v.findViewById(R.id.et_content);
-
+        editText.setInputType(content.getInputType());
         if (!TextUtils.isEmpty(content.getHint())) {
             editText.setHint(content.getHint());
         }
-        if (!TextUtils.isEmpty(content.getDefaultContext())) {
-            editText.setText(content.getDefaultContext());
+        if (!TextUtils.isEmpty(content.getDefaultText())) {
+            editText.setText(content.getDefaultText());
         }
         if (!TextUtils.isEmpty(content.getTitle())) {
             builder.setTitle(content.getTitle());

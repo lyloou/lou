@@ -328,6 +328,7 @@ public class OneArticleActivity extends AppCompatActivity {
         Content content = Content.Builder.builder()
                 .title("输入日期")
                 .hint("20171111")
+                .type(Content.Type.NUMBER)
                 .focus(true)
                 .build();
         Udialog.showInputDialog(mContext, content, date -> {
@@ -336,6 +337,7 @@ public class OneArticleActivity extends AppCompatActivity {
                         .getSpecialArticle(1, date)
                 );
             } else {
+                Toast.makeText(mContext, "请输入内容", Toast.LENGTH_SHORT).show();
                 showSpecialDayArticleHere();
             }
         });

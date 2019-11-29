@@ -1,12 +1,36 @@
 
 package com.lyloou.test.util.dialog;
 
+import android.text.InputType;
+
 public class Content {
     private String hint;
     private String title;
-    private String defaultContext;
+    private String defaultText;
     private boolean focus;
+    private Type type = Type.TEXT;
 
+    public static enum Type {
+        TEXT, PASSWORD, NUMBER;
+    }
+
+    public int getInputType() {
+        if (Type.NUMBER.equals(type)) {
+            return InputType.TYPE_CLASS_NUMBER;
+        }
+        if (Type.PASSWORD.equals(type)) {
+            return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD;
+        }
+        return InputType.TYPE_CLASS_TEXT;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
 
     public String getHint() {
         return hint;
@@ -24,8 +48,8 @@ public class Content {
         this.title = title;
     }
 
-    public String getDefaultContext() {
-        return defaultContext;
+    public String getDefaultText() {
+        return defaultText;
     }
 
     public boolean isFocus() {
@@ -36,15 +60,16 @@ public class Content {
         this.focus = focus;
     }
 
-    private void setDefaultContext(String defaultContext) {
-        this.defaultContext = defaultContext;
+    private void setDefaultText(String defaultText) {
+        this.defaultText = defaultText;
     }
 
     public static final class Builder {
         String hint;
         String title;
-        String defaultContext;
+        String defaultText;
         boolean focus;
+        private Type type = Type.TEXT;
 
 
         private Builder() {
@@ -69,8 +94,13 @@ public class Content {
             return this;
         }
 
-        public Builder defaultContext(String defaultContext) {
-            this.defaultContext = defaultContext;
+        public Builder type(Type type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder defaultText(String defaultText) {
+            this.defaultText = defaultText;
             return this;
         }
 
@@ -79,7 +109,8 @@ public class Content {
             content.setHint(hint);
             content.setTitle(title);
             content.setFocus(focus);
-            content.setDefaultContext(defaultContext);
+            content.setDefaultText(defaultText);
+            content.setType(type);
             return content;
         }
     }
