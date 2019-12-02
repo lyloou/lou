@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.kingsoftware;
+package com.lyloou.test.common;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

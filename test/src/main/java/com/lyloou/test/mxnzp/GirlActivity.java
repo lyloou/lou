@@ -29,20 +29,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.github.chrisbanes.photoview.PhotoView;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
-import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.LouProgressBar;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.gank.Ushare;
 import com.lyloou.test.kingsoftware.KingsoftwareUtil;
+import com.lyloou.test.util.Ugson;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.List;
@@ -137,42 +135,9 @@ public class GirlActivity extends AppCompatActivity {
         mGirlAdapter.setOnItemGirlClickListener(new GirlAdapter.OnItemGirlClickListener() {
             @Override
             public void onClick(GirlResult.Data.Girl girl) {
-                PhotoView view = new PhotoView(mContext);
-                view.setMinimumScale(0.5f);
-                view.setMaximumScale(3);
-                view.setScale(0.8f);
-                Glide.with(mContext)
-                        .load(girl.getImageUrl())
-                        .thumbnail(0.1f)
-                        .into(view);
-
-                LouDialog louDialog = LouDialog
-                        .newInstance(mContext, view, R.style.Theme_AppCompat)
-                        .setCancelable(true)
-                        .setWindowAnimation(R.style.Animation_Alpha)
-                        .setWH(-1, -1);
-
-                if (Build.VERSION.SDK_INT >= 19) {
-                    Window window = louDialog.getDialog().getWindow();
-                    if (window != null) {
-                        View decorView = window.getDecorView();
-                        decorView.setSystemUiVisibility(
-                                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-                    }
-
-                }
-
-                view.setOnClickListener(v -> {
-                    if (view.getScale() <= 1) {
-                        louDialog.dismiss();
-                    }
-                });
-                louDialog.show();
+                List<GirlResult.Data.Girl> items = mGirlAdapter.getItems();
+                String s = Ugson.getGson().toJson(items, GirlHelper.getType());
+                GirlGalleryActivity.startActivity(mContext, s, mPage, items.indexOf(girl));
             }
 
             @Override

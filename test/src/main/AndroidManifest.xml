@@ -64,14 +64,14 @@
             android:name=".media.recoder.RecorderActivity"
             android:theme="@style/FastEnterTheme" />
         <activity
-            android:name=".kingsoftware.KingsoftwareActivity"
-            android:theme="@style/AppTheme.TranslucentStatus" />
-        <activity
             android:name=".man.WebActivity"
             android:theme="@style/AppTheme.FULL" />
         <activity
             android:name=".mxnzp.GirlActivity"
             android:label="@string/mxnzp_girl"
+            android:theme="@style/AppTheme.TranslucentStatus" />
+        <activity
+            android:name=".mxnzp.GirlGalleryActivity"
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".mxnzp.JokeActivity"

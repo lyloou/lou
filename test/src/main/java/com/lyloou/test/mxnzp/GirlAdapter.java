@@ -43,6 +43,10 @@ class GirlAdapter extends RecyclerView.Adapter<GirlAdapter.GirlViewHolder> {
         mList = new ArrayList<>();
     }
 
+    public List<GirlResult.Data.Girl> getItems() {
+        return mList;
+    }
+
     public void addItems(List<GirlResult.Data.Girl> girls) {
         int oldLength = mList.size();
         mList.addAll(girls);

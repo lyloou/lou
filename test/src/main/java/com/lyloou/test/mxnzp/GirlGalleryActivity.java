@@ -14,42 +14,65 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.kingsoftware;
+package com.lyloou.test.mxnzp;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
+import android.support.v7.graphics.Palette;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.ImageViewTarget;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.lyloou.test.R;
+import com.lyloou.test.common.Constant;
+import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.HackyViewPager;
+import com.lyloou.test.common.NetWork;
+import com.lyloou.test.common.glide.PaletteBitmap;
+import com.lyloou.test.common.glide.PaletteBitmapTranscoder;
+import com.lyloou.test.util.Ugson;
 import com.lyloou.test.util.Uscreen;
+import com.lyloou.test.util.Utoast;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-public class KingsoftwareGalleryActivity extends AppCompatActivity {
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+public class GirlGalleryActivity extends AppCompatActivity {
+    private static final String EXTRA_ITEMS = "items";
+    private static final String EXTRA_PAGE = "page";
+    private static final String EXTRA_POSITION = "position";
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    private int mPage = 0;
     private static final int COLOR_BLUE = Color.parseColor("#009edc");
     private static final int COLOR_BLACK = Color.parseColor("#000000");
     private Activity mContext;
     private HackyViewPager mViewPager;
+
+    public static void startActivity(Context context, String items, int page, int position) {
+        Intent intent = new Intent(context, GirlGalleryActivity.class);
+        intent.putExtra(EXTRA_ITEMS, items);
+        intent.putExtra(EXTRA_PAGE, page);
+        intent.putExtra(EXTRA_POSITION, position);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,28 +84,84 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
         setContentView(mViewPager);
 
         initView();
+        initData();
     }
+
+    private void initData() {
+        if (getIntent() != null) {
+            String items = getIntent().getStringExtra(EXTRA_ITEMS);
+            List<GirlResult.Data.Girl> list = Ugson.getGson().fromJson(items, GirlHelper.getType());
+            List<String> data = toUrlList(list);
+            mAdapter.addItemsAndNotify(data);
+            mPage = getIntent().getIntExtra(EXTRA_PAGE, 0);
+            int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
+            mViewPager.setCurrentItem(position);
+        }
+        if (mAdapter.getCount() <= 0) {
+            loadMore();
+        }
+    }
+
+
+    private List<String> toUrlList(List<GirlResult.Data.Girl> list) {
+        List<String> data = new ArrayList<>();
+        for (GirlResult.Data.Girl girl : list) {
+            data.add(girl.getImageUrl());
+        }
+        return data;
+    }
+
+
+    private void loadData(int page, Consumer<List<GirlResult.Data.Girl>> consumer) {
+        Observable<GirlResult> observable = NetWork.get(Constant.Url.Mxnzp.getUrl(), MxnzpApi.class).getGirl(page);
+        Disposable disposable = observable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(jokeResults -> {
+                    GirlResult.Data data = jokeResults.getData();
+                    consumer.accept(data.getList());
+                }, throwable -> Utoast.show(mContext, throwable.getMessage()));
+        mCompositeDisposable.add(disposable);
+    }
+
+    boolean mIsEnd = false;
+
+    private void loadMore() {
+        if (mIsEnd) {
+            return;
+        }
+        loadData(mPage++, list -> {
+            if (list.size() == 0) {
+                mIsEnd = true;
+                return;
+            }
+            List<String> data = toUrlList(list);
+            mAdapter.addItemsAndNotify(data);
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (!mCompositeDisposable.isDisposed()) {
+            mCompositeDisposable.dispose();
+        }
+        super.onDestroy();
+    }
+
+    private GalleryPagerAdapter mAdapter;
 
     private void initView() {
 
-        GalleryPagerAdapter adapter = new GalleryPagerAdapter();
-        mViewPager.setAdapter(adapter);
-        adapter.setClickListener(view -> toggleScreenStatus());
-        adapter.setLongClickListener(view -> {
+        mAdapter = new GalleryPagerAdapter();
+        mAdapter.setClickListener(view -> toggleScreenStatus());
+        mAdapter.setLongClickListener(view -> {
             if (view instanceof ImageView) {
                 Uscreen.setWallpaperByImageView((ImageView) view, COLOR_BLUE);
                 return true;
             }
             return false;
         });
-
-        String formatedToday = SDF.format(new Date());
-        String formatedYesterday = oneDayAgo(formatedToday);
-        String formatedTwodayAgo = oneDayAgo(formatedYesterday);
-        adapter.addItemAndNotify(formatedToday);
-        adapter.addItemAndNotify(formatedYesterday);
-        adapter.addItemAndNotify(formatedTwodayAgo);
-
+        mViewPager.setAdapter(mAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -91,11 +170,8 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if (position > adapter.getCount() - 2) {
-                    String day = oneDayAgo(adapter.getItem(position));
-                    if (!TextUtils.isEmpty(day)) {
-                        adapter.addItemAndNotify(day);
-                    }
+                if (position > mAdapter.getCount() - 2) {
+                    loadMore();
                 }
             }
 
@@ -106,26 +182,6 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
         });
     }
 
-    private String oneDayAgo(String currentDay) {
-        try {
-            Calendar calendar = Calendar.getInstance();
-            Date parse = SDF.parse(currentDay);
-            long oneDayAgoLong = parse.getTime() - 24 * 60 * 60 * 1000;
-            calendar.setTimeInMillis(oneDayAgoLong);
-            Date oneDayAgoDate = calendar.getTime();
-            String oneDayAgoString = SDF.format(oneDayAgoDate);
-            return oneDayAgoString;
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @SuppressLint("CheckResult")
-    private void loadDataAndRenderView(String day, ImageView view) {
-        String url = KingsoftwareUtil.getShareImage(day);
-        Glide.with(mContext).load(url).into(view);
-    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -158,12 +214,12 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
     // https://github.com/chrisbanes/PhotoView/blob/master/sample/src/main/java/com/github/chrisbanes/photoview/sample/ViewPagerActivity.java
     private class GalleryPagerAdapter extends PagerAdapter {
-        final List<String> days;
+        final List<String> list;
         private View.OnClickListener clickListener;
         private View.OnLongClickListener longClickListener;
 
         public GalleryPagerAdapter() {
-            days = new ArrayList<>();
+            list = new ArrayList<>();
         }
 
         public void setClickListener(View.OnClickListener clickListener) {
@@ -174,16 +230,16 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
             this.longClickListener = longClickListener;
         }
 
-        public void addItemAndNotify(String day) {
-            days.add(day);
+        public void addItemsAndNotify(List<String> list) {
+            this.list.addAll(list);
             notifyDataSetChanged();
         }
 
         public String getItem(int position) {
-            if (position >= days.size() || position < 0) {
+            if (position >= list.size() || position < 0) {
                 throw new IndexOutOfBoundsException("越界了啦");
             }
-            return days.get(position);
+            return list.get(position);
         }
 
         @Override
@@ -191,10 +247,30 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
             Context context = container.getContext();
             PhotoView photoView = new PhotoView(context);
             container.addView(photoView, ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT);
-            loadDataAndRenderView(days.get(position), photoView);
+            String url = list.get(position);
+
+            setImage(context, photoView, url);
+
             photoView.setOnClickListener(clickListener);
             photoView.setOnLongClickListener(longClickListener);
             return photoView;
+        }
+
+        private void setImage(Context context, ImageView iv, String url) {
+            Glide.with(context)
+                    .load(url)
+                    .asBitmap()
+                    .transcode(new PaletteBitmapTranscoder(context), PaletteBitmap.class)
+                    .into(new ImageViewTarget<PaletteBitmap>(iv) {
+                        @Override
+                        protected void setResource(PaletteBitmap resource) {
+                            // [Converting bitmap to drawable in Android - Stack Overflow](https://stackoverflow.com/questions/23107090/converting-bitmap-to-drawable-in-android)
+                            super.view.setImageDrawable(new BitmapDrawable(getResources(), resource.bitmap));
+                            Palette p = resource.palette;
+                            int color = p.getMutedColor(ContextCompat.getColor(context, R.color.colorAccent));
+                            mViewPager.setBackgroundColor(color);
+                        }
+                    });
         }
 
         @Override
@@ -204,7 +280,7 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return days.size();
+            return list.size();
         }
 
         @Override
