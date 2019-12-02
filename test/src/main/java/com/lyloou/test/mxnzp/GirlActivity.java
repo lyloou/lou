@@ -106,7 +106,7 @@ public class GirlActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(jokeResults -> {
                     GirlResult.Data data = jokeResults.getData();
-                    mTotalCount = data.getTotalPage();
+                    mTotalCount = data.getTotalCount();
                     consumer.accept(data.getList());
                     mIsLoadingData = false;
                 }, throwable -> mIsLoadingData = false);
