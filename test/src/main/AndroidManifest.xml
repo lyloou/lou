@@ -145,6 +145,10 @@
             android:name=".media.video.VideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/FastEnterTheme" />
+        <activity
+            android:name=".github.RepositoryActivity"
+            android:label="@string/github_trend"
+            android:theme="@style/FastEnterTheme" />
 
         <receiver android:name=".bus.notification.DeviceBootReceiver">
             <intent-filter>
