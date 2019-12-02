@@ -384,7 +384,7 @@ public class GankWelfareActivity extends AppCompatActivity {
             }
             int lastSize = mWelfareAdapter.getList().size();
             mWelfareAdapter.getList().addAll(welfareList);
-            mWelfareAdapter.notifyItemRangeInserted(lastSize - 1, welfareList.size());
+            mWelfareAdapter.notifyItemRangeInserted(lastSize + 1, welfareList.size());
         });
     }
 

@@ -21,11 +21,11 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -36,16 +36,17 @@ import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
+import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
 import com.lyloou.test.common.LouDialog;
 import com.lyloou.test.common.LouProgressBar;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.gank.Ushare;
-import com.lyloou.test.kingsoftware.KingsoftwareAPI;
+import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Uscreen;
-import com.lyloou.test.util.Utoast;
 
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -53,11 +54,29 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class TuPianActivity extends AppCompatActivity {
+public class GirlActivity extends AppCompatActivity {
     CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private Activity mContext;
-    private TuPianAdapter mTuPianAdapter;
-    private int retryTimes;
+    private GirlAdapter mGirlAdapter;
+    private int mPage = 0;
+    private int mTotalCount;
+    private boolean mIsLoadingData = false;
+    private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            int lastVisibleItem = Objects.requireNonNull(layoutManager).findLastVisibleItemPosition();
+            int totalItemCount = layoutManager.getItemCount();
+            // 快到底部了，数据不多了，接着加载
+            int nearBottom = totalItemCount - 4;
+            if (totalItemCount < mTotalCount && lastVisibleItem >= nearBottom) {
+                if (!mIsLoadingData) {
+                    loadMore();
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +87,7 @@ public class TuPianActivity extends AppCompatActivity {
 
         initView();
 
-        loadData();
+        loadMore();
     }
 
     @Override
@@ -79,72 +98,51 @@ public class TuPianActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void loadData() {
-
-        Observable<List<TuPian>> observable = NetWork.get(Constant.Url.Laifudao.getUrl(), LaiFuDaoApi.class).getTuPian();
+    private void loadData(int page, Consumer<List<GirlResult.Data.Girl>> consumer) {
+        mIsLoadingData = true;
+        Observable<GirlResult> observable = NetWork.get(Constant.Url.Mxnzp.getUrl(), MxnzpApi.class).getGirl(page);
         Disposable disposable = observable
                 .subscribeOn(Schedulers.io())
-                .doOnNext(tuPien -> {
-                    // 模拟网络延迟
-                    SystemClock.sleep(1000);
-                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(tupian -> {
-                            // 减少一个元素，构成奇数个数的列表
-                            tupian.remove(tupian.size() - 1);
-                            mTuPianAdapter.addItems(tupian);
-                            retryTimes = 0;
-                            Snackbar.make(findViewById(R.id.coordinator_mxnzp), "加载成功", Snackbar.LENGTH_SHORT).show();
-                        }
-                        , throwable -> {
-                            Utoast.show(mContext, "加载失败：" + throwable.getMessage() + "\n 重新尝试：" + retryTimes);
-                            if (retryTimes > 20) {
-                                Utoast.show(mContext, "网络真的不行了，你等会儿再来吧");
-                                return;
-                            }
-                            retryTimes++;
-                            loadData();
-                        });
+                .subscribe(jokeResults -> {
+                    GirlResult.Data data = jokeResults.getData();
+                    mTotalCount = data.getTotalPage();
+                    consumer.accept(data.getList());
+                    mIsLoadingData = false;
+                }, throwable -> mIsLoadingData = false);
         mCompositeDisposable.add(disposable);
     }
+
 
     @SuppressLint("CheckResult")
     private void initView() {
         Toolbar toolbar = findViewById(R.id.toolbar_mxnzp);
-        toolbar.setTitle("来福岛上的笑话图片");
+        toolbar.setTitle("一图");
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        Uscreen.setToolbarMarginTop(mContext, toolbar);
 
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.coolapsing_toolbar_layout_mxnzp);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
-        ImageView ivHeader = findViewById(R.id.iv_header);
-        NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)
-                .getDaily("")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(daily -> Glide
-                                .with(mContext)
-                                .load(daily.getPicture2())
-                                .centerCrop()
-                                .into(ivHeader)
-                        , Throwable::printStackTrace);
+        Glide.with(this)
+                .load(KingsoftwareUtil.getTodayBigImage())
+                .centerCrop()
+                .into(this.<ImageView>findViewById(R.id.iv_header));
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview_mxnzp);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        mTuPianAdapter = new TuPianAdapter();
-        mTuPianAdapter.setOnItemTuPianClickListener(new TuPianAdapter.OnItemTuPianClickListener() {
+        mGirlAdapter = new GirlAdapter();
+        mGirlAdapter.setOnItemGirlClickListener(new GirlAdapter.OnItemGirlClickListener() {
             @Override
-            public void onClick(TuPian tuPian) {
+            public void onClick(GirlResult.Data.Girl girl) {
                 PhotoView view = new PhotoView(mContext);
                 view.setMinimumScale(0.5f);
                 view.setMaximumScale(3);
                 view.setScale(0.8f);
                 Glide.with(mContext)
-                        .load(tuPian.getThumburl())
+                        .load(girl.getImageUrl())
                         .thumbnail(0.1f)
                         .into(view);
 
@@ -178,18 +176,23 @@ public class TuPianActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onLongClick(TuPian tuPian) {
+            public void onLongClick(GirlResult.Data.Girl girl) {
                 LouProgressBar progressTips = LouProgressBar.builder(mContext).tips("图片打包中");
                 progressTips.show();
                 new Thread(() -> {
-                    Ushare.sharePicUrl(mContext, tuPian.getThumburl());
+                    Ushare.sharePicUrl(mContext, girl.getImageUrl());
                     progressTips.hide();
                 }).start();
             }
         });
-        recyclerView.setAdapter(mTuPianAdapter);
+        recyclerView.setAdapter(mGirlAdapter);
+        recyclerView.addOnScrollListener(mListener);
         recyclerView.addItemDecoration(new DoubleItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
 
+    }
+
+    private void loadMore() {
+        loadData(mPage++, list -> mGirlAdapter.addItems(list));
     }
 
     @Override

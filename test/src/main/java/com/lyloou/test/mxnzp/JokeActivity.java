@@ -48,10 +48,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class JokeActivity extends AppCompatActivity {
-    private int mPage = 0;
     CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private Activity mContext;
     private JokeAdapter mJokeAdapter;
+    private int mPage = 0;
     private int mTotalCount;
     private boolean mIsLoadingData = false;
     private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
@@ -93,7 +93,7 @@ public class JokeActivity extends AppCompatActivity {
 
     private void loadData(int page, Consumer<List<JokeResult.Data.Joke>> consumer) {
         mIsLoadingData = true;
-        Observable<JokeResult> observable = NetWork.get(Constant.Url.Mxnzp.getUrl(), JokeApi.class).getJoke(page);
+        Observable<JokeResult> observable = NetWork.get(Constant.Url.Mxnzp.getUrl(), MxnzpApi.class).getJoke(page);
         Disposable disposable = observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -108,7 +108,7 @@ public class JokeActivity extends AppCompatActivity {
 
     private void initView() {
         Toolbar toolbar = findViewById(R.id.toolbar_mxnzp);
-        toolbar.setTitle("笑一笑");
+        toolbar.setTitle("一笑");
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
