@@ -45,11 +45,12 @@ class RepositoryAdapter extends RecyclerView.Adapter {
 
     public void clear() {
         mList.clear();
+        notifyDataSetChanged();
     }
 
-    public void addItems(List<Repository> jokes) {
+    public void addItems(List<Repository> repositories) {
         int oldLength = mList.size();
-        mList.addAll(jokes);
+        mList.addAll(repositories);
         notifyItemRangeInserted(oldLength, mList.size());
     }
 

@@ -108,11 +108,8 @@ public class RepositoryActivity extends AppCompatActivity {
         srl = findViewById(R.id.srl_github);
         srl.setRefreshing(true);
         srl.setOnRefreshListener(() -> {
-            loadData(list -> {
-                mRepositoryAdapter.clear();
-                mRepositoryAdapter.addItems(list);
-                srl.setRefreshing(false);
-            });
+            mRepositoryAdapter.clear();
+            loadMore();
         });
 
     }
