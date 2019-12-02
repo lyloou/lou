@@ -41,13 +41,10 @@ class JokeAdapter extends RecyclerView.Adapter {
         mList = new ArrayList<>();
     }
 
-    public void addItem(JokeResult.Data.Joke joke) {
-        mList.add(joke);
-    }
-
     public void addItems(List<JokeResult.Data.Joke> jokes) {
+        int oldLength = mList.size();
         mList.addAll(jokes);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(oldLength, mList.size());
     }
 
     @Override

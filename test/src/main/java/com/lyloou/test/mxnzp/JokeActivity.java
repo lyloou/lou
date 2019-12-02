@@ -20,8 +20,8 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,11 +32,14 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
+import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Uscreen;
-import com.lyloou.test.util.Utoast;
+
+import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -45,10 +48,28 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class JokeActivity extends AppCompatActivity {
+    private int mPage = 0;
     CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private Activity mContext;
     private JokeAdapter mJokeAdapter;
-    private int retryTimes;
+    private int mTotalCount;
+    private boolean mIsLoadingData = false;
+    private RecyclerView.OnScrollListener mListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            int lastVisibleItem = Objects.requireNonNull(layoutManager).findLastVisibleItemPosition();
+            int totalItemCount = layoutManager.getItemCount();
+            // 快到底部了，数据不多了，接着加载
+            int nearBottom = totalItemCount - 4;
+            if (totalItemCount < mTotalCount && lastVisibleItem >= nearBottom) {
+                if (!mIsLoadingData) {
+                    loadMore();
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +79,7 @@ public class JokeActivity extends AppCompatActivity {
 
         initView();
 
-        loadData();
+        loadMore();
     }
 
     @Override
@@ -70,25 +91,18 @@ public class JokeActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void loadData() {
-        Observable<JokeResult> observable = NetWork.get(Constant.Url.Mxnzp.getUrl(), JokeApi.class).getJoke(0);
+    private void loadData(int page, Consumer<List<JokeResult.Data.Joke>> consumer) {
+        mIsLoadingData = true;
+        Observable<JokeResult> observable = NetWork.get(Constant.Url.Mxnzp.getUrl(), JokeApi.class).getJoke(page);
         Disposable disposable = observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(jokeResults -> {
-                            mJokeAdapter.addItems(jokeResults.getData().getList());
-                            retryTimes = 0;
-                            Snackbar.make(findViewById(R.id.coordinator_mxnzp), "加载成功", Snackbar.LENGTH_SHORT).show();
-                        }
-                        , throwable -> {
-                            Utoast.show(mContext, "加载失败：" + throwable.getMessage() + "\n 重新尝试：" + retryTimes);
-                            if (retryTimes > 20) {
-                                Utoast.show(mContext, "网络真的不行了，你等会儿再来吧");
-                                return;
-                            }
-                            retryTimes++;
-                            loadData();
-                        });
+                    JokeResult.Data data = jokeResults.getData();
+                    mTotalCount = data.getTotalPage();
+                    consumer.accept(data.getList());
+                    mIsLoadingData = false;
+                }, throwable -> mIsLoadingData = false);
         mCompositeDisposable.add(disposable);
     }
 
@@ -98,7 +112,6 @@ public class JokeActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        Uscreen.setToolbarMarginTop(mContext, toolbar);
 
         Glide.with(this)
                 .load(KingsoftwareUtil.getTodayBigImage())
@@ -113,8 +126,13 @@ public class JokeActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         mJokeAdapter = new JokeAdapter();
         recyclerView.setAdapter(mJokeAdapter);
+        recyclerView.addOnScrollListener(mListener);
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
 
+    }
+
+    private void loadMore() {
+        loadData(mPage++, list -> mJokeAdapter.addItems(list));
     }
 
 
