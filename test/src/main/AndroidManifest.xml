@@ -70,12 +70,12 @@
             android:name=".man.WebActivity"
             android:theme="@style/AppTheme.FULL" />
         <activity
-            android:name=".laifudao.TuPianActivity"
+            android:name=".mxnzp.TuPianActivity"
             android:label="@string/laifudao_tupian"
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
-            android:name=".laifudao.XiaoHuaActivity"
-            android:label="@string/laifudao_xiaohua"
+            android:name=".mxnzp.JokeActivity"
+            android:label="@string/mxnzp_joke"
             android:theme="@style/AppTheme.TranslucentStatus" />
         <activity
             android:name=".kingsoftware.KingsoftwareGalleryActivity"

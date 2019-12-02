@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.laifudao;
+package com.lyloou.test.mxnzp;
 
 import android.app.Activity;
-import android.content.ClipboardManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,15 +27,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
+import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
-
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -44,19 +44,17 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.lyloou.test.common.webview.CustomTabsHelper.launchUrlWithCustomTabs;
-
-public class XiaoHuaActivity extends AppCompatActivity {
+public class JokeActivity extends AppCompatActivity {
     CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private Activity mContext;
-    private XiaoHuaAdapter mXiaoHuaAdapter;
+    private JokeAdapter mJokeAdapter;
     private int retryTimes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        setContentView(R.layout.activity_laifudao);
+        setContentView(R.layout.activity_mxnzp);
 
         initView();
 
@@ -73,14 +71,14 @@ public class XiaoHuaActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        Observable<List<XiaoHua>> observable = NetWork.get(Constant.Url.Laifudao.getUrl(), LaiFuDaoApi.class).getXiaoHua();
+        Observable<JokeResult> observable = NetWork.get(Constant.Url.Mxnzp.getUrl(), JokeApi.class).getJoke(0);
         Disposable disposable = observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(xiaoHuas -> {
-                            mXiaoHuaAdapter.addItems(xiaoHuas);
+                .subscribe(jokeResults -> {
+                            mJokeAdapter.addItems(jokeResults.getData().getList());
                             retryTimes = 0;
-                            Snackbar.make(findViewById(R.id.coordinator_xiaohua), "加载成功", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.coordinator_mxnzp), "加载成功", Snackbar.LENGTH_SHORT).show();
                         }
                         , throwable -> {
                             Utoast.show(mContext, "加载失败：" + throwable.getMessage() + "\n 重新尝试：" + retryTimes);
@@ -95,34 +93,26 @@ public class XiaoHuaActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_laifudao);
-        toolbar.setTitle("来福岛上的笑话");
+        Toolbar toolbar = findViewById(R.id.toolbar_mxnzp);
+        toolbar.setTitle("笑一笑");
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.mipmap.back_white);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
         Uscreen.setToolbarMarginTop(mContext, toolbar);
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.coolapsing_toolbar_layout_xiaohua);
+        Glide.with(this)
+                .load(KingsoftwareUtil.getTodayBigImage())
+                .centerCrop()
+                .into(this.<ImageView>findViewById(R.id.iv_header));
+
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.coolapsing_toolbar_layout_mxnzp);
         collapsingToolbarLayout.setExpandedTitleColor(Color.YELLOW);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_laifudao);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview_mxnzp);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mXiaoHuaAdapter = new XiaoHuaAdapter();
-        mXiaoHuaAdapter.setOnItemXiaoHuaClickListener(new XiaoHuaAdapter.OnItemXiaoHuaClickListener() {
-            @Override
-            public void onClick(String url) {
-                launchUrlWithCustomTabs(mContext, url);
-            }
-
-            @Override
-            public void onLongClick(String content) {
-                ClipboardManager cmb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                cmb.setText(content);
-                Utoast.show(mContext, "“笑话”已经复制到剪切板");
-            }
-        });
-        recyclerView.setAdapter(mXiaoHuaAdapter);
+        mJokeAdapter = new JokeAdapter();
+        recyclerView.setAdapter(mJokeAdapter);
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(this, 16)));
 
     }

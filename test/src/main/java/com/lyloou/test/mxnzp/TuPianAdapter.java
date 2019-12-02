@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.laifudao;
+package com.lyloou.test.mxnzp;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

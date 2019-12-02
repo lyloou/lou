@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lyloou.test.laifudao;
+package com.lyloou.test.mxnzp;
 
 
 import java.util.List;
@@ -31,9 +31,6 @@ import retrofit2.http.GET;
  */
 public interface LaiFuDaoApi {
 
-
-    @GET("open/xiaohua.json")
-    Observable<List<XiaoHua>> getXiaoHua();
 
     @GET("open/tupian.json")
     Observable<List<TuPian>> getTuPian();
