@@ -37,12 +37,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.lyloou.test.bus.notification.LongRunningService;
 import com.lyloou.test.common.Constant;
+import com.lyloou.test.common.ImageHelper;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.contact.ContactActivity;
 import com.lyloou.test.flow.FlowActivity;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
-import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.media.pic.PictureActivity;
 import com.lyloou.test.media.recoder.RecorderActivity;
 import com.lyloou.test.media.video.VideoActivity;
@@ -106,7 +106,7 @@ public class ClassOneActivity extends AppCompatActivity {
         ImageView ivHeader = findViewById(R.id.iv_header);
         TextView tvHeader = findViewById(R.id.tv_header);
         Glide.with(this)
-                .load(KingsoftwareUtil.getTodayBigImage())
+                .load(ImageHelper.getTodayBigImage())
                 .centerCrop()
                 .into(ivHeader);
         NetWork.get(Constant.Url.Kingsoftware.getUrl(), KingsoftwareAPI.class)

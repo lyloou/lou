@@ -33,9 +33,9 @@ import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.Consumer;
+import com.lyloou.test.common.ImageHelper;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
-import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Uscreen;
 
 import java.util.List;
@@ -114,7 +114,7 @@ public class JokeActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         Glide.with(this)
-                .load(KingsoftwareUtil.getTodayBigImage())
+                .load(ImageHelper.getTodayBigImage())
                 .centerCrop()
                 .into(this.<ImageView>findViewById(R.id.iv_header));
 

@@ -36,10 +36,10 @@ import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.Consumer;
 import com.lyloou.test.common.DoubleItemOffsetDecoration;
+import com.lyloou.test.common.ImageHelper;
 import com.lyloou.test.common.LouProgressBar;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.gank.Ushare;
-import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Ugson;
 import com.lyloou.test.util.Uscreen;
 
@@ -125,7 +125,7 @@ public class GirlActivity extends AppCompatActivity {
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
 
         Glide.with(this)
-                .load(KingsoftwareUtil.getTodayBigImage())
+                .load(ImageHelper.getTodayBigImage())
                 .centerCrop()
                 .into(this.<ImageView>findViewById(R.id.iv_header));
 

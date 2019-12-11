@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.lyloou.test.common.HackyViewPager;
+import com.lyloou.test.common.ImageHelper;
 import com.lyloou.test.util.Uscreen;
 
 import java.text.ParseException;
@@ -123,7 +124,7 @@ public class KingsoftwareGalleryActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     private void loadDataAndRenderView(String day, ImageView view) {
-        String url = KingsoftwareUtil.getShareImage(day);
+        String url = ImageHelper.getShareImage(day);
         Glide.with(mContext).load(url).into(view);
     }
 

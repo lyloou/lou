@@ -44,12 +44,12 @@ import com.bumptech.glide.request.target.ImageViewTarget;
 import com.lyloou.test.bus.notification.LongRunningService;
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.CrashHandler;
+import com.lyloou.test.common.ImageHelper;
 import com.lyloou.test.common.ItemOffsetDecoration;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.glide.PaletteBitmap;
 import com.lyloou.test.common.glide.PaletteBitmapTranscoder;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
-import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Uactivity;
 import com.lyloou.test.util.Uanimation;
 import com.lyloou.test.util.Ucolor;
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
-        toNext();
+        // toNext();
 
         setContentView(R.layout.activity_main);
         CrashHandler.getInstance().init(this.getApplicationContext());
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView ivHeader = findViewById(R.id.iv_header);
         mTvHeader = findViewById(R.id.tv_header);
         Glide.with(mContext)
-                .load(KingsoftwareUtil.getTodayBigImage())
+                .load(ImageHelper.getTodayBigImage())
                 .asBitmap()
                 .transcode(new PaletteBitmapTranscoder(mContext), PaletteBitmap.class)
                 .fitCenter()

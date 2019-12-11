@@ -36,11 +36,11 @@ import com.gyf.immersionbar.ImmersionBar;
 import com.lyloou.test.R;
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.EmptyRecyclerView;
+import com.lyloou.test.common.ImageHelper;
 import com.lyloou.test.common.NetWork;
 import com.lyloou.test.common.glide.PaletteBitmap;
 import com.lyloou.test.common.glide.PaletteBitmapTranscoder;
 import com.lyloou.test.kingsoftware.KingsoftwareAPI;
-import com.lyloou.test.kingsoftware.KingsoftwareUtil;
 import com.lyloou.test.util.Ucolor;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Usystem;
@@ -387,7 +387,7 @@ public class FlowActivity extends AppCompatActivity {
 
         ImageView ivHeader = findViewById(R.id.iv_header);
         Glide.with(mContext)
-                .load(KingsoftwareUtil.getBigImage(mFlowDay.getDay()))
+                .load(ImageHelper.getBigImage(mFlowDay.getDay()))
                 .asBitmap()
                 .transcode(new PaletteBitmapTranscoder(mContext), PaletteBitmap.class)
                 .fitCenter()

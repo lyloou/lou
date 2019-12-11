@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-import com.lyloou.test.kingsoftware.KingsoftwareUtil;
+import com.lyloou.test.common.ImageHelper;
 
 /**
  * Created by Administrator on 2016.10.18.
@@ -32,7 +32,7 @@ public class WelcomeActivity extends Activity {
         ImageView ivWelcome = findViewById(R.id.iv_welcome);
         ivWelcome.setOnClickListener(v -> toNext());
         Glide.with(getApplicationContext())
-                .load(KingsoftwareUtil.getTodayShareImage())
+                .load(ImageHelper.getTodayShareImage())
                 .into(new GlideDrawableImageViewTarget(ivWelcome) {
                     @Override
                     protected void setResource(GlideDrawable resource) {
