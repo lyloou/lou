@@ -52,6 +52,7 @@ import com.lyloou.test.util.Unotification;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Uservice;
 import com.lyloou.test.util.Usp;
+import com.lyloou.test.util.Uview;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -135,6 +136,7 @@ public class ClassOneActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
+        Uview.toggleViewVisibleWhenAppBarLayoutScrollChanged(findViewById(R.id.app_bar), tvHeader);
     }
 
     static class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
