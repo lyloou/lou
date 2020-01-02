@@ -50,30 +50,46 @@ class DbUtil {
         sd.close();
     }
 
-    static Consumer<FlowDay> getUpdateFlowDayConsumer(Context context) {
-        return (consume) -> {
+    /**
+     * 获取更新 items 的 consumer
+     *
+     * @param context 上下文
+     * @return consumer
+     */
+    static Consumer<FlowDay> getUpdateItemsConsumer(Context context) {
+        return (flowDay) -> {
             SQLiteDatabase sd = new DbHelper(context).getWritableDatabase();
             ContentValues contentValues = new ContentValues();
-            contentValues.put(DbHelper.COL_DAY, consume.getDay());
-            contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJsonArray(consume.getItems()));
-            sd.update(DbHelper.TABLE_NAME, contentValues, "id=?", new String[]{String.valueOf(consume.getId())});
+            contentValues.put(DbHelper.COL_DAY, flowDay.getDay());
+            contentValues.put(DbHelper.COL_ITEMS, FlowItemHelper.toJsonArray(flowDay.getItems()));
+            contentValues.put(DbHelper.COL_IS_SYNCED, Constant.FALSE);
+            sd.update(DbHelper.TABLE_NAME, contentValues, "id=?", new String[]{String.valueOf(flowDay.getId())});
+            flowDay.setSynced(false);
             sd.close();
         };
     }
 
-    static boolean toggleArchiveFlowDay(Context context, String day, boolean delete) {
-        SQLiteDatabase sd = new DbHelper(context).getReadableDatabase();
+    static boolean updateArchived(Context context, String day, boolean archived) {
+        SQLiteDatabase sd = new DbHelper(context).getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DbHelper.COL_IS_ARCHIVED, delete ? Constant.TRUE : Constant.FALSE);
+        contentValues.put(DbHelper.COL_IS_ARCHIVED, archived ? Constant.TRUE : Constant.FALSE);
         int update = sd.update(DbHelper.TABLE_NAME, contentValues, "day=?", new String[]{day});
         sd.close();
         return update >= 0;
     }
 
-    static boolean delete(Context context, String day, Consumer<Integer> consumer) {
-        SQLiteDatabase sd = new DbHelper(context).getReadableDatabase();
+    static boolean updateSynced(Context context, String day, boolean synced) {
+        SQLiteDatabase sd = new DbHelper(context).getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbHelper.COL_IS_SYNCED, synced ? Constant.TRUE : Constant.FALSE);
+        int update = sd.update(DbHelper.TABLE_NAME, contentValues, "day=?", new String[]{day});
+        sd.close();
+        return update >= 0;
+    }
+
+    static boolean delete(Context context, String day) {
+        SQLiteDatabase sd = new DbHelper(context).getWritableDatabase();
         int delete = sd.delete(DbHelper.TABLE_NAME, "day = ?", new String[]{day});
-        consumer.accept(delete);
         sd.close();
         return delete >= 0;
     }

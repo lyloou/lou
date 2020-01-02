@@ -18,7 +18,11 @@ public class FlowItemHelper {
         if (items == null) {
             return "[]";
         }
-        return gson.toJson(items, type);
+        try {
+            return gson.toJson(items, type);
+        } catch (Exception e) {
+            return "[]";
+        }
     }
 
 

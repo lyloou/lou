@@ -1,6 +1,10 @@
 package com.lyloou.test.flow;
 
 import android.content.Context;
+import android.util.Log;
+
+import com.lyloou.test.common.Constant;
+import com.lyloou.test.flow.net.FlowReq;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -30,19 +34,37 @@ class TransferUtil {
             if (count == 0) {
                 return;
             }
-            List<FlowItem> mFlowItems = new LinkedList<>();
             int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
             String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
-            mFlowItems.addAll(FlowItemHelper.fromJsonArray(items));
-            sortItems(mFlowItems);
+            int isArchived = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_ARCHIVED));
+            int isSynced = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_SYNCED));
+            int isDisabled = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_DISABLED));
+            List<FlowItem> flowItems = new LinkedList<>(FlowItemHelper.fromJsonArray(items));
+            sortItems(flowItems);
 
             flowDay.setId(id);
             flowDay.setDay(day);
-            flowDay.setItems(mFlowItems);
+            flowDay.setItems(flowItems);
+            flowDay.setArchived(isArchived == Constant.TRUE);
+            flowDay.setSynced(isSynced == Constant.TRUE);
+            flowDay.setDisabled(isDisabled == Constant.TRUE);
         });
         if (flowDay.getId() == null || flowDay.getId() == 0) {
             return null;
         }
         return flowDay;
     }
+
+    static FlowReq transferToFlowReq(Context context, FlowDay flowDay) {
+        flowDay = getFlowDayByDay(context, flowDay.getDay());
+        FlowReq req = new FlowReq();
+        req.setArchived(flowDay.isArchived());
+        req.setDay(flowDay.getDay());
+        req.setItem(FlowItemHelper.toJsonArray(flowDay.getItems()));
+        req.setDisabled(flowDay.isDisabled());
+        Log.e(TAG, "transferToFlowReq: +" + req.getDay() + ":" + req.getItem());
+        return req;
+    }
+
+    private static final String TAG = TransferUtil.class.getSimpleName();
 }

@@ -24,6 +24,7 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,7 +59,7 @@ import static com.lyloou.test.flow.TransferUtil.sortItems;
 
 public class FlowActivity extends AppCompatActivity {
     private static final String EXTRA_ID = "id";
-    private static final String EXTRA_DAY = "day";
+    public static final String EXTRA_DAY = "day";
     public static final String ACTION_REFRESH = "refresh";
     private Activity mContext;
     private FlowAdapter mAdapter;
@@ -84,12 +85,6 @@ public class FlowActivity extends AppCompatActivity {
             }
         }
     };
-
-    public static void start(Context context, int id) {
-        Intent intent = new Intent(context, FlowActivity.class);
-        intent.putExtra(EXTRA_ID, id);
-        context.startActivity(intent);
-    }
 
     public static void start(Context context, String day) {
         Intent intent = new Intent(context, FlowActivity.class);
@@ -266,7 +261,7 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     private Runnable updateDbTask = () -> {
-        DbUtil.getUpdateFlowDayConsumer(mContext).accept(mFlowDay);
+        DbUtil.getUpdateItemsConsumer(mContext).accept(mFlowDay);
         sendRefreshBroadcastReceiver();
     };
 
@@ -503,6 +498,7 @@ public class FlowActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent data = new Intent();
         data.putExtra(Intent.ACTION_ATTACH_DATA, mFlowDay);
+        Log.e(TAG, "onBackPressed: " + mFlowDay.getDay() + " - " + mFlowDay.isSynced());
         setResult(Activity.RESULT_OK, data);
         super.onBackPressed();
     }

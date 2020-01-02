@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lyloou.test.R;
@@ -13,7 +14,7 @@ import com.lyloou.test.R;
 import java.util.Set;
 
 class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
-    final Set<FlowDay> list;
+    final Set<FlowDay> mSet;
     final Context context;
     Listener mListener;
 
@@ -22,26 +23,26 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     }
 
     public Set<FlowDay> getList() {
-        return list;
+        return mSet;
     }
 
-    Adapter(Context context, Set<FlowDay> list) {
+    Adapter(Context context, Set<FlowDay> mSet) {
         this.context = context;
-        this.list = list;
+        this.mSet = mSet;
     }
 
     public void remove(FlowDay flowDay) {
-        if (list == null) {
+        if (mSet == null) {
             return;
         }
-        list.remove(flowDay);
+        mSet.remove(flowDay);
     }
 
     public void add(FlowDay flowDay) {
-        if (list == null) {
+        if (mSet == null) {
             return;
         }
-        list.add(flowDay);
+        mSet.add(flowDay);
     }
 
     @Override
@@ -52,8 +53,13 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        FlowDay flowDay = list.toArray(new FlowDay[0])[position];
+        FlowDay flowDay = mSet.toArray(new FlowDay[0])[position];
         holder.tvTitle.setText(flowDay.getDay());
+        if (flowDay.isSynced()) {
+            holder.ivSyncStatus.setImageResource(0);
+        } else {
+            holder.ivSyncStatus.setImageResource(R.drawable.ic_sync_problem_black_24dp);
+        }
         holder.view.setOnClickListener(v -> {
             if (mListener == null) {
                 return;
@@ -71,16 +77,18 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return mSet.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle;
+        ImageView ivSyncStatus;
         View view;
 
         ViewHolder(View itemView) {
             super(itemView);
             view = itemView;
+            ivSyncStatus = itemView.findViewById(R.id.iv_sync_status);
             tvTitle = itemView.findViewById(R.id.tv_one);
             tvTitle.setGravity(Gravity.CENTER);
         }
