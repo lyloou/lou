@@ -2,6 +2,7 @@ package com.lyloou.test.flow;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +82,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             super(itemView);
             view = itemView;
             tvTitle = itemView.findViewById(R.id.tv_one);
+            tvTitle.setGravity(Gravity.CENTER);
         }
     }
 }

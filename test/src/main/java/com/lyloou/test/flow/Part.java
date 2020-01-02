@@ -1,7 +1,7 @@
 package com.lyloou.test.flow;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +24,7 @@ public class Part {
         RecyclerView recyclerView = mView.findViewById(R.id.rv_list);
         mAdapter = new Adapter(context, mFlowDays);
         recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
         recyclerView.addItemDecoration(new ItemOffsetDecoration(Uscreen.dp2Px(context, 16)));
     }
 
