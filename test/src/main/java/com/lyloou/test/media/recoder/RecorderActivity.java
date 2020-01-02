@@ -18,6 +18,7 @@ package com.lyloou.test.media.recoder;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -94,13 +95,27 @@ public class RecorderActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mTbtnRecord = (ToggleButton) findViewById(R.id.tbtn_record);
-        mTbtnPlay = (ToggleButton) findViewById(R.id.tbtn_play);
+        mTbtnRecord = findViewById(R.id.tbtn_record);
+        mTbtnPlay = findViewById(R.id.tbtn_play);
 
         mTbtnRecord.setOnCheckedChangeListener((buttonView, isOn) -> onRecord(isOn));
         mTbtnPlay.setOnCheckedChangeListener((buttonView, isOn) -> onPlay(isOn));
 
         findViewById(R.id.btn_grant).setOnClickListener(view -> requestPermission());
+        findViewById(R.id.btn_hello).setOnClickListener(view -> sayHello());
+    }
+
+    private void sayHello() {
+        try {
+            String url = "http://res.iciba.com/resource/amp3/1/0/5d/41/5d41402abc4b2a76b9719d911017c592.mp3"; // your URL here
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepare(); // might take long! (for buffering, etc)
+            mediaPlayer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
