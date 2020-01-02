@@ -195,11 +195,17 @@ public class FlowActivity extends AppCompatActivity {
         int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
         String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
         String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
+        int isArchived = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_ARCHIVED));
+        int isSynced = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_SYNCED));
+        int isDisabled = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_DISABLED));
         mFlowItems.addAll(FlowItemHelper.fromJsonArray(items));
         mFlowDay = new FlowDay();
         mFlowDay.setId(id);
         mFlowDay.setDay(day);
         mFlowDay.setItems(mFlowItems);
+        mFlowDay.setArchived(isArchived == Constant.TRUE);
+        mFlowDay.setSynced(isSynced == Constant.TRUE);
+        mFlowDay.setDisabled(isDisabled == Constant.TRUE);
         sortItems(mFlowItems);
     }
 

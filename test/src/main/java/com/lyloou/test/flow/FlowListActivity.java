@@ -35,11 +35,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lyloou.test.R;
+import com.lyloou.test.common.Constant;
 import com.lyloou.test.common.TitleViewPagerAdapter;
 import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.util.Uapp;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Uview;
+import com.lyloou.test.util.dialog.Udialog;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -56,7 +58,7 @@ public class FlowListActivity extends AppCompatActivity {
     public static final String IMG_TOP_BG = "https://ws1.sinaimg.cn/large/610dc034gy1fhupzs0awwj20u00u0tcf.jpg";
     private Activity mContext;
     private Adapter mActiveAdapter;
-    private Adapter mDisableddapter;
+    private Adapter mArchiveddapter;
 
 
     @Override
@@ -75,10 +77,10 @@ public class FlowListActivity extends AppCompatActivity {
 
     private void showViewpager() {
 
-        Part part1 = new Part(mContext, "日前的", getData(false));
-        Part part2 = new Part(mContext, "回收站", getData(true));
+        Part part1 = new Part(mContext, "进行中", getData(false));
+        Part part2 = new Part(mContext, "已归档", getData(true));
         mActiveAdapter = part1.getAdapter();
-        mDisableddapter = part2.getAdapter();
+        mArchiveddapter = part2.getAdapter();
 
         initListener(part1.getAdapter());
         initListener(part2.getAdapter());
@@ -96,16 +98,22 @@ public class FlowListActivity extends AppCompatActivity {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
     }
 
-    private Set<FlowDay> getData(boolean isDisabled) {
+    private Set<FlowDay> getData(boolean isArchived) {
         Set<FlowDay> sets = new TreeSet<>((o1, o2) -> -o1.getDay().compareTo(o2.getDay()));
 
-        DbUtil.consumeCursorByDay(this, isDisabled, cursor -> {
-            FlowDay fd = new FlowDay();
+        DbUtil.consumeCursorByDay(this, isArchived, cursor -> {
+            FlowDay flowDay = new FlowDay();
             int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
             String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
-            fd.setId(id);
-            fd.setDay(day);
-            sets.add(fd);
+            int isSynced = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_SYNCED));
+            int isDisabled = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_DISABLED));
+
+            flowDay.setId(id);
+            flowDay.setDay(day);
+            flowDay.setArchived(isArchived);
+            flowDay.setSynced(isSynced == Constant.TRUE);
+            flowDay.setDisabled(isDisabled == Constant.TRUE);
+            sets.add(flowDay);
         });
         return sets;
     }
@@ -120,50 +128,70 @@ public class FlowListActivity extends AppCompatActivity {
 
             @Override
             public void onItemLongClicked(FlowDay flowDay) {
-                new AlertDialog.Builder(mContext)
-                        .setTitle("操作")
-                        .setItems(OperateType.toStrArray(), (dialog, which) -> {
-                            switch (OperateType.indexOf(which)) {
-                                case DELETE:
-                                    delete(flowDay);
-                                    break;
-                                case ONLY_COPY:
-                                    ToolUtil.doCopy(mContext, TransferUtil.getFlowDayByDay(mContext, flowDay.getDay()), false);
-                                    break;
-                                case COPY_TO_WPS:
-                                    ToolUtil.doCopy(mContext, TransferUtil.getFlowDayByDay(mContext, flowDay.getDay()), true);
-                                    delete(flowDay);
-                                    break;
-                                case RECOVER:
-                                    unDelete(flowDay);
-                                default:
-                            }
-                        })
-                        .create()
-                        .show();
+                doOnItemLongClicked(flowDay);
             }
         });
     }
 
+    private void doOnItemLongClicked(FlowDay flowDay) {
 
-    enum OperateType {
-        ONLY_COPY("复制"),
-        RECOVER("恢复"),
-        COPY_TO_WPS("一键复制"),
-        DELETE("删除此项"),
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                .setTitle("操作");
+        if (flowDay.isArchived()) {
+            builder.setItems(ArchivedType.toStrArray(), (dialog, which) -> {
+                switch (ArchivedType.indexOf(which)) {
+                    case COPY:
+                        ToolUtil.doCopy(mContext, TransferUtil.getFlowDayByDay(mContext, flowDay.getDay()), false);
+                        break;
+                    case DELETE:
+                        delete(flowDay);
+                        break;
+                    case UNDER_ARCHIVE:
+                        unArchive(flowDay);
+                    default:
+                }
+            });
+        } else {
+            builder.setItems(ActiveType.toStrArray(), (dialog, which) -> {
+                switch (ActiveType.indexOf(which)) {
+                    case ARCHIVE:
+                        archive(flowDay);
+                        break;
+                    case COPY:
+                        ToolUtil.doCopy(mContext, TransferUtil.getFlowDayByDay(mContext, flowDay.getDay()), false);
+                        break;
+                    case COPY_TO_WPS:
+                        ToolUtil.doCopy(mContext, TransferUtil.getFlowDayByDay(mContext, flowDay.getDay()), true);
+                        archive(flowDay);
+                        break;
+                    case DELETE:
+                        delete(flowDay);
+                    default:
+                }
+            });
+        }
+        builder.create().show();
+
+    }
+
+    enum ArchivedType {
+        COPY("复制"),
+        SYNC("同步"),
+        UNDER_ARCHIVE("撤销归档"),
+        DELETE("删除"),
         ;
         String title;
 
-        OperateType(String title) {
+        ArchivedType(String title) {
             this.title = title;
         }
 
-        public static OperateType indexOf(int index) {
-            return OperateType.values()[index];
+        public static ArchivedType indexOf(int index) {
+            return ArchivedType.values()[index];
         }
 
         public static String[] toStrArray() {
-            OperateType[] values = OperateType.values();
+            ArchivedType[] values = ArchivedType.values();
             String[] result = new String[values.length];
             for (int i = 0; i < values.length; i++) {
                 result[i] = values[i].title;
@@ -172,26 +200,71 @@ public class FlowListActivity extends AppCompatActivity {
         }
     }
 
-    private boolean delete(FlowDay flowDay) {
-        if (DbUtil.toggleDisabledFlowDay(mContext, flowDay.getDay(), true)) {
-            mActiveAdapter.remove(flowDay);
-            mActiveAdapter.notifyDataSetChanged();
-            mDisableddapter.add(flowDay);
-            mDisableddapter.notifyDataSetChanged();
-            return true;
+    enum ActiveType {
+        COPY("复制"),
+        SYNC("同步"),
+        ARCHIVE("归档"),
+        COPY_TO_WPS("一键复制"),
+        DELETE("删除"),
+        ;
+
+        String title;
+
+        ActiveType(String title) {
+            this.title = title;
         }
-        return false;
+
+        public static ActiveType indexOf(int index) {
+            return ActiveType.values()[index];
+        }
+
+        public static String[] toStrArray() {
+            ActiveType[] values = ActiveType.values();
+            String[] result = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                result[i] = values[i].title;
+            }
+            return result;
+        }
     }
 
-    private boolean unDelete(FlowDay flowDay) {
-        if (DbUtil.toggleDisabledFlowDay(mContext, flowDay.getDay(), false)) {
+    private void delete(FlowDay flowDay) {
+        Udialog.AlertOneItem.builder(mContext).message("确定删除?").consumer(result -> {
+            if (result) {
+                // 从数据库中删除
+                DbUtil.delete(mContext, flowDay.getDay(), num -> {
+                    // 更新列表
+                    if (flowDay.isArchived()) {
+                        mArchiveddapter.remove(flowDay);
+                        mArchiveddapter.notifyDataSetChanged();
+                    } else {
+                        mActiveAdapter.remove(flowDay);
+                        mActiveAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        }).show();
+
+    }
+
+    private void archive(FlowDay flowDay) {
+        if (DbUtil.toggleArchiveFlowDay(mContext, flowDay.getDay(), true)) {
+            flowDay.setArchived(true);
+            mActiveAdapter.remove(flowDay);
+            mActiveAdapter.notifyDataSetChanged();
+            mArchiveddapter.add(flowDay);
+            mArchiveddapter.notifyDataSetChanged();
+        }
+    }
+
+    private void unArchive(FlowDay flowDay) {
+        if (DbUtil.toggleArchiveFlowDay(mContext, flowDay.getDay(), false)) {
+            flowDay.setArchived(false);
+            mArchiveddapter.remove(flowDay);
+            mArchiveddapter.notifyDataSetChanged();
             mActiveAdapter.add(flowDay);
             mActiveAdapter.notifyDataSetChanged();
-            mDisableddapter.remove(flowDay);
-            mDisableddapter.notifyDataSetChanged();
-            return true;
         }
-        return false;
     }
 
     private void initTopPart() {

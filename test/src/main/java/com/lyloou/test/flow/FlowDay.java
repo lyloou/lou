@@ -12,7 +12,11 @@ public class FlowDay implements Serializable {
     @SerializedName("day")
     private String day; // 20190921
     @SerializedName("is_disabled")
-    private Integer isDisabled; // 20190921
+    private boolean isDisabled; // 20190921
+    @SerializedName("is_synced")
+    private boolean isSynced;
+    @SerializedName("is_archived")
+    private boolean isArchived;
     @SerializedName("items")
     private List<FlowItem> items;
 
@@ -40,11 +44,27 @@ public class FlowDay implements Serializable {
         this.day = day;
     }
 
-    public Integer getIsDisabled() {
+    public boolean isDisabled() {
         return isDisabled;
     }
 
-    public void setIsDisabled(Integer isDisabled) {
-        this.isDisabled = isDisabled;
+    public void setDisabled(boolean disabled) {
+        isDisabled = disabled;
+    }
+
+    public boolean isSynced() {
+        return isSynced;
+    }
+
+    public void setSynced(boolean synced) {
+        isSynced = synced;
+    }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setArchived(boolean archived) {
+        isArchived = archived;
     }
 }

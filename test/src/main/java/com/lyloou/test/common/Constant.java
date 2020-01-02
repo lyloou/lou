@@ -2,7 +2,8 @@ package com.lyloou.test.common;
 
 
 public interface Constant {
-
+    int TRUE = 1;
+    int FALSE = 0;
 
     enum Url implements Str {
         Kingsoftware("http://open.iciba.com/"),
