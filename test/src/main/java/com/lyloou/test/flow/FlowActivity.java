@@ -24,7 +24,6 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -487,7 +486,6 @@ public class FlowActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent data = new Intent();
         data.putExtra(Intent.ACTION_ATTACH_DATA, mFlowDay);
-        Log.i("TTAG", "onBackPressed: +++" + mFlowDay.isSynced());
         setResult(Activity.RESULT_OK, data);
         super.onBackPressed();
     }
