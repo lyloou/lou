@@ -1,11 +1,13 @@
 package com.lyloou.test.flow;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 
 import com.lyloou.test.common.Constant;
 import com.lyloou.test.flow.net.FlowReq;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,5 +68,43 @@ class TransferUtil {
         return req;
     }
 
+    static List<FlowReq> transferToFlowReqs(Context context, List<FlowDay> flowDays) {
+        List<FlowReq> flowReqs = new ArrayList<>();
+        for (FlowDay day : flowDays) {
+            flowReqs.add(transferToFlowReq(context, day));
+        }
+        return flowReqs;
+    }
+
     private static final String TAG = TransferUtil.class.getSimpleName();
+
+
+    static List<FlowDay> transferCursorToFlowDays(Cursor cursor) {
+        List<FlowDay> flowDays = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                flowDays.add(transferCursorToFlowDay(cursor));
+            } while (cursor.moveToNext());
+        }
+        return flowDays;
+    }
+
+    static FlowDay transferCursorToFlowDay(Cursor cursor) {
+        int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
+        String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
+        String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
+        int isArchived = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_ARCHIVED));
+        int isSynced = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_SYNCED));
+        int isDisabled = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_DISABLED));
+        FlowDay flowDay = new FlowDay();
+        List<FlowItem> flowItems = new ArrayList<>(FlowItemHelper.fromJsonArray(items));
+        flowDay.setId(id);
+        flowDay.setDay(day);
+        flowDay.setItems(flowItems);
+        flowDay.setArchived(isArchived == Constant.TRUE);
+        flowDay.setSynced(isSynced == Constant.TRUE);
+        flowDay.setDisabled(isDisabled == Constant.TRUE);
+        sortItems(flowItems);
+        return flowDay;
+    }
 }

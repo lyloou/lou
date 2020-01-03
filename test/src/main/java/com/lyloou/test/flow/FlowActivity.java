@@ -187,22 +187,10 @@ public class FlowActivity extends AppCompatActivity {
     }
 
     private void fillData(Cursor cursor) {
-        int id = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_ID));
-        String day = cursor.getString(cursor.getColumnIndex(DbHelper.COL_DAY));
-        String items = cursor.getString(cursor.getColumnIndex(DbHelper.COL_ITEMS));
-        int isArchived = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_ARCHIVED));
-        int isSynced = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_SYNCED));
-        int isDisabled = cursor.getInt(cursor.getColumnIndex(DbHelper.COL_IS_DISABLED));
-        mFlowItems.addAll(FlowItemHelper.fromJsonArray(items));
-        mFlowDay = new FlowDay();
-        mFlowDay.setId(id);
-        mFlowDay.setDay(day);
-        mFlowDay.setItems(mFlowItems);
-        mFlowDay.setArchived(isArchived == Constant.TRUE);
-        mFlowDay.setSynced(isSynced == Constant.TRUE);
-        mFlowDay.setDisabled(isDisabled == Constant.TRUE);
-        sortItems(mFlowItems);
+        mFlowDay = TransferUtil.transferCursorToFlowDay(cursor);
+        mFlowItems = mFlowDay.getItems();
     }
+
 
     private void initView() {
         initTopPart();
@@ -218,6 +206,7 @@ public class FlowActivity extends AppCompatActivity {
 
     private void toList() {
         Intent intent = new Intent(this, FlowListActivity.class);
+        intent.putExtra(Intent.ACTION_ATTACH_DATA, mFlowDay);
         startActivity(intent);
     }
 
@@ -498,7 +487,7 @@ public class FlowActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent data = new Intent();
         data.putExtra(Intent.ACTION_ATTACH_DATA, mFlowDay);
-        Log.e(TAG, "onBackPressed: " + mFlowDay.getDay() + " - " + mFlowDay.isSynced());
+        Log.i("TTAG", "onBackPressed: +++" + mFlowDay.isSynced());
         setResult(Activity.RESULT_OK, data);
         super.onBackPressed();
     }

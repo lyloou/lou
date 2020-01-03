@@ -10,5 +10,11 @@
         android:id="@+id/menu_add_shortcut"
         android:title="添加到桌面"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_sync_current_tab"
+        android:title="同步当前数据" />
+    <item
+        android:id="@+id/menu_sync_all_tab"
+        android:title="同步全部数据" />
 
 </menu>

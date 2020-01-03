@@ -43,16 +43,20 @@ import com.lyloou.test.common.webview.NormalWebViewActivity;
 import com.lyloou.test.flow.net.FlowApi;
 import com.lyloou.test.flow.net.FlowReq;
 import com.lyloou.test.util.Uapp;
+import com.lyloou.test.util.Ulist;
 import com.lyloou.test.util.Uscreen;
 import com.lyloou.test.util.Utoast;
 import com.lyloou.test.util.Uview;
 import com.lyloou.test.util.dialog.Udialog;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -69,6 +73,7 @@ public class FlowListActivity extends AppCompatActivity {
     private Adapter mActiveAdapter;
     private Adapter mArchiveddapter;
     private CompositeDisposable mDisposable;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,6 +84,12 @@ public class FlowListActivity extends AppCompatActivity {
         initView();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        FlowDay flowDay = (FlowDay) intent.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
+        updateFlowDayWhenBackHere(flowDay);
+    }
 
     private void initView() {
         initTopPart();
@@ -99,11 +110,11 @@ public class FlowListActivity extends AppCompatActivity {
         pagerAdapter.addView(part1.getTitle(), part1.getView());
         pagerAdapter.addView(part2.getTitle(), part2.getView());
 
-        ViewPager viewPager = findViewById(R.id.vp_flow);
-        viewPager.setAdapter(pagerAdapter);
+        mViewPager = findViewById(R.id.vp_flow);
+        mViewPager.setAdapter(pagerAdapter);
 
         TabLayout tabLayout = findViewById(R.id.tablyt_flow);
-        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
     }
@@ -196,31 +207,19 @@ public class FlowListActivity extends AppCompatActivity {
         }
 
         FlowReq flowReq = TransferUtil.transferToFlowReq(mContext, flowDay);
-        mDisposable.add(NetWork.get(Constant.Url.FlowApi.getUrl(), FlowApi.class)
-                .sync(flowReq)
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(commonResult -> {
-                    if (commonResult.getErr_code() == 0) {
-                        // 更新数据库
-                        if (DbUtil.updateSynced(mContext, flowDay.getDay(), true)) {
-                            // 更新界面
-                            flowDay.setSynced(true);
-                            if (flowDay.isArchived()) {
-                                mArchiveddapter.notifyDataSetChanged();
-                            } else {
-                                mActiveAdapter.notifyDataSetChanged();
-                            }
-                            Utoast.show(mContext, String.format("同步%s成功", flowDay.getDay()));
-                        }
-
-                    } else {
-                        Utoast.show(mContext, String.format("同步%s失败, err_code:%s", flowDay.getDay(), commonResult.getErr_code()));
-                    }
-                }, throwable -> {
-                    Utoast.show(mContext, String.format("同步%s失败, 原因：%s", flowDay.getDay(), throwable.getMessage()));
-                }));
+        netSync(flowReq, () -> {
+            // 更新数据库
+            if (DbUtil.updateSynced(mContext, flowDay.getDay(), true)) {
+                // 更新界面
+                flowDay.setSynced(true);
+                if (flowDay.isArchived()) {
+                    mArchiveddapter.notifyDataSetChanged();
+                } else {
+                    mActiveAdapter.notifyDataSetChanged();
+                }
+                Utoast.show(mContext, String.format("同步%s成功", flowDay.getDay()));
+            }
+        });
     }
 
     private void unSubscribe() {
@@ -295,40 +294,70 @@ public class FlowListActivity extends AppCompatActivity {
             if (result) {
                 FlowReq flowReq = TransferUtil.transferToFlowReq(mContext, flowDay);
                 flowReq.setDisabled(true);
-                mDisposable.add(NetWork.get(Constant.Url.FlowApi.getUrl(), FlowApi.class)
-                        .sync(flowReq)
-                        .subscribeOn(Schedulers.io())
-                        .unsubscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(commonResult -> {
-                            if (commonResult.getErr_code() == 0) {
-                                // 从数据库中删除
-                                if (DbUtil.delete(mContext, flowDay.getDay())) {
-                                    // 更新列表
-                                    if (flowDay.isArchived()) {
-                                        mArchiveddapter.remove(flowDay);
-                                        mArchiveddapter.notifyDataSetChanged();
-                                    } else {
-                                        mActiveAdapter.remove(flowDay);
-                                        mActiveAdapter.notifyDataSetChanged();
-                                    }
-                                }
-                            } else {
-                                Utoast.show(mContext, String.format("同步%s失败, err_code:%s", flowDay.getDay(), commonResult.getErr_code()));
-                            }
-                        }, throwable -> {
-                            Utoast.show(mContext, String.format("同步%s失败, 原因：%s", flowDay.getDay(), throwable.getMessage()));
-                        }));
-
+                netSync(flowReq, () -> {
+                    // 从数据库中删除
+                    if (DbUtil.delete(mContext, flowDay.getDay())) {
+                        // 更新列表
+                        if (flowDay.isArchived()) {
+                            mArchiveddapter.remove(flowDay);
+                            mArchiveddapter.notifyDataSetChanged();
+                        } else {
+                            mActiveAdapter.remove(flowDay);
+                            mActiveAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
 
             }
         }).show();
 
     }
 
-    private void archive(FlowDay flowDay, boolean archived) {
-        FlowReq flowReq = TransferUtil.transferToFlowReq(mContext, flowDay);
-        flowReq.setArchived(archived);
+    public static final int MAX_SYNC_NUMBER = 10;
+
+    private void netBatchSync(List<FlowReq> flowReqList, Runnable runnable) {
+        List<List<FlowReq>> partition = Ulist.partition(flowReqList, MAX_SYNC_NUMBER);
+        List<Disposable> disposableList = new ArrayList<>();
+        for (List<FlowReq> flowReqs : partition) {
+
+            Disposable disposable = NetWork.get(Constant.Url.FlowApi.getUrl(), FlowApi.class)
+                    .batchSync(flowReqs)
+                    .subscribeOn(Schedulers.io())
+                    .unsubscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(commonResult -> {
+                        if (commonResult.getErr_code() == 0) {
+                            runnable.run();
+                        } else {
+                            String flowReqDays = getFlowReqDays(flowReqs);
+                            Log.i("TTAG", "syncList: " + String.format("同步%s失败", flowReqDays));
+                            Utoast.show(mContext, String.format("同步%s失败, err_code:%s", flowReqDays, commonResult.getErr_code()));
+                        }
+                    }, throwable -> {
+                        String flowReqDays = getFlowReqDays(flowReqs);
+                        Log.e("TTAG", "syncList: " + String.format("同步%s失败", flowReqDays), throwable);
+                        Utoast.show(mContext, String.format("同步%s失败, 原因：%s", flowReqDays, throwable.getMessage()));
+                    });
+            disposableList.add(disposable);
+        }
+
+        mDisposable.addAll(disposableList.toArray(new Disposable[0]));
+    }
+
+    private String getFlowReqDays(List<FlowReq> flowReqs) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < flowReqs.size(); i++) {
+            if (i != 0) {
+                sb.append(",");
+            }
+            sb.append(flowReqs.get(i).getDay());
+        }
+        sb.append("]");
+        return sb.toString().trim();
+    }
+
+    private void netSync(FlowReq flowReq, Runnable runnable) {
         mDisposable.add(NetWork.get(Constant.Url.FlowApi.getUrl(), FlowApi.class)
                 .sync(flowReq)
                 .subscribeOn(Schedulers.io())
@@ -336,26 +365,34 @@ public class FlowListActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(commonResult -> {
                     if (commonResult.getErr_code() == 0) {
-                        if (DbUtil.updateArchived(mContext, flowDay.getDay(), archived)) {
-                            flowDay.setArchived(archived);
-                            if (archived) {
-                                mActiveAdapter.remove(flowDay);
-                                mActiveAdapter.notifyDataSetChanged();
-                                mArchiveddapter.add(flowDay);
-                                mArchiveddapter.notifyDataSetChanged();
-                            } else {
-                                mArchiveddapter.remove(flowDay);
-                                mArchiveddapter.notifyDataSetChanged();
-                                mActiveAdapter.add(flowDay);
-                                mActiveAdapter.notifyDataSetChanged();
-                            }
-                        }
+                        runnable.run();
                     } else {
-                        Utoast.show(mContext, String.format("同步%s失败, err_code:%s", flowDay.getDay(), commonResult.getErr_code()));
+                        Utoast.show(mContext, String.format("同步%s失败, err_code:%s", flowReq.getDay(), commonResult.getErr_code()));
                     }
                 }, throwable -> {
-                    Utoast.show(mContext, String.format("同步%s失败, 原因：%s", flowDay.getDay(), throwable.getMessage()));
+                    Utoast.show(mContext, String.format("同步%s失败, 原因：%s", flowReq.getDay(), throwable.getMessage()));
                 }));
+    }
+
+    private void archive(FlowDay flowDay, boolean archived) {
+        FlowReq flowReq = TransferUtil.transferToFlowReq(mContext, flowDay);
+        flowReq.setArchived(archived);
+        netSync(flowReq, () -> {
+            if (DbUtil.updateArchived(mContext, flowDay.getDay(), archived)) {
+                flowDay.setArchived(archived);
+                if (archived) {
+                    mActiveAdapter.remove(flowDay);
+                    mActiveAdapter.notifyDataSetChanged();
+                    mArchiveddapter.add(flowDay);
+                    mArchiveddapter.notifyDataSetChanged();
+                } else {
+                    mArchiveddapter.remove(flowDay);
+                    mArchiveddapter.notifyDataSetChanged();
+                    mActiveAdapter.add(flowDay);
+                    mActiveAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
 
@@ -399,8 +436,63 @@ public class FlowListActivity extends AppCompatActivity {
             case R.id.menu_today_flow_time:
                 toFlowActivity();
                 break;
+            case R.id.menu_sync_current_tab:
+                syncList(false);
+                break;
+            case R.id.menu_sync_all_tab:
+                syncList(true);
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 同步数据
+     *
+     * @param all 是否是全部
+     */
+    private void syncList(boolean all) {
+        DbUtil.consumeCursorByArchived(mContext, all, mViewPager.getCurrentItem(), cursor -> {
+            final int count = cursor.getCount();
+            if (count == 0) {
+                return;
+            }
+
+            List<FlowDay> flowDays = TransferUtil.transferCursorToFlowDays(cursor);
+            List<FlowReq> flowReqList = TransferUtil.transferToFlowReqs(mContext, flowDays);
+            netBatchSync(flowReqList, () -> {
+                boolean isArchivedDataChanged = false;
+                boolean isActiveDataChanged = false;
+                for (FlowDay flowDay : flowDays) {
+                    // 更新数据库
+                    if (DbUtil.updateSynced(mContext, flowDay.getDay(), true)) {
+                        flowDay.setSynced(true);
+                        updateFlowDayWhenBackHere(flowDay);
+                        // 更新界面
+                        if (flowDay.isArchived()) {
+                            isArchivedDataChanged = true;
+                        } else {
+                            isActiveDataChanged = true;
+                        }
+                    }
+                }
+                Log.i("TTAG", "syncList: " + String.format("同步%s成功", getFlowReqDays(flowReqList)));
+
+                if (count == MAX_SYNC_NUMBER) {
+                    syncList(all);
+                    return;
+                }
+
+                if (isArchivedDataChanged) {
+                    mArchiveddapter.notifyDataSetChanged();
+                }
+                if (isActiveDataChanged) {
+                    mActiveAdapter.notifyDataSetChanged();
+                }
+            });
+        });
     }
 
     public void toFlowActivity(String day) {
@@ -416,29 +508,43 @@ public class FlowListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             FlowDay flowDay = (FlowDay) data.getSerializableExtra(Intent.ACTION_ATTACH_DATA);
-            FlowDay sameFlowDay = getSameFlowDay(flowDay);
-            if (sameFlowDay == null) {
-                mActiveAdapter.getList().add(flowDay);
-                mActiveAdapter.notifyDataSetChanged();
-            } else {
-                if (sameFlowDay.isDisabled()) {
-                    mActiveAdapter.getList().remove(sameFlowDay);
-                }
-                sameFlowDay.setSynced(flowDay.isSynced());
-            }
-            Log.e(TAG, "onActivityResult: " + flowDay.getDay() + " - " + flowDay.isSynced());
-            mActiveAdapter.notifyDataSetChanged();
+            updateFlowDayWhenBackHere(flowDay);
         }
-        Log.e(TAG, "onActivityResult: ");
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private static final String TAG = FlowListActivity.class.getSimpleName();
+    private void updateFlowDayWhenBackHere(FlowDay flowDay) {
+        if (flowDay == null) {
+            return;
+        }
+        FlowDay sameFlowDay = getSameFlowDay(flowDay);
+
+        // 新加的
+        if (sameFlowDay == null) {
+            mActiveAdapter.getList().add(flowDay);
+            mActiveAdapter.notifyDataSetChanged();
+            return;
+        }
+
+        sameFlowDay.setSynced(flowDay.isSynced());
+        if (sameFlowDay.isArchived()) {
+            mArchiveddapter.notifyDataSetChanged();
+        } else {
+            mActiveAdapter.notifyDataSetChanged();
+        }
+    }
+
 
     private FlowDay getSameFlowDay(FlowDay flowDay) {
         for (FlowDay day : mActiveAdapter.getList()) {
+            if (flowDay != null && flowDay.getDay().equals(day.getDay())) {
+                return day;
+            }
+        }
+
+        for (FlowDay day : mArchiveddapter.getList()) {
             if (flowDay != null && flowDay.getDay().equals(day.getDay())) {
                 return day;
             }

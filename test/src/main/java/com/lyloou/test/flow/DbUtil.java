@@ -28,6 +28,24 @@ class DbUtil {
         sd.close();
     }
 
+
+    static void consumeCursorByArchived(Context context, boolean all, int archived, Consumer<Cursor> consumer) {
+        SQLiteDatabase sd = new DbHelper(context).getReadableDatabase();
+        Cursor cursor;
+        if (all) {
+            cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where "
+                    + DbHelper.COL_IS_SYNCED + "=0 limit 10", null);
+        } else {
+            cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where "
+                    + DbHelper.COL_IS_SYNCED + "=0 " +
+                    "and " + DbHelper.COL_IS_ARCHIVED + " = ? limit 10", new String[]{String.valueOf(archived)});
+        }
+        cursor.moveToFirst();
+        consumer.accept(cursor);
+        cursor.close();
+        sd.close();
+    }
+
     static void consumeCursorById(Context context, int id, Consumer<Cursor> consumer) {
         SQLiteDatabase sd = new DbHelper(context).getReadableDatabase();
         Cursor cursor = sd.rawQuery("select * from " + DbHelper.TABLE_NAME + " where id = ?", new String[]{"" + id});
